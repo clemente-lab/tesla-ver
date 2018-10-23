@@ -50,6 +50,7 @@ figure = {
                     'xsrc': grid.get_column_reference('x2'),
                     'ysrc': grid.get_column_reference('y2'),
                     'mode': 'markers',
+                    'marker': {'color': '#5405e5', 'size': 25}
                 }
             ]
         },
@@ -59,6 +60,7 @@ figure = {
                     'xsrc': grid.get_column_reference('x3'),
                     'ysrc': grid.get_column_reference('y3'),
                     'mode': 'markers',
+                    'marker': {'color': '#000000', 'size': 50}
                 }
             ]
         },
