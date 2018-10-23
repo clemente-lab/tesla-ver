@@ -3,6 +3,7 @@ from plotly.grid_objs import Grid, Column
 
 import time
 
+#Datapoints for movement
 column_1 = Column([0.5], 'x')
 column_2 = Column([0.5], 'y')
 column_3 = Column([1.5], 'x2')
@@ -13,6 +14,7 @@ column_6 = Column([3.0], 'y3')
 grid = Grid([column_1, column_2, column_3, column_4, column_5, column_6])
 plty.grid_ops.upload(grid, 'tut_anim'+str(time.time()), auto_open = False)
 
+#Creates the animation
 figure = {
     'data': [
         {
