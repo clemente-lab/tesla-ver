@@ -1,8 +1,7 @@
-import plotly as plty
-import plotly.graph_objs
+import plotly.plotly as py
+import plotly.graph_objs as go
 import time
 import csv
-import os
 
 #How does one select the C02_trajs.csv file from the data directory?
 with open('./data/CO2_trajs.csv', 'r') as main_csv:
@@ -20,7 +19,7 @@ with open('./data/CO2_trajs.csv', 'r') as main_csv:
             #Clump the x values (years) into their own sublist and the y values as well, across all lists
             for val in main_list[counter]:
                 # puts x values into their own list
-                if val.startswith('20') or val.startswith('19'):
+                if len(val) == 4 and (val.startswith('20') or val.startswith('19')):
                     temp_year_list.append(val)
                     val_indicies_to_remove.append(val)
                 #puts y values into their own list
@@ -33,10 +32,39 @@ with open('./data/CO2_trajs.csv', 'r') as main_csv:
             main_list[counter].insert(1, temp_year_list)
             main_list[counter].insert(2, temp_kg_list)
 
+#Creates layout of the graph
+layout= go.Layout(
+    title= 'C02 Trajectories',
+    hovermode= 'closest',
+    xaxis= dict(
+        title= 'Year',
+        autorange = True,
+        ticklen= 5,
+        zeroline= False,
+        gridwidth= 2,
+    ),
+    yaxis=dict(
+        title= 'Carbon Dioxide in Kg Per Dollar per capita per person',
+        autorange = True,
+        ticklen= 5,
+        gridwidth= 2,
+    ),
+    showlegend= True
+)
 
-    
+data = list()
 
+#Adds each plot to trace to a list
+for counter in list(range(len(main_list))):
+    trace = go.Scattergl(
+        x = main_list[counter][1],
+        y = main_list[counter][2],
+        mode = 'lines+markers',
+        #Imperfectly adds the labels to each country's graph
+        text=main_list[counter][len(main_list[counter])-21]
 
+    )
+    data.append(trace)
 
-# print(temp_kg_list)
-print(main_list[185])
+#Plots data
+py.iplot(data, filename = 'C02_Graph '+str(time.time()))
