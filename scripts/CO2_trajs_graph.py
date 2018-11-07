@@ -1,13 +1,32 @@
+#Imports plotly  and plotly graphing libraries
 import plotly.plotly as py
 import plotly.graph_objs as go
+#Imports time module
 import time
-import csv
-import os
+#Imports lodi and lodi parsing modules
 import lodi
 from lodi import parse
 
 #imports the dataset and parses it with the lodi parse method
 parsed_data = lodi.parse.read_csv('../teslaver/data/CO2_trajs.csv')
+
+
+
+
+#Creats list to store all traced scatterplots
+data = list()
+
+#Iterates through the entire dataset and creates traces out of the data
+for counter in list(range(len(parsed_data['ID'])-1)):
+    #Creates each traced scatterplot
+    trace = go.Scattergl(
+        x = [int(val) for val in parsed_data['X'][counter].split(',')],
+        y = [float(val) for val in parsed_data['Y'][counter].split(',')],
+        mode = 'lines+markers',
+        name= parsed_data['country_name'][counter]
+     )
+     #Appends each traced scatterplot to data list
+    data.append(trace)
 
 #Creates layout of the graph
 layout= go.Layout(
@@ -29,17 +48,12 @@ layout= go.Layout(
     showlegend= True
 )
 
-data = list()
+#Creates figure containing both the data and layout, ready to graph
+fig = go.Figure(data=data, layout=layout)
 
-for counter in list(range(len(parsed_data['ID']))):
-    trace = go.Scattergl(
-        x = parsed_data['X'],
-        y = parsed_data['Y'],
-        mode = 'lines+markers',
-        text = parsed_data['']
-     )
-    data.append(trace)
-py.iplot(data, filename = 'C02_Graph '+str(time.time()))
+#Plots the data on plotly
+py.plot(fig, filename = 'C02_Graph '+str(time.time()))
+
 # #How does one select the C02_trajs.csv file from the data directory?
 # with open('./data/CO2_trajs.csv', 'r') as main_csv:
 #     main_list = list(csv.reader(main_csv))
