@@ -17,7 +17,7 @@ parsed_data = lodi.parse.read_csv('../teslaver/data/CO2_trajs.csv')
 data = list()
 
 #Iterates through the entire dataset and creates traces out of the data
-for counter in list(range(len(parsed_data['ID'])-1)):
+for counter in list(range(len(parsed_data['ID']))):
     #Creates each traced scatterplot
     trace = go.Scattergl(
         x = [int(val) for val in parsed_data['X'][counter].split(',')],
