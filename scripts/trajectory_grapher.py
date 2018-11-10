@@ -4,7 +4,7 @@ import time
 import lodi
 from lodi import parse
 
-def graph_trajectories(path, graph_title, xaxis_title, yaxis_title):
+def graph_trajectories(path, graph_title=None, xaxis_title=None, yaxis_title=None):
     """Graphs a longitudinal dataset on plotly:
 
     Args:
@@ -14,6 +14,17 @@ def graph_trajectories(path, graph_title, xaxis_title, yaxis_title):
         yaxis_title: the y-axis title
 
     """
+
+    #Creates default values from the filename
+    if graph_title is None:
+        graph_title = path.split('/')[-1]
+        graph_title = graph_title.split('.')[0]
+
+    if xaxis_title is None:
+        xaxis_title = " "
+
+    if yaxis_title is None:
+        yaxis_title = " "
 
     #imports the dataset and parses it with the lodi parse method
     trajectories = lodi.parse.read_trajectories(path)
@@ -35,10 +46,10 @@ def graph_trajectories(path, graph_title, xaxis_title, yaxis_title):
 
     #Creates layout of the graph
     layout= go.Layout(
-        title= xaxis_title,
+        title= graph_title,
         hovermode= 'closest',
         xaxis= dict(
-            title= 'Year',
+            title= xaxis_title,
             autorange = True,
             ticklen= 5,
             zeroline= False,
