@@ -2,6 +2,7 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 import time
 import lodi
+import os
 from lodi import parse
 
 def graph_trajectories(path, graph_title=None, xaxis_title=None, yaxis_title=None):
@@ -16,8 +17,12 @@ def graph_trajectories(path, graph_title=None, xaxis_title=None, yaxis_title=Non
     """
 
     #Creates default values from the filename
-    if graph_title is None:
+    if graph_title is None and os.path == 'posix':
         graph_title = path.split('/')[-1]
+        graph_title = graph_title.split('.')[0]
+
+    elif graph_title is None and os.path != "posix":
+        graph_title = path.split('\\')[-1]
         graph_title = graph_title.split('.')[0]
 
     if xaxis_title is None:
