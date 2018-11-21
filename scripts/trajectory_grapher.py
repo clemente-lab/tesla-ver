@@ -2,10 +2,9 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 import time
 import lodi
-import os
 from lodi import parse
 
-def graph_trajectories(path, graph_title=None, xaxis_title=None, yaxis_title=None):
+def graph_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_name):
     """Graphs a longitudinal dataset on plotly:
 
     Args:
@@ -16,21 +15,6 @@ def graph_trajectories(path, graph_title=None, xaxis_title=None, yaxis_title=Non
 
     """
 
-    #Creates default values from the filename
-    if graph_title is None and os.path == 'posix':
-        graph_title = path.split('/')[-1]
-        graph_title = graph_title.split('.')[0]
-
-    elif graph_title is None and os.path != "posix":
-        graph_title = path.split('\\')[-1]
-        graph_title = graph_title.split('.')[0]
-
-    if xaxis_title is None:
-        xaxis_title = " "
-
-    if yaxis_title is None:
-        yaxis_title = " "
-
     #imports the dataset and parses it with the lodi parse method
     trajectories = lodi.parse.read_trajectories(path)
 
@@ -39,15 +23,17 @@ def graph_trajectories(path, graph_title=None, xaxis_title=None, yaxis_title=Non
 
     #Iterates through the entire dataset and creates traces out of the data
     for traj in trajectories:
-        #Creates each traced scatterplot
-        trace = go.Scattergl(
-            x = traj.time,
-            y = traj.values,
-            mode = 'lines+markers',
-            name= traj.get_mdata()['country_name']
-        )
-        #Appends each traced scatterplot to data list
-        data.append(trace)
+        #checks lists for equality of length
+        if len(traj.get_mdata()[xaxis_title]) == len(traj.get_mdata()[yaxis_title]):
+            #Creates each traced scatterplot
+            trace = go.Scattergl(
+                x = list(map(float, traj.get_mdata()[xaxis_title])),
+                y = list(map(float, traj.get_mdata()[yaxis_title])),
+                mode = 'lines+markers',
+                name= traj.get_mdata()[trajectory_name]
+            )
+            #Appends each traced scatterplot to data list
+            data.append(trace)
 
     #Creates layout of the graph
     layout= go.Layout(
@@ -74,3 +60,5 @@ def graph_trajectories(path, graph_title=None, xaxis_title=None, yaxis_title=Non
 
     #Plots the data on plotly
     py.plot(fig, filename = graph_title)
+
+graph_trajectories('/Users/alexanderkyim/Documents/GitHub/teslaver/data/CO2_trajs.csv', 'C02 Per Dollar Per Capita Over Time', 'country-code', 'original_trajectory','country_name')
