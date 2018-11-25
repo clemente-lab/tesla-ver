@@ -23,17 +23,52 @@ def graph_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_n
 
     #Iterates through the entire dataset and creates traces out of the data
     for traj in trajectories:
-        #checks lists for equality of length
-        if len(traj.get_mdata()[xaxis_title]) == len(traj.get_mdata()[yaxis_title]):
+        
+        if xaxis_title in traj.get_mdata() and yaxis_title in traj.get_mdata():
+            #checks lists for equality of length
+            if len(traj.get_mdata()[xaxis_title]) == len(traj.get_mdata()[yaxis_title]):
+                #Creates each traced scatterplot
+                trace = go.Scattergl(
+                    x = list(map(float, traj.get_mdata()[xaxis_title])),
+                    y = list(map(float, traj.get_mdata()[yaxis_title])),
+                    mode = 'lines+markers',
+                    name= traj.get_mdata()[trajectory_name]
+                )
+                #Appends each traced scatterplot to data list
+                data.append(trace)
+        elif xaxis_title == 'times' and yaxis_title == 'values':
             #Creates each traced scatterplot
-            trace = go.Scattergl(
-                x = list(map(float, traj.get_mdata()[xaxis_title])),
-                y = list(map(float, traj.get_mdata()[yaxis_title])),
-                mode = 'lines+markers',
-                name= traj.get_mdata()[trajectory_name]
-            )
-            #Appends each traced scatterplot to data list
-            data.append(trace)
+                trace = go.Scattergl(
+                    x = traj.time,
+                    y = traj.values,
+                    mode = 'lines+markers',
+                    name= traj.get_mdata()[trajectory_name]
+                )
+                #Appends each traced scatterplot to data list
+                data.append(trace)
+        elif xaxis_title == 'times' and yaxis_title in traj.get_mdata():
+            #Creates each traced scatterplot
+                trace = go.Scattergl(
+                    x = traj.time,
+                    y = list(map(float, traj.get_mdata()[yaxis_title])),
+                    mode = 'lines+markers',
+                    name= traj.get_mdata()[trajectory_name]
+                )
+                #Appends each traced scatterplot to data list
+                data.append(trace)
+        elif xaxis_title in traj.get_mdata() and yaxis_title == 'values':
+                #Creates each traced scatterplot
+                trace = go.Scattergl(
+                    x = list(map(float, traj.get_mdata()[xaxis_title])),
+                    y = traj.values,
+                    mode = 'lines+markers',
+                    name= traj.get_mdata()[trajectory_name]
+                )
+                #Appends each traced scatterplot to data list
+                data.append(trace)         
+        else:
+            print 'Invalid Parameters passed'
+            exit()
 
     #Creates layout of the graph
     layout= go.Layout(
@@ -60,5 +95,3 @@ def graph_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_n
 
     #Plots the data on plotly
     py.plot(fig, filename = graph_title)
-
-graph_trajectories('/Users/alexanderkyim/Documents/GitHub/teslaver/data/CO2_trajs.csv', 'C02 Per Dollar Per Capita Over Time', 'country-code', 'original_trajectory','country_name')
