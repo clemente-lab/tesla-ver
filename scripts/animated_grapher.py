@@ -5,6 +5,7 @@ import plotly.figure_factory as ff
 from plotly.grid_objs import Grid, Column
 import numpy as np
 import pandas as pd
+import trajectory_to_dataframe
 
 class animate_trajectories:
 
@@ -28,23 +29,7 @@ class animate_trajectories:
         #Creates list to store all traced scatterplots
         data = list()
 
-        #Iterates through the entire dataset and creates traces out of the data
+        #Iterates through the entire dataset
         for traj in trajectories:
-            #Checks whether or not xaxis_title is mdata, and assigns appropriate data to the lists
-            if self.xaxis_title == 'time':
-                x_values = traj.time
-            elif self.xaxis_title in traj.get_mdata():
-                x_values = list(map(float, traj.get_mdata()[self.xaxis_title]))
-            else:
-                print 'Invalid Xaxis input'
-                exit
             
-            #Checks whether or not yaxis_title is mdata, and assigns appropriate data to the lists
-            if self.yaxis_title == 'values':
-                y_values = traj.values
-            elif self.yaxis_title in traj.get_mdata():
-                y_values = list(map(float, traj.get_mdata()[self.yaxis_title]))
-            else:
-                print 'Invalid Yaxis input'
-                exit
             
