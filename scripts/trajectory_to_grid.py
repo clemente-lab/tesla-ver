@@ -13,9 +13,6 @@ def trajectory_to_grid(path, yaxis):
     for traj in trajectory:
         #makes list of all potential time values  
         xvalues = traj.time
-        #TODO: Sort them into order
-    # columns_list.append('xavlues')
-    # values_list = np.empty(shape = (len(xvalues), len(trajectory)))
     return_frame = pd.DataFrame({'xvalues': xvalues})
     for num, traj in enumerate(trajectory):
         #Checks whether or not yaxis is mdata, and assigns appropriate data to the lists
@@ -23,17 +20,24 @@ def trajectory_to_grid(path, yaxis):
             yvalues = traj.values
             while(len(yvalues) < len(xvalues)):
                 yvalues = np.insert(yvalues, 0, None)
+            #Appends column titles
             columns_list.append('yvalues' + str(num))
             data_main = {columns_list[num]: yvalues}
+            #Creates the dataframe in question
             df_joined = pd.DataFrame(data=data_main)
+            #appends the dataframe to the main dataframe
             return_frame = return_frame.join(df_joined)
+
         elif yaxis in traj.get_mdata():
             yvalues = traj.get_mdata()[yaxis]
             while(len(yvalues) < len(xvalues)):
                 yvalues = np.insert(yvalues, 0, None)
+            #Appends column titles
             columns_list.append(str(yaxis) + 'values' + str(num))
             data_main = {columns_list[num]: yvalues}
+            #Creates the dataframe
             df_joined = pd.DataFrame(data=data_main)
+            #Appends to main dataframe
             return_frame = return_frame.join(df_joined)
         else:
             print 'Invalid Yaxis input'
@@ -41,4 +45,4 @@ def trajectory_to_grid(path, yaxis):
     grid = Grid([Column(return_frame[column_name], column_name) for column_name in return_frame.columns])
     return grid
     
-print trajectory_to_grid('../teslaver/data/CO2_trajs.csv', 'country-code')
+# print trajectory_to_grid('../teslaver/data/CO2_trajs.csv', 'values')
