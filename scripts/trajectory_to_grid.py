@@ -6,7 +6,6 @@ import plotly.plotly as py
 import plotly.figure_factory as ff
 from plotly.grid_objs import Grid, Column
 
-
 def trajectory_to_grid(path, yaxis):
     trajectory = lodi.parse.read_trajectories(path)
     columns_list = list()
