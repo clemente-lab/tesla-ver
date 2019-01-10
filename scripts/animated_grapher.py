@@ -9,10 +9,21 @@ import plotly.graph_objs as go
 from plotly.grid_objs import Grid, Column
 
 def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_title):
-    main_data = ttg.trajectory_to_grid(path, yaxis_title)
+    dtfr = ttg.trajectory_to_grid(path, yaxis_title)
+    main_data = Grid([Column(dtfr[column_name], column_name) for column_name in dtfr.columns])
     py.grid_ops.upload(main_data, 'anim_grid'+str(time.time), auto_open=False)
+    figure = {
+        'data': [],
+        'layout': {},
+        'frames': [],
+        'config': {'scrollzoom': True}
+    }
+
+    figure['layout']['xaxis'] = {'range': [min(dtfr[0]), max(dtfr[0])], 'title': xaxis_title, 'gridcolor': '#FFFFFF'}
+    figure['layout']['yaxis'] = {'title': yaxis_title, 'range': [np.nanmin(dtfr), np.nanmax(dtfr[:, 1:])]}
+
+
     for counter in list(range(len(main_data.__len__))):
-        figure = {}
         data_dict = {
             'xsrc': main_data.get_column_reference('xvalues'),
             'ysrc': main_data.get_column_reference('yvalues'+str(counter)),
@@ -23,5 +34,4 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
             }
         }
         figure['data'].append(data_dict)
-
 animate_trajectories('../teslaver/data/CO2_trajs.csv', 'testyboi', 'time', 'values', 'spicy bois')

@@ -42,6 +42,6 @@ def trajectory_to_grid(path, yaxis):
             print 'Invalid Yaxis input'
             exit
     grid = Grid([Column(return_frame[column_name], column_name) for column_name in return_frame.columns])
-    return grid
+    return return_frame
     
 # print trajectory_to_grid('../teslaver/data/CO2_trajs.csv', 'values')
