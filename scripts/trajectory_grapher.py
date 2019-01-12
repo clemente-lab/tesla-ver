@@ -1,8 +1,8 @@
 import plotly.plotly as py
 import plotly.graph_objs as go
 import time
-import lodi
-from lodi import parse
+import loclust
+from loclust import parse
 
 def graph_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_name):
     """Graphs a longitudinal dataset on plotly:
@@ -16,7 +16,7 @@ def graph_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_n
     """
 
     #imports the dataset and parses it with the lodi parse method
-    trajectories = lodi.parse.read_trajectories(path)
+    trajectories = loclust.parse.read_trajectories(path)
 
     #Creates list to store all traced scatterplots
     data = list()

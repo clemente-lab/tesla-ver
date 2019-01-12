@@ -1,5 +1,5 @@
-import lodi
-from lodi import parse
+import loclust
+from loclust import parse
 import numpy as np
 import pandas as pd
 import plotly.plotly as py
@@ -7,7 +7,7 @@ import plotly.figure_factory as ff
 from plotly.grid_objs import Grid, Column
 
 def trajectory_to_grid(path, yaxis):
-    trajectory = lodi.parse.read_trajectories(path)
+    trajectory = loclust.parse.read_trajectories(path)
     columns_list = list()
     for traj in trajectory:
         #makes list of all potential time values  

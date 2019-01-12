@@ -1,5 +1,5 @@
-import lodi
-from lodi import parse
+import loclust
+from loclust import parse
 import plotly.plotly as py
 import numpy as np
 import pandas as pd
