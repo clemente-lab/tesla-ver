@@ -1,0 +1,14 @@
+Metadata-Version: 1.1
+Name: teslaver
+Version: 0.1.0.dev0
+Summary: TimE Series Longitudinal Analaysis Server
+Home-page: http://github.com/clemente-lab/teslaver
+Author: The Clemente Lab
+Author-email: jose.clemente@gmail.com
+License: GPL
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
