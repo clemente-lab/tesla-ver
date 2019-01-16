@@ -7,6 +7,7 @@ import trajectory_to_grid as ttg
 import time
 import plotly.graph_objs as go
 from plotly.grid_objs import Grid, Column
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 
 
 def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_title):
