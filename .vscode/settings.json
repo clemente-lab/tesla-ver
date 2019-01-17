@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Python27\\python.exe",
+    "python.pythonPath": "/usr/local/bin/python",
     "python.linting.pylintEnabled": true,
     "git.ignoreLimitWarning": true,
     "python.linting.enabled": true
