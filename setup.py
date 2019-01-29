@@ -34,7 +34,7 @@ setup(name='teslaver',
       author=__author__,
       author_email=__email__,
       license=__license__,
-      packages=['lodi'],
+      packages=['teslaver'],
       scripts=glob('scripts/*py'),
       install_requires=[
           'numpy',

@@ -1,5 +1,19 @@
-
 scripts/projectiledata.csv
 scripts/projectile_launch.py
 
 \.vscode/
+
+# Compiled python modules.
+*.pyc
+
+# Build
+/build/
+
+# Libraries
+/lib/
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info

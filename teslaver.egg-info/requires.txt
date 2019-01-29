@@ -1,6 +1,0 @@
-numpy
-scipy
-click
-seaborn
-sklearn
-pandas
