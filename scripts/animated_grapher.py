@@ -1,35 +1,35 @@
-import loclust
-from loclust import parse
+import lodi
+from lodi import parse
 import plotly.plotly as py
 import numpy as np
 import pandas as pd
 import trajectory_to_grid as ttg
 import time
+import utilities as utls
 import plotly.graph_objs as go
 from plotly.grid_objs import Grid, Column
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 
 
 def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_title):
-    dtfr = ttg.trajectory_to_grid(path, yaxis_title)
     # This add every data point to every year which isn't what we want
-    main_data = Grid([Column(dtfr[column_name], column_name) for column_name in dtfr.columns])
-    url = py.grid_ops.upload(main_data, 'anim_grid'+str(time.time()), auto_open=False)
+    parsed_dataframe = utls.trajectories_to_dataframe(lodi.parse.read_trajectories(path))
     figure = {
         'data': [],
         'layout': {},
-        'frames': [],
+        'frames': [],   
         'config': {'scrollzoom': True}
     }
 
     # Use pandas dataframe methods to get min/max values
-    figure['layout']['xaxis'] = {'range': [dtfr['xvalues'].min(), dtfr['xvalues'].max()],
+    #I'm a bit unsure how to pull the correct values from the dataframe.
+    figure['layout']['xaxis'] = {'range': [parsed_dataframe['X'].min(), parsed_dataframe['X'].max()],
                                  'title': xaxis_title,
                                  'gridcolor': '#FFFFFF'}
     figure['layout']['yaxis'] = {'title': yaxis_title,
                                  'range': [
-                                     dtfr.filter(regex='yvalues*').min(),
-                                     dtfr.filter(regex='yvalues*').max()
+                                     parsed_dataframe.filter(regex='Y*').min(),
+                                     parsed_dataframe.filter(regex='Y*').max()
                                  ]}
     # Get a list of yvalues to track
     all_cols = list(filter(lambda x: 'yvalue' in x, dtfr.columns))
@@ -96,8 +96,8 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
     # Iterate through the desired columns
     for col in all_cols:
         data_dict = {
-            'xsrc': main_data.get_column_reference('xvalues'),
-            'ysrc': main_data.get_column_reference(col),
+            'xsrc': parsed_dataframe.get_column_reference('xvalues'),
+            'ysrc': parsed_dataframe.get_column_reference(col),
             'mode': 'markers',
             'marker': {
                 'sizemode': 'area',
@@ -107,7 +107,8 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
         figure['data'].append(data_dict)
 
     # Create each frame of the animation
-    for year in dtfr['xvalues']:
+    # How do I separate the data by column
+    for year in parsed_dataframe['X']:
         frame = {
             'data': [],
             'name': str(year)
@@ -115,8 +116,8 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
         # Add the value of each column for the current frame
         for col in all_cols:
             data_dict = {
-                'xsrc': main_data.get_column_reference('xvalues'),
-                'ysrc': main_data.get_column_reference(col),
+                'xsrc': parsed_dataframe.get_column_reference('xvalues'),
+                'ysrc': parsed_dataframe.get_column_reference(col),
                 'mode': 'markers',
                 'marker': {
                     'sizemode': 'area',
