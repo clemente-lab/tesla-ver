@@ -1,7 +1,7 @@
 from pandas import DataFrame, concat
 
 
-def trajectories_to_df(trajs):
+def trajectories_to_dataframe(trajs):
     """
     A function for converting a list of trajectories into a pandas DataFrame.
     ========================================================================
