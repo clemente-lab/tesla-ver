@@ -23,14 +23,14 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
 
     # Use pandas dataframe methods to get min/max values
     #I'm a bit unsure how to pull the correct values from the dataframe.
-    figure['layout']['xaxis'] = {'range': [parsed_dataframe['X'].min(), parsed_dataframe['X'].max()],
+    figure['layout']['xaxis'] = {'autorange': True,
                                  'title': xaxis_title,
                                  'gridcolor': '#FFFFFF'}
     figure['layout']['yaxis'] = {'title': yaxis_title,
-                                 'range': [
-                                     parsed_dataframe.filter(regex='Y*').min(),
-                                     parsed_dataframe.filter(regex='Y*').max()
-                                 ]}
+                                 'autorange': True,}
+
+    figure['layout']['hovermode'] = 'closest'
+    figure['layout']['showlegend'] = True
     # Get a list of yvalues to track
     all_cols = list(filter(lambda x: 'yvalue' in x, dtfr.columns))
 
@@ -95,16 +95,7 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
 
     # Iterate through the desired columns
     for col in all_cols:
-        data_dict = {
-            'xsrc': parsed_dataframe.get_column_reference('xvalues'),
-            'ysrc': parsed_dataframe.get_column_reference(col),
-            'mode': 'markers',
-            'marker': {
-                'sizemode': 'area',
-                'sizeref': 200000
-            }
-        }
-        figure['data'].append(data_dict)
+        
 
     # Create each frame of the animation
     # How do I separate the data by column
@@ -116,19 +107,18 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
         # Add the value of each column for the current frame
         for col in all_cols:
             data_dict = {
-                'xsrc': parsed_dataframe.get_column_reference('xvalues'),
-                'ysrc': parsed_dataframe.get_column_reference(col),
-                'mode': 'markers',
-                'marker': {
-                    'sizemode': 'area',
-                    'sizeref': 200000
-                },
-                'name': col
-            }
-            frame['data'].append(data_dict)
-
-        # Add the frame to the figure
-        figure['frames'].append(frame)
+            'xsrc': parsed_dataframe['X'],
+            'ysrc': parsed_dataframe['Y'],
+            'mode': 'markers',
+            'text': parsed_dataframe['region'],
+            'marker': {
+                'sizemode': 'area',
+                'sizeref': 200000,
+            },
+            'name':['country_name'],
+        }
+        figure['data'].append(data_dict)
+        
         slider_step = {'args': [
             [year],
             {'frame': {'duration': 300, 'redraw': False},
