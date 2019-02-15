@@ -1,11 +1,11 @@
-import lodi
-from lodi import parse
+import loclust
+from loclust import parse
 import plotly.plotly as py
 import numpy as np
 import pandas as pd
 import trajectory_to_grid as ttg
 import time
-import utilities as utls
+from teslaver import utilities as utls
 import plotly.graph_objs as go
 from plotly.grid_objs import Grid, Column
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
@@ -31,8 +31,6 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
 
     figure['layout']['hovermode'] = 'closest'
     figure['layout']['showlegend'] = True
-    # Get a list of yvalues to track
-    all_cols = list(filter(lambda x: 'yvalue' in x, dtfr.columns))
 
     sliders_dict = {
         'active': 0,
@@ -93,12 +91,6 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
         }
     ]
 
-    # Iterate through the desired columns
-    for col in all_cols:
-        
-
-    # Create each frame of the animation
-    # How do I separate the data by column
     for year in parsed_dataframe['X']:
         frame = {
             'data': [],

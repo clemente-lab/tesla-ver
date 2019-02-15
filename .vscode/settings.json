@@ -1,6 +1,0 @@
-{
-    "python.pythonPath": "/usr/local/bin/python",
-    "python.linting.pylintEnabled": true,
-    "git.ignoreLimitWarning": true,
-    "python.linting.enabled": true
-}
