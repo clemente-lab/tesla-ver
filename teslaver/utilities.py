@@ -35,3 +35,4 @@ def trajectories_to_dataframe(trajs):
     # Concatenate all the dataframes into a single frame
     all_trajs = concat(traj_frames)
     return all_trajs
+    
