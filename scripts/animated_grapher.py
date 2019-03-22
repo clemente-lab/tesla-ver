@@ -13,7 +13,7 @@ from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 
 def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory_title):
     # This add every data point to every year which isn't what we want
-    parsed_dataframe = utls.trajectories_to_dataframe(lodi.parse.read_trajectories(path))
+    parsed_dataframe = utls.trajectories_to_dataframe(loclust.parse.read_trajectories(path))
     figure = {
         'data': [],
         'layout': {},
@@ -97,6 +97,7 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
             'name': str(year)
         }
         # Add the value of each column for the current frame
+        #How do the columns work in this dataframe
         for col in all_cols:
             data_dict = {
             'xsrc': parsed_dataframe['X'],
@@ -125,7 +126,8 @@ def animate_trajectories(path, graph_title, xaxis_title, yaxis_title, trajectory
     return url, figure
 
 
-url, figure = animate_trajectories('../teslaver/data/CO2_trajs_short.csv', 'testyboi', 'time', 'values', 'spicy bois')
+url, figure = animate_trajectories('../teslaver/data/CO2_trajs_short.csv', 
+                                   'testyboi', 'time', 'values', 'spicy bois')
 url2 = py.icreate_animations(figure, 'anim_grid'+str(time.time()))
 # Print the url of the animated plot
 print(url2.resource)
