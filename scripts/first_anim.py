@@ -2,7 +2,6 @@
 import plotly.plotly as plty
 #imports the Grid and Column objects from grid_objects
 from plotly.grid_objs import Grid, Column
-
 import time
 
 #Datapoints for movement
@@ -36,7 +35,7 @@ figure = {
                 'updatemenus': [{
                    'buttons': [
                        {
-                           'args': [None],
+                            'args': [None],
                             'label': 'Play',
                             'method': 'animate'
                     }
@@ -94,4 +93,4 @@ figure = {
 }
 
 #Creates the animation on the server, with the title 'tut_anim' + the current time, using the animation frames defined in 'figure'
-plty.icreate_animations(figure, 'tut_anim'+str(time.time()))
+plty.create_animations(figure, 'tut_anim'+str(time.time()))
