@@ -3,6 +3,9 @@ scripts/projectile_launch.py
 
 \.vscode/
 
+# Notebook backups
+.ipynb_checkpoints
+
 # Compiled python modules.
 *.pyc
 
@@ -17,3 +20,6 @@ scripts/projectile_launch.py
 
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
+
+# Vim backup files
+*.swp
