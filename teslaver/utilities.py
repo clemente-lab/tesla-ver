@@ -18,7 +18,6 @@ def trajectories_to_dataframe(trajs):
         }
         # Add each metadata entry to the dictionary
         for key in traj.get_mdata().keys():
-            print(traj.get_mdata()[key])
             # If there is only a single value, repeat it for each time point
             # To do this check if the result is not a list
             if not traj.get_mdata()[key] is list:
@@ -35,4 +34,3 @@ def trajectories_to_dataframe(trajs):
     # Concatenate all the dataframes into a single frame
     all_trajs = concat(traj_frames)
     return all_trajs
-    
