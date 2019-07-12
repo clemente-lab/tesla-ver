@@ -1,6 +1,6 @@
 scripts/projectiledata.csv
 scripts/projectile_launch.py
-
+.DS_Store
 \.vscode/
 
 # Notebook backups
