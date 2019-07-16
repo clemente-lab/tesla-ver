@@ -12,6 +12,9 @@ scripts/projectile_launch.py
 # Build
 /build/
 
+#Credentials
+/credentials/
+
 # Libraries
 /lib/
 
