@@ -4,7 +4,6 @@ Created On Friday July 1
 
 @author: alexanderkyim
 """
-
 import dash
 
 app = dash.Dash(__name__)

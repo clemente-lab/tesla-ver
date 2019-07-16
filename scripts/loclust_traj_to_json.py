@@ -38,4 +38,4 @@ def traj_to_json(path_to_file, filename='default'):
         json.dump(temp_store, write_file)
         logging.info('Wrote JSON')
     return filename
-traj_to_json('./data_source/MicrobiomeMaturation_all_taxa.csv','Ballaboosta')
+# traj_to_json('./data_source/MicrobiomeMaturation_all_taxa.csv','Ballaboosta')

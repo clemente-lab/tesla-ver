@@ -1,0 +1,25 @@
+
+#import dash and components
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+
+#import graphing library(ies)
+import plotly
+import plotly.graph_objs as go
+
+#import data manipulation libraries
+import numpy as np
+import pandas as pd
+
+#misc imports
+import os
+import json
+
+if 'DYNO' in os.environ:
+    app_name = os.environ['DASH_APP_NAME']
+else:
+    app_name = 'tesla-ver'
+
+layout = html.Div([
+])
