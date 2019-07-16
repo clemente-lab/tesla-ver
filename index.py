@@ -5,11 +5,26 @@ from dash.dependencies import Input, Output
 from app import app
 # from apps import main, heatmap
 
-if 'DYNO' in os.environ:
-    app_name = os.environ['DASH_APP_NAME']
-else:
-    app_name = 'dash-heatmapplot/'
+#Set App name for main view
+app_name = 'Tesla-ver'
 
+
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>Tesla-ver</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry}
+        <footer>
+        </footer>
+    </body>
+</html>
+'''
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')

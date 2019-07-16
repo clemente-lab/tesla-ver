@@ -23,11 +23,11 @@ class JSONWrapper(object):
             with open(new_path_to_json, 'r') as f:
                 self.json_container = json.load(f)
                 logging.info('Opened JSON File')
-        if '0' in self.json_container.keys():
-            pass
-        else:
-            logging.debug(self.json_container.keys())
-            raise JSONContainerEmpty
+            if '0' in self.json_container.keys():
+                pass
+            else:
+                logging.debug(self.json_container.keys())
+                raise JSONContainerEmpty
 
 class JSONContainerEmpty(Exception):
     def __init__(self, msg):

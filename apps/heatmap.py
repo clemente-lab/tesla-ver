@@ -16,10 +16,7 @@ import pandas as pd
 import os
 import json
 
-if 'DYNO' in os.environ:
-    app_name = os.environ['DASH_APP_NAME']
-else:
-    app_name = 'tesla-ver'
+app_name = 'Tesla-ver'
 
 layout = html.Div([
 ])

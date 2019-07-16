@@ -34,8 +34,8 @@ def traj_to_json(path_to_file, filename='default'):
     except AssertionError:
             logging.error('ID Keys not unique or Not Represented')
             logging.debug(keys)   
-    with open("./json_data/{}.json".format(filename), "w") as write_file:
+    with open("./assets/json_data/{}.json".format(filename), "w") as write_file:
         json.dump(temp_store, write_file)
         logging.info('Wrote JSON')
     return filename
-# traj_to_json('./data_source/MicrobiomeMaturation_all_taxa.csv','Ballaboosta')
+# traj_to_json('./assets/data_source/MicrobiomeMaturation_all_taxa.csv','Ballaboosta')
