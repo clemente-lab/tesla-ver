@@ -50,3 +50,13 @@ def get_X_and_Y():
         for id_chunk in 
         [id_entry for id_entry in holding_dict.values()][1:]]))))
         }
+
+def removed(remove_list, item):
+    remove_list.remove(item)
+    return remove_list
+
+def get_keys_metadata():
+    holding_dict = dict()
+    with open('./assets/json_data/db.json', 'r') as read_file:
+        holding_dict = json.load(read_file)
+    return removed(holding_dict.values()[1].keys(), 'XYData')
