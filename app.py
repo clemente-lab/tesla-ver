@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created On Friday July 1
+Created On Friday July 11
 
 @author: alexanderkyim
 """
@@ -34,17 +34,15 @@ import os
 
 app = dash.Dash(__name__, external_stylesheets=['https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'], 
                                 external_scripts=[' https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'])
-app.scripts.config.serve_locally = False
+app.config['suppress_callback_exceptions']=True
 
 # server = app.server
 # app.config.supress_callback_exceptions = False
 XandY = get_X_and_Y()
 app.layout = html.Div([
     html.Div([
-        html.Label('Teslaver')
+        html.H1('Teslaver')
     ], style={
-        'font-size': '35px',
-        'font-weight': '700',
         'text-align':'center',
     }),
     html.Div([
@@ -127,12 +125,15 @@ def draw_heat_map(n_clicks):
 
 
 
-@app.callback(Output('output-data-upload', 'children'),
+@app.callback([Output('output-data-upload', 'children'),
+                            Output('selected-type', 'options')],
               [Input('upload-data', 'contents')],
               [State('upload-data', 'filename')])
 def update_output(file_to_upload, file_name):
     if file_to_upload is not None:
-        return parse_contents(file_to_upload,file_name)
+        if os.path.exists('./assets/json_data/db.json'):
+            os.remove('./assets/json_data/db.json')
+        return parse_contents(file_to_upload,file_name), [{"label": i, "value": i} for i in get_keys_metadata()]
 
 def parse_contents(contents, filename):
     # print contents
