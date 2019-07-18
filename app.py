@@ -5,7 +5,7 @@ Created On Friday July 1
 @author: alexanderkyim
 """
 
-
+#region
 #import dash and components
 import dash
 import dash_core_components as dcc
@@ -24,23 +24,71 @@ import io
 import loclust
 import scripts.loclust_traj_to_json
 from scripts.JSONWrapper import JSONWrapper
+from scripts.json_helpers import parse_loclust_string_to_json, get_X_and_Y, get_keys_metadata
 import csv
 import httplib
 import json
 #misc imports
 import os
+#endregion
 
-
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=['https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'], 
+                                external_scripts=[' https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'])
+app.scripts.config.serve_locally = False
 
 # server = app.server
 # app.config.supress_callback_exceptions = False
+XandY = get_X_and_Y()
 app.layout = html.Div([
+    html.Div([
+        html.Label('Teslaver')
+    ], style={
+        'font-size': '35px',
+        'font-weight': '700',
+        'text-align':'center',
+    }),
+    html.Div([
+        dcc.Dropdown(id="selected-type", options=[{"label": i, "value": i} for i in get_keys_metadata()]),
+    ], style={
+    }),
+    
+    dcc.Graph(
+        id='heatmap-main',
+        # hoverData = 'points':[{'0':}]
+    ),
+    html.P([dcc.Slider(
+        id='main-slider',
+        min=min(XandY.get('X')),
+        max=max(XandY.get('X')),
+        value=min(XandY.get('X')),
+        marks={str(X): str(X) for X in XandY.get('X')},
+    ),
+    ],
+    style = {
+            'margin-top':'5px',
+            'width' : '80%',
+            'fontSize' : '20px',
+            'padding-left' : '100px',
+            'display': 'inline-block'}),
+    html.Label('Time Interval', style={'text-align':'center',
+        'margin':'auto',
+        'padding-top':'20px',
+        'display':'block',}),
+    html.P([
+        html.Button('Draw Graphs', id='draw-button', className='waves-effect waves-light btn-large'),
+        html.Button('Reload Graphs', id='reload-button', className='waves-effect waves-light btn-large'),
+    ],
+    style = {
+        'margin-top':'5px',
+        'padding-top':'10px',
+        'display':'inline-block',
+    }
+    ),
     dcc.Upload(
         id='upload-data',
         children=html.Div([
-            'Drag and Drop or ', html.A('Select Files')
-        ]),
+            'Drag and Drop or ', html.A('Select Files', className='card-content white-text')
+        ], className='card-content white-text'),
         style={
             'width': '100%',
             'height': '60px',
@@ -48,15 +96,43 @@ app.layout = html.Div([
             'borderWidth': '1px',
             'borderStyle': 'dashed',
             'borderRadius': '5px',
-            'textAlign': 'center',
-            'margin': '10px'
+            'text-align': 'center',
+            # 'display': 'flex',
+            # 'margin': '10px',
         },
+        className = 'card blue',
         # Disallow multiple files to be uploaded
         multiple=False
     ),
     html.Div(id='output-data-upload'),
-    html.Div(id='hidden-div')
+    html.Div(id='graph-div'),
+    html.Div(id='hidden-div'),
+
 ])
+# style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'})
+
+
+# @app.callback(Output('hidden-div', 'children'),
+#             [Input('shutdown-button', 'n_clicks')])
+# def call_shutdown(contents):
+#     shutdown_call = Process(target=shutdown_server)
+#     shutdown_call.start()
+#     shutdown_call.join()
+
+
+@app.callback(Output('graph-div', 'children'),
+              [Input('main-slider', 'value')])
+def draw_heat_map(n_clicks):
+    pass
+
+
+
+@app.callback(Output('output-data-upload', 'children'),
+              [Input('upload-data', 'contents')],
+              [State('upload-data', 'filename')])
+def update_output(file_to_upload, file_name):
+    if file_to_upload is not None:
+        return parse_contents(file_to_upload,file_name)
 
 def parse_contents(contents, filename):
     # print contents
@@ -68,8 +144,6 @@ def parse_contents(contents, filename):
             parse_loclust_string_to_json(io.StringIO(decoded.decode('utf-8')).getvalue(), filename)
             return html.Div([
                 u'✅ Data successfully loaded and appears ready',
-                #TODO: Add callback for button
-                html.Button('Draw Graphs', id='draw-button'),
             ])
     except Exception as e:
         print(e)
@@ -77,54 +151,19 @@ def parse_contents(contents, filename):
             u'❌ There was an error processing this file, or you uploaded a non-loclust file'
         ])
 
+#region
+# from flask import request
+# def shutdown_server():
+#     func = request.environ.get('werkzeug.server.shutdown')
+#     if func is None:
+#         raise RuntimeError('Not running with the Werkzeug Server')
+#     func()
 
-@app.callback(
-    dash.dependencies.Output('hidden-div', 'children'),
-    [dash.dependencies.Input('button', 'n_clicks')])
-def draw_graphs(n_clicks):
-    return str(n_clicks)
-
-
-@app.callback(Output('output-data-upload', 'children'),
-              [Input('upload-data', 'contents')],
-              [State('upload-data', 'filename')])
-def update_output(file_to_upload, file_name):
-    if file_to_upload is not None:
-        return parse_contents(file_to_upload,file_name)
-
-def parse_loclust_string_to_json(loclust_string, file_name):
-    jsonDict = dict()
-
-    #Turns string of input into a 2d list
-    split_data = map(lambda x: x.split('\t'), loclust_string.split('\n'))
-
-    #adds a dictionary of all of the keys
-    jsonDict['keys'] = split_data[0]
-
-    #Reduces the 2d list to just a list of non keys and removes an empty list at the end
-    split_data = split_data[1:-1]
-
-    #Creates a list of tuples of the type (ID, dictionary) where the dictionary is key:value for each ID's list
-    #of values, and with the special key 'XYData' to store each X:Y pair in a sub-dictionary
-    split_data = [id_list_to_dict(split_data_indiv,jsonDict['keys']) for split_data_indiv in split_data]
-
-    #adds the ID:dictionary pairs from each tuple
-    for id_chunk in split_data:
-        id_val, dict_val = id_chunk
-        jsonDict[id_val] = dict_val
-    with open("./assets/json_data/{}.json".format(file_name), "w") as write_file:
-        json.dump(jsonDict, write_file)
-    # return jsonDict
-    
-def id_list_to_dict(id_list, keys_list):
-    id_dict = dict()
-
-    #Populates X:Y pairs of sub dictionary
-    id_dict['XYData'] = {str(key):str(value) for key, value in zip(id_list[1].split(','), id_list[2].split(','))}
-    #Creates dictionary of all key:idvalue pairs, now including the XYData
-    id_dict.update({str(key):str(value) for key, value in zip(keys_list[3:], id_list[3:])})
-    #Returns a tuple with the original ID and the new dictionary corresponding to that ID
-    return (id_list[0],id_dict)
+# @app.server.route('/shutdown', methods=['POST'])
+# def shutdown():
+#     shutdown_server()
+#     return 'Server shutting down...'
+#endregion
 
 if __name__ == '__main__':
     app.run_server(debug=True)
