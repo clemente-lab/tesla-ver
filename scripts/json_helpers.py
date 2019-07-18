@@ -39,16 +39,18 @@ def get_X_and_Y():
     holding_dict = dict()
     with open('./assets/json_data/db.json', 'r') as read_file:
         holding_dict = json.load(read_file)
-    # value = 
-        return {'X':sorted(map(lambda to_int: int(to_int),set(
-        itertools.chain.from_iterable([id_chunk.get('XYData').keys() 
-        for id_chunk in 
-        [id_entry for id_entry in holding_dict.values()][1:]])))),
+        
+        #Filters list down to just lists of X : Y dictionaries
+        filtered_list = filter(lambda dict_chk: type(dict_chk) is dict,[id_entry for id_entry in holding_dict.values()])
 
-        'Y':sorted(map(lambda to_float: float(to_float),set(itertools.chain.from_iterable(
-        [id_chunk.get('XYData').values() 
-        for id_chunk in 
-        [id_entry for id_entry in holding_dict.values()][1:]]))))
+        return {'X':sorted(map(lambda to_int: int(float(to_int)),set(
+        itertools.chain.from_iterable([id_chunk.get('XYData').keys() 
+        for id_chunk in filtered_list])))),
+
+        #Y Value list
+        'Y':sorted(map(lambda to_float: float(to_float),
+        set(itertools.chain.from_iterable(
+        [id_chunk.get('XYData').values() for id_chunk in filtered_list]))))
         }
 
 def removed(remove_list, item):
@@ -60,3 +62,5 @@ def get_keys_metadata():
     with open('./assets/json_data/db.json', 'r') as read_file:
         holding_dict = json.load(read_file)
     return removed(holding_dict.values()[1].keys(), 'XYData')
+
+get_X_and_Y()
