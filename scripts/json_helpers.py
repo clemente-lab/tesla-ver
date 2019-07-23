@@ -39,7 +39,7 @@ def get_X_and_Y():
     holding_dict = dict()
     with open('./assets/json_data/db.json', 'r') as read_file:
         holding_dict = json.load(read_file)
-        
+
         #Filters list down to just lists of X : Y dictionaries
         filtered_list = filter(lambda dict_chk: type(dict_chk) is dict,[id_entry for id_entry in holding_dict.values()])
 
@@ -63,4 +63,13 @@ def get_keys_metadata():
         holding_dict = json.load(read_file)
     return removed(holding_dict.values()[1].keys(), 'XYData')
 
-get_X_and_Y()
+def get_all_Y_at_X(X_val, val_dict):
+    y_list = list()
+    for  id in val_dict.keys()[1:]:
+        xy_data = val_dict.get(id).get('XYData')
+        if (str(X_val) in xy_data.keys()):
+            year_dict = val_dict.get(id)
+            year_dict.pop('XYData')
+            year_dict['X'] = val_dict.get(str(X_val))
+            y_list.append(year_dict)
+    return y_list
