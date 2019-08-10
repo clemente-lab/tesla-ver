@@ -25,17 +25,20 @@ app.layout = html.Div([
         dcc.Dropdown(
             id = 'x_dropdown',
             options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
-            value = list(filter(lambda x: '_data' in x,df.columns))[0]
+            value = list(filter(lambda x: '_data' in x,df.columns))[0],
+            placeholder = 'X Axis Values'
         ),
         dcc.Dropdown(
             id = 'y_dropdown',
             options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
-            value =  list(filter(lambda x: '_data' in x,df.columns))[1]
+            value =  list(filter(lambda x: '_data' in x,df.columns))[1],
+            placeholder = 'Y Axis Values'
         ),
         dcc.Dropdown(
             id = 'size_dropdown',
             options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
-            value = list(filter(lambda x: '_data' in x,df.columns))[2]
+            value = list(filter(lambda x: '_data' in x,df.columns))[2],
+            placeholder = 'Sizing Values'
         )
     ])
 ])
