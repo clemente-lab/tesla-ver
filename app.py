@@ -17,7 +17,7 @@ app = dash.Dash(__name__)
 
 app.layout = html.Div([
     html.Div([
-        html.P('Controls', className='card-title'),
+        html.P('Controls', className='card-title labelText', id='controlsTitle'),
         html.Div([
             html.Span('X:', className='labelText'),
             dcc.Dropdown(
@@ -59,7 +59,7 @@ app.layout = html.Div([
                 className='dropdowns'
             )
         ],className='axes_div'),
-    ], className='card orange lighten-1', id='controls_div'),
+    ], className='card orange lighten-1 z-depth-3', id='controls_div'),
     html.Div([
         dcc.Graph(id='graph-with-slider'),
         dcc.Slider(
