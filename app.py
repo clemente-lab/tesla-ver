@@ -7,7 +7,9 @@ import pandas as pd
 import plotly.graph_objs as go
 
 df = pd.read_csv('./data/df.csv')
-
+marks_edited = {str(year): str(year) for year in df['X'].unique()}
+for update_key in list(marks_edited.keys())[::3]:
+    marks_edited[str(int(float(update_key)))] = marks_edited.pop(update_key)
 # external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__)
@@ -15,24 +17,33 @@ app = dash.Dash(__name__)
 app.layout = html.Div([
     html.Div([
         html.P('Controls', className='card-title'),
-        dcc.Dropdown(
-            id = 'x_dropdown',
-            options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
-            value = list(filter(lambda x: '_data' in x,df.columns))[0],
-            placeholder = 'X Axis Values'
-        ),
-        dcc.Dropdown(
-            id = 'y_dropdown',
-            options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
-            value =  list(filter(lambda x: '_data' in x,df.columns))[1],
-            placeholder = 'Y Axis Values'
-        ),
-        dcc.Dropdown(
+        html.Div([
+            html.Span('X:'),
+            dcc.Dropdown(
+                id = 'x_dropdown',
+                options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
+                value = list(filter(lambda x: '_data' in x,df.columns))[0],
+                placeholder = 'X Axis Values'
+            )
+        ]),
+        html.Div([
+            html.Span('Y:'),
+            dcc.Dropdown(
+                id = 'y_dropdown',
+                options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
+                value =  list(filter(lambda x: '_data' in x,df.columns))[1],
+                placeholder = 'Y Axis Values'
+            ),
+        ]),
+        html.Div([
+            html.Span('Size'),
+            dcc.Dropdown(
             id = 'size_dropdown',
             options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
             value = list(filter(lambda x: '_data' in x,df.columns))[2],
             placeholder = 'Sizing Values'
         )
+        ]),
     ], className='card orange lighten-1', id='controls_div'),
     html.Div([
         dcc.Graph(id='graph-with-slider'),
@@ -41,7 +52,7 @@ app.layout = html.Div([
             min=df['X'].min(),
             max=df['X'].max(),
             value=df['X'].min(),
-            marks={str(int(year)): str(year) for year in df['X'].unique()},
+            marks=marks_edited,
             updatemode='drag'
         ),
     ], id='graph_div')
