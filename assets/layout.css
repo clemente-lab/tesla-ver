@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
 #main_div {
   display: flex;
 }
@@ -16,4 +17,20 @@
   -o-webkit: flex 1;
   flex: 1;
   width: 80vh
+}
+
+.axes_div{
+  /* display: flex; */
+  width: 90%
+}
+.dropdown{
+  flex: 1;
+  width: 40%;
+  vertical-align: middle;
+}
+.labelText{
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 300;
+  color: white;
+  font-size: 140%
 }

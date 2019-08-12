@@ -1,14 +1,15 @@
 import dash
-from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
+from dash.dependencies import Input, Output, State
 
 df = pd.read_csv('./data/df.csv')
 marks_edited = {str(year): str(year) for year in df['X'].unique()}
 for update_key in list(marks_edited.keys())[::3]:
+    #FIXME: remove float rendering (maybe start with the casting order?)
     marks_edited[str(int(float(update_key)))] = marks_edited.pop(update_key)
 # external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -18,32 +19,46 @@ app.layout = html.Div([
     html.Div([
         html.P('Controls', className='card-title'),
         html.Div([
-            html.Span('X:'),
+            html.Span('X:', className='labelText'),
             dcc.Dropdown(
                 id = 'x_dropdown',
                 options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
                 value = list(filter(lambda x: '_data' in x,df.columns))[0],
-                placeholder = 'X Axis Values'
+                placeholder = 'X Axis Values',
+                className='dropdowns'
             )
-        ]),
+        ],className='axes_div'),
         html.Div([
-            html.Span('Y:'),
+            html.Span('Y:',className='labelText'),
             dcc.Dropdown(
                 id = 'y_dropdown',
                 options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
                 value =  list(filter(lambda x: '_data' in x,df.columns))[1],
-                placeholder = 'Y Axis Values'
+                placeholder = 'Y Axis Values',
+                className='dropdowns'
             ),
-        ]),
+        ],className='axes_div'),
         html.Div([
-            html.Span('Size'),
+            html.Span('Size:',className='labelText'),
             dcc.Dropdown(
-            id = 'size_dropdown',
-            options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
-            value = list(filter(lambda x: '_data' in x,df.columns))[2],
-            placeholder = 'Sizing Values'
-        )
-        ]),
+                id = 'size_dropdown',
+                options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
+                value = list(filter(lambda x: '_data' in x,df.columns))[2],
+                placeholder = 'Sizing Values',
+                className='dropdowns'
+            )
+        ],className='axes_div'),
+        html.Div([
+            html.Span('Annotation Metadata:',className='labelText'),
+            dcc.Dropdown(
+                id = 'annotation_dropdown',
+                options = [{"label": i, "value": i} for i in list(df.columns)],
+                value = list(filter(lambda x: '_data' in x,df.columns))[2],
+                placeholder = 'Sizing Values',
+                multi=True,
+                className='dropdowns'
+            )
+        ],className='axes_div'),
     ], className='card orange lighten-1', id='controls_div'),
     html.Div([
         dcc.Graph(id='graph-with-slider'),
@@ -65,8 +80,9 @@ app.layout = html.Div([
     [Input('year-slider', 'value'),
      Input('x_dropdown', 'value'),
     Input('y_dropdown', 'value'),
-    Input('size_dropdown', 'value')])
-def update_figure(selected_year, x_key, y_key, size_key):
+    Input('size_dropdown', 'value'),
+    Input('annotation_dropdown', 'value')])
+def update_figure(selected_year, x_key, y_key, size_key, annotations_list):
     filtered_df = df[df['X'] == selected_year]
     traces = []
     for i in filtered_df.name.unique():
