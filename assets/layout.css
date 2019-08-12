@@ -1,0 +1,19 @@
+#main_div {
+  display: flex;
+}
+#controls_div{
+  -webkit-webkit: flex initial;
+  -moz-webkit: flex initial;
+  -ms-webkit: flex initial;
+  -o-webkit: flex initial;
+  flex: initial;
+  width: 20%;
+}
+#graph_div{
+  -webkit-webkit: flex 1;
+  -moz-webkit: flex 1;
+  -ms-webkit: flex 1;
+  -o-webkit: flex 1;
+  flex: 1;
+  width: 80vh
+}
