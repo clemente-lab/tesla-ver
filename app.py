@@ -13,15 +13,8 @@ df = pd.read_csv('./data/df.csv')
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
-    dcc.Graph(id='graph-with-slider'),
-    dcc.Slider(
-        id='year-slider',
-        min=df['X'].min(),
-        max=df['X'].max(),
-        value=df['X'].min(),
-        marks={str(year): str(year) for year in df['X'].unique()}
-    ),
     html.Div([
+        html.P('Controls', className='card-title'),
         dcc.Dropdown(
             id = 'x_dropdown',
             options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x,df.columns))],
@@ -40,16 +33,28 @@ app.layout = html.Div([
             value = list(filter(lambda x: '_data' in x,df.columns))[2],
             placeholder = 'Sizing Values'
         )
-    ])
-])
+    ], className='card orange lighten-1', id='controls_div'),
+    html.Div([
+        dcc.Graph(id='graph-with-slider'),
+        dcc.Slider(
+            id='year-slider',
+            min=df['X'].min(),
+            max=df['X'].max(),
+            value=df['X'].min(),
+            marks={str(int(year)): str(year) for year in df['X'].unique()},
+            updatemode='drag'
+        ),
+    ], id='graph_div')
+
+], id='main_div')
 
 #region
 @app.callback(
-    dash.dependencies.Output('graph-with-slider', 'figure'),
-    [dash.dependencies.Input('year-slider', 'value')],
-    [State('x_dropdown', 'value'),
-    State('y_dropdown', 'value'),
-    State('size_dropdown', 'value')])
+    Output('graph-with-slider', 'figure'),
+    [Input('year-slider', 'value'),
+     Input('x_dropdown', 'value'),
+    Input('y_dropdown', 'value'),
+    Input('size_dropdown', 'value')])
 def update_figure(selected_year, x_key, y_key, size_key):
     filtered_df = df[df['X'] == selected_year]
     traces = []
@@ -62,7 +67,7 @@ def update_figure(selected_year, x_key, y_key, size_key):
             mode='markers',
             opacity=0.7,
             marker={
-                'size': list(map(lambda increm: int((50 * (increm/100)) + 15), 
+                'size': list(map(lambda increm: int((50 * (increm/100)) + 15),
                             list(df_by_continent[size_key].fillna(0)))),
                 'line': {'width': 0.5, 'color': 'white'}
             },
