@@ -70,7 +70,7 @@ app.layout = html.Div([
             marks=marks_edited,
             updatemode='drag'
         ),
-    ], id='graph_div')
+    ],  className='card z-depth-3',id='graph_div')
 
 ], id='main_div')
 
