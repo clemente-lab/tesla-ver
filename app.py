@@ -11,11 +11,12 @@ from dash.dependencies import Input, Output
 def load_current_data():
     return pd.read_csv('./data/df.csv')
 df = load_current_data()
-# Edits marks dictionary to be every nth mark
-def marks_editing(marks, nth):
-    for update_key in list(marks.keys())[::3]:
-        #FIXME: remove float rendering (maybe start with the casting order?)
-        marks[str(int(float(update_key)))] = marks.pop(update_key)
+
+
+marks_edited =  {str(year): str(year) for year in df['X'].unique()}
+for update_key in list(marks_edited.keys())[::3]:
+    #FIXME: remove float rendering (maybe start with the casting order?)
+    marks_edited[str(int(float(update_key)))] = marks_edited.pop(update_key)
 
 app = dash.Dash(__name__)
 
@@ -78,11 +79,35 @@ app.layout = html.Div([
             min = df['X'].min(),
             max = df['X'].max(),
             value = df['X'].min(),
-            marks = marks_editing({str(year): str(year) for year in df['X'].unique()}, 3),
+            marks = marks_edited,
             updatemode = 'drag'
         ),
-    ],  className = 'card z-depth-3', id = 'graph_div')
-
+    ],  className = 'card z-depth-3', id = 'graph_div'),
+     html.Div([
+         html.Div([
+             html.Span('Upload Loclust Trajectories'),
+             dcc.Upload(
+                id='upload-data',
+                children=html.Div([
+                    'Drag and Drop or ',
+                    html.A('Select Files')
+                ]),
+                style={
+                    'width': '100%',
+                    'height': '60px',
+                    'lineHeight': '60px',
+                    'borderStyle':'solid',
+                    'borderWidth':'1px',
+                    'borderColor':'black',
+                    'borderRadius': '5px',
+                    'textAlign': 'center',
+                    'margin': '10px'
+                },
+                # Allow multiple files to be uploaded
+                multiple=True
+            )
+         ], className='card white upload-div-interior')
+        ], className='card blue upload-div-exterior')
 ], id = 'main_div')
 
 # region
@@ -123,14 +148,14 @@ def update_figure(selected_year, x_key, y_key, size_key, annotations_list):
         'layout': dict(
             xaxis = {
                 'type': 'log',
-                'title': x_key,
+                'title': ' '.join(x_key.split('_')).title(),
                 'range': [
                     min(df[x_key]) * 0.9,
                     max(df[x_key])  * 1.1,
                 ]
             },
             yaxis = {
-                'title': y_key,
+                'title': ' '.join(y_key.split('_')).title(),
                 'range': [
                     min(df[y_key]) * 0.9,
                     max(df[y_key])  * 1.1,

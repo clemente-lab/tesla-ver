@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
 #main_div {
   display: flex;
+  flex-wrap: wrap;
 }
 #controls_div{
   -webkit-webkit: flex initial;
@@ -37,4 +38,16 @@
 #controlsTitle {
   font-size: 175%;
   font-weight: 900;
+}
+.upload-div-interior{
+  text-align: center;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 400;
+  padding: 1em;
+}
+.upload-div-exterior{
+  width: 100%;
+  padding: 1em;
+  padding-right: 3em;
+  padding-left: 3em;
 }
