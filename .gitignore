@@ -12,6 +12,9 @@ scripts/projectile_launch.py
 # Build
 /build/
 
+#Credentials
+/credentials/
+
 # Libraries
 /lib/
 
@@ -23,3 +26,6 @@ scripts/projectile_launch.py
 
 # Vim backup files
 *.swp
+
+# Rope Projects
+.ropeproject/*
