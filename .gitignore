@@ -26,3 +26,6 @@ scripts/projectile_launch.py
 
 # Vim backup files
 *.swp
+
+# Rope Projects
+.ropeproject/*
