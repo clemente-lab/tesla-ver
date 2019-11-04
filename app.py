@@ -38,9 +38,7 @@ LAYOUT = html.Div(
                          marks={},
                          updatemode='drag'
                      ),
-                 ],
-                 style={'display': 'none'}
-                 ),
+                 ]),
         # Hidden component for storing data
         html.Div(id='hidden-data', style={'display': 'none'})
     ],
@@ -113,6 +111,8 @@ def update_figure(clicks, selected_year, df):
     if df is not None:
         df = pd.read_json(df)
         marks = {str(year): str(year) for year in df['X'].unique()}
+        year_min = df['X'].min()
+        year_max = df['X'].max()
         print(marks)
         if selected_year is None:
             filtered_df = df
