@@ -2,57 +2,13 @@ import dash
 import base64
 import io
 
-import dash_html_components as html
-import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 
 import pandas as pd
 
-# from teslaver.layout import LAYOUT
+from tesla_ver.layout import LAYOUT
 
-# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
-
-LAYOUT = html.Div(
-    [
-        dcc.Upload(
-            id='upload',
-            children=html.Div([
-                'Drag and Drop or ',
-                html.A('Select Files')
-            ]),
-            multiple=False,
-        ),
-        html.Button(id='upload-button', n_clicks=0, children='Submit'),
-        html.Div(id='graph',
-                 children=[
-                     # Provides an empty graph object for updates in callback
-                     dcc.Graph(id='graph-with-slider'),
-                     # Creates Slider from min-max X values to give input for graph updates
-                     dcc.Slider(
-                         id='year-slider',
-                         min=0,
-                         max=1,
-                         value=None,
-                         marks={},
-                         updatemode='drag'
-                     ),
-                 ]),
-        # Hidden component for storing data
-        html.Div(id='hidden-data', style={'display': 'none'})
-    ],
-    style={
-        'width': '100%',
-        'height': '60px',
-        'lineHeight': '60px',
-        'borderWidth': '1px',
-        'borderStyle': 'dashed',
-        'borderRadius': '50px',
-        'textAlign': 'center',
-        'margin': '10px'
-    },
-    className='card z-depth-3', id='graph_div')
 
 app = dash.Dash(__name__)  # , external_stylesheets=external_stylesheets)
 
@@ -60,6 +16,7 @@ app.layout = LAYOUT
 
 
 def parse_contents(contents, filename, date):
+    """ Parse a Dash Upload into a DataFrame """
     content_type, content_string = contents.split(',')
 
     decoded = base64.b64decode(content_string)
@@ -76,6 +33,7 @@ def parse_contents(contents, filename, date):
                   Input('upload', 'last_modified')
               ])
 def upload_data(contents, filename, last_modified):
+    """ This callback handles storing the dataframe as JSON in the hidden component """
     df = None
     if contents is not None:
         df = parse_contents(contents, filename, last_modified).to_json()
@@ -99,21 +57,29 @@ def upload_data(contents, filename, last_modified):
     ]
 )
 def update_figure(clicks, selected_year, df):
+    """
+    This callback handles updating the graph in response to user actions. All updates must
+    pass through this callback. The functionality should be split out into library files
+    as it gets more complex.
+    """
+    # Set default values for when no data has yet been loaded
     year_min = 0
     year_max = 1
     figure = {}
     marks = {}
-    style = {'display': 'none'}
+    style = {'display': 'none'}  # Don't display the graph until data is uploaded
     traces = []
     x_key = 'ad_fert_data'
     y_key = 'adjusted_income_data'
     size_key = 'contraceptive_data'
+    # If the is data uploaded
     if df is not None:
         df = pd.read_json(df)
         marks = {str(year): str(year) for year in df['X'].unique()}
         year_min = df['X'].min()
         year_max = df['X'].max()
-        print(marks)
+
+        # Filtering by year is the only interaction currently support
         if selected_year is None:
             filtered_df = df
         else:
