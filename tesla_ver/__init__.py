@@ -7,6 +7,3 @@ __license__ = "GPL"
 __version__ = "0.1.0-dev"
 __maintainer__ = "Jose C. Clemente"
 __email__ = "jose.clemente@gmail.com"
-
-__all__ = [
-           ]
