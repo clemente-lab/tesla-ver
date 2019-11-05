@@ -11,7 +11,7 @@ from dash.dependencies import Input, Output
 
 
 def load_current_data():
-    return pd.read_csv('./data/df.csv')
+    return pd.read_csv('../data/df.csv')
 
 
 df = load_current_data()

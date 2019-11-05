@@ -2,8 +2,14 @@ import dash_html_components as html
 import dash_core_components as dcc
 
 
+# The HTML layout for the tesla-ver web app
+# All parts of the webpage should be part of the 'children'
+# of 'graph_div', the top level div
 LAYOUT = html.Div(
-    [
+    className='card z-depth-3',
+    id='graph_div',
+    children=[
+        # This handles the upload of files
         dcc.Upload(
             id='upload',
             children=html.Div([
@@ -12,8 +18,11 @@ LAYOUT = html.Div(
             ]),
             multiple=False,
         ),
-        html.Button(id='upload-button', n_clicks=0, children='Submit'),
+        # This triggers the plot to load
+        html.Button(id='upload-button', n_clicks=0, children='Graph'),
+        # This contains all the components of the graph itself
         html.Div(id='graph',
+                 # All graph components should go here
                  children=[
                      # Provides an empty graph object for updates in callback
                      dcc.Graph(id='graph-with-slider'),
@@ -39,5 +48,5 @@ LAYOUT = html.Div(
         'borderRadius': '50px',
         'textAlign': 'center',
         'margin': '10px'
-    },
-    className='card z-depth-3', id='graph_div')
+    }
+)
