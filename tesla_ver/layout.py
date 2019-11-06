@@ -35,7 +35,36 @@ LAYOUT = html.Div(
                          marks={},
                          updatemode='drag'
                      ),
-                 ]),
+                    dcc.Dropdown(
+                     id='y_dropdown',
+                     options=[],
+                     value=None,
+                     placeholder='Y Axis Values',
+                     className='dropdowns'
+                     ),
+                    dcc.Dropdown(
+                     id='x_dropdown',
+                     options=[],
+                     value= None,
+                     placeholder='X Axis Values',
+                     className='dropdowns'
+                     ),
+                    dcc.Dropdown(
+                     id='size_dropdown',
+                     options=[],
+                     value=None,
+                     placeholder='Sizing Values',
+                     className='dropdowns'
+                      ),
+                    dcc.Dropdown(
+                     id='annotation_dropdown',
+                     options=[],
+                     value='',
+                     placeholder='Sizing Values',
+                     multi=True,
+                     className='dropdowns'
+                     )
+                         ]),
         # Hidden component for storing data
         html.Div(id='hidden-data', style={'display': 'none'})
     ],

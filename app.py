@@ -46,17 +46,25 @@ def upload_data(contents, filename, last_modified):
         Output('graph-with-slider', 'figure'),
         Output('year-slider', 'marks'),
         Output('year-slider', 'min'),
-        Output('year-slider', 'max')
+        Output('year-slider', 'max'),
+        Output('y_dropdown', 'options'),
+        Output('x_dropdown', 'options'),
+        Output('size_dropdown', 'options'),
+        Output('annotation_dropdown', 'options')
     ],
     [
         Input('upload-button', 'n_clicks'),
-        Input('year-slider', 'value')
+        Input('year-slider', 'value'),
+        Input('y_dropdown', 'value'),
+        Input('x_dropdown', 'value'),
+        Input('size_dropdown', 'value'),
+        Input('annotation_dropdown', 'value')
     ],
     [
         State('hidden-data', 'children')
     ]
 )
-def update_figure(clicks, selected_year, df):
+def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, selected_annotation, df):
     """
     This callback handles updating the graph in response to user actions. All updates must
     pass through this callback. The functionality should be split out into library files
@@ -70,15 +78,31 @@ def update_figure(clicks, selected_year, df):
     style = {'display': 'none'}  # Don't display the graph until data is uploaded
     traces = []
     x_key = 'ad_fert_data'
-    y_key = 'adjusted_income_data'
+    y_key = 'adjusted_income_data' 
     size_key = 'contraceptive_data'
+    annotation_key = 'contraceptive_data'
+    y_dropdown_options = []
+    x_dropdown_options = []
+    size_dropdown_options = []
+    annotation_dropdown_options = []
     # If the is data uploaded
     if df is not None:
         df = pd.read_json(df)
         marks = {str(year): str(year) for year in df['X'].unique()}
         year_min = df['X'].min()
         year_max = df['X'].max()
-
+        y_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]        
+        x_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]
+        annotation_dropdown_options = [{"label": i, "value": i} for i in list(df.columns)]
+        size_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]
+        if selected_y is not None:
+            y_key = selected_y
+        if selected_x is not None: 
+            x_key = selected_x
+        if selected_size is not None:
+            size_key = selected_size
+        if selected_annotation is not None: 
+            annotation_key = selected_annotation
         # Filtering by year is the only interaction currently support
         if selected_year is None:
             filtered_df = df
@@ -130,7 +154,7 @@ def update_figure(clicks, selected_year, df):
                 }
             )
         }
-    return style, figure, marks, year_min, year_max
+    return style, figure, marks, year_min, year_max, y_dropdown_options, x_dropdown_options, size_dropdown_options, annotation_dropdown_options
 
 
 if __name__ == '__main__':
