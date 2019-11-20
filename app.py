@@ -54,8 +54,8 @@ def upload_data(contents, filename, last_modified):
     ],
     [
         Input('upload-button', 'n_clicks'),
-        Input('y_dropdown', 'value'),
         Input('year-slider', 'value'),
+        Input('y_dropdown', 'value'), 
         Input('x_dropdown', 'value'),
         Input('size_dropdown', 'value'),
         Input('annotation_dropdown', 'value')
@@ -87,6 +87,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
     annotation_dropdown_options = []
     # If the is data uploaded
 
+    # import pudb; pudb.set_trace()
     if df is not None:
         df = pd.read_json(df)
         marks = {str(year): str(year) for year in df['X'].unique()}
@@ -117,17 +118,17 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
             traces.append(go.Scatter(
                 x=df_by_continent[x_key],
                 y=df_by_continent[y_key],
-                text=df_by_continent[annotation_key],
                 mode='markers',
                 opacity=0.7,
                 marker={
                     # The size is determined from the value of the dropdown given for size,
                     # and starts at a default size of 15 with no data and scales
                     'size': list(map(lambda increm: int((50 * (increm/100)) + 15),
-                                     list(df_by_continent[size_key].fillna(0)))),
+                            list(df_by_continent[size_key].fillna(0)))),
                     'line': {'width': 0.5, 'color': 'white'}
                 },
-                name=i
+                name = i,
+                hovertext=df_by_continent[annotation_key]
             ))
         style = {
             'width': '100%'
