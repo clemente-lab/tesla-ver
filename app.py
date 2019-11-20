@@ -54,8 +54,8 @@ def upload_data(contents, filename, last_modified):
     ],
     [
         Input('upload-button', 'n_clicks'),
-        Input('year-slider', 'value'),
         Input('y_dropdown', 'value'),
+        Input('year-slider', 'value'),
         Input('x_dropdown', 'value'),
         Input('size_dropdown', 'value'),
         Input('annotation_dropdown', 'value')
@@ -86,6 +86,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
     size_dropdown_options = []
     annotation_dropdown_options = []
     # If the is data uploaded
+
     if df is not None:
         df = pd.read_json(df)
         marks = {str(year): str(year) for year in df['X'].unique()}
@@ -93,7 +94,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
         year_max = df['X'].max()
         y_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]        
         x_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]
-        annotation_dropdown_options = [{"label": i, "value": i} for i in list(df.columns)]
+        annotation_dropdown_options = [{"label": i, "value": i} for i in df.columns]
         size_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]
         if selected_y is not None:
             y_key = selected_y
@@ -116,7 +117,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
             traces.append(go.Scatter(
                 x=df_by_continent[x_key],
                 y=df_by_continent[y_key],
-                text=df_by_continent[size_key],
+                text=df_by_continent[annotation_key],
                 mode='markers',
                 opacity=0.7,
                 marker={

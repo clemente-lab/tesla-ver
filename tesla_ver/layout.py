@@ -31,40 +31,53 @@ LAYOUT = html.Div(
                          id='year-slider',
                          min=0,
                          max=1,
+                         step = 0.01,
                          value=None,
                          marks={},
                          updatemode='drag'
                      ),
-                    dcc.Dropdown(
-                     id='y_dropdown',
-                     options=[],
-                     value=None,
-                     placeholder='Y Axis Values',
-                     className='dropdowns'
-                     ),
-                    dcc.Dropdown(
-                     id='x_dropdown',
-                     options=[],
-                     value= None,
-                     placeholder='X Axis Values',
-                     className='dropdowns'
-                     ),
-                    dcc.Dropdown(
-                     id='size_dropdown',
-                     options=[],
-                     value=None,
-                     placeholder='Sizing Values',
-                     className='dropdowns'
+                    html.Div([
+                      html.P('Y Axis'),
+                       dcc.Dropdown(
+                       id='y_dropdown',
+                       options=[],
+                       value=None,
+                       placeholder='Y Axis Values',
+                       className='dropdowns'
                       ),
+                    ]),
+                   html.Div([
+                    html.P('X Axis'),
+                     dcc.Dropdown(
+                      id='x_dropdown',
+                      options=[],
+                      value= None,
+                      placeholder='X Axis Values',
+                      className='dropdowns'
+                     ),
+                   ]),
+                   html.Div([
+                    html.P('Sizing Values'),    
+                     dcc.Dropdown(
+                      id='size_dropdown',
+                      options=[],
+                      value=None,
+                      placeholder='Sizing Values',
+                      className='dropdowns'
+                      ),
+                   ]),
+                   html.Div([
+                    html.P('Annotation'),     
                     dcc.Dropdown(
                      id='annotation_dropdown',
                      options=[],
-                     value='',
-                     placeholder='Sizing Values',
+                     value=None,
+                     placeholder='Annotation',
                      multi=True,
                      className='dropdowns'
                      )
-                         ]),
+                   ]),  
+                  ]),
         # Hidden component for storing data
         html.Div(id='hidden-data', style={'display': 'none'})
     ],
@@ -79,3 +92,4 @@ LAYOUT = html.Div(
         'margin': '10px'
     }
 )
+
