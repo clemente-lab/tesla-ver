@@ -12,8 +12,7 @@ from tesla_ver.layout import LAYOUT
 
 app = dash.Dash(__name__)  # , external_stylesheets=external_stylesheets)
 
-app.layout = LAYOUT
-
+app.layout = LAYOUT   
 
 def parse_contents(contents, filename, date):
     """ Parse a Dash Upload into a DataFrame """
@@ -85,9 +84,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
     x_dropdown_options = []
     size_dropdown_options = []
     annotation_dropdown_options = []
-    # If the is data uploaded
-
-    # import pudb; pudb.set_trace()
+    # If the is data uploaded    
     if df is not None:
         df = pd.read_json(df)
         marks = {str(year): str(year) for year in df['X'].unique()}
@@ -105,7 +102,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
             size_key = selected_size
         if selected_annotation is not None: 
             annotation_key = selected_annotation
-        # Filtering by year is the only interaction currently support
+        #Filtering by year is the only interaction currently support
         if selected_year is None:
             filtered_df = df
         else:
@@ -113,6 +110,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
             filtered_df = df[df['X'] == selected_year]
         # Iterates over all 'continents' for a given x value to generate all the bubbles in the graph
         # TODO: Add general handling for other 'contintents' not using the 'name' axis (dropdown/textfield?)
+        # import pudb; pudb.set_trace()
         for i in filtered_df.name.unique():
             df_by_continent = filtered_df[filtered_df['name'] == i]
             traces.append(go.Scatter(

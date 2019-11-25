@@ -27,15 +27,15 @@ LAYOUT = html.Div(
                      # Provides an empty graph object for updates in callback
                      dcc.Graph(id='graph-with-slider'),
                      # Creates Slider from min-max X values to give input for graph updates
-                     dcc.Slider(
+                    html.Div([
+                    dcc.Slider(
                          id='year-slider',
                          min=0,
                          max=1,
-                         step = 0.01,
                          value=None,
                          marks={},
                          updatemode='drag'
-                     ),
+                     )]),
                     html.Div([
                       html.P('Y Axis'),
                        dcc.Dropdown(
