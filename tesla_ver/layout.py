@@ -45,7 +45,7 @@ LAYOUT = html.Div(
                        placeholder='Y Axis Values',
                        className='dropdowns'
                       ),
-                    ]),
+                       ], style={'width': '25%', 'position': 'absolute', 'left': '-10px', 'top': '650px'}),
                    html.Div([
                     html.P('X Axis'),
                      dcc.Dropdown(
@@ -55,7 +55,7 @@ LAYOUT = html.Div(
                       placeholder='X Axis Values',
                       className='dropdowns'
                      ),
-                   ]),
+                   ], style={'width': '25%', 'position': 'absolute', 'left': '470px', 'top': '650px'}),
                    html.Div([
                     html.P('Sizing Values'),    
                      dcc.Dropdown(
@@ -65,7 +65,7 @@ LAYOUT = html.Div(
                       placeholder='Sizing Values',
                       className='dropdowns'
                       ),
-                   ]),
+                   ], style={'width': '25%','position': 'absolute', 'left': '950px', 'top': '650px'}),
                    html.Div([
                     html.P('Annotation'),     
                     dcc.Dropdown(
@@ -76,7 +76,7 @@ LAYOUT = html.Div(
                      multi=True,
                      className='dropdowns'
                      )
-                   ]),  
+                   ], style={'width': '25%', 'position': 'absolute', 'left': '1430px', 'top': '650px'}),  
                   ]),
         # Hidden component for storing data
         html.Div(id='hidden-data', style={'display': 'none'})

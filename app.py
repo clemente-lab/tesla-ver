@@ -126,7 +126,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
                     'line': {'width': 0.5, 'color': 'white'}
                 },
                 name = i,
-                hovertext=df_by_continent[annotation_key]
+                hovertext=df_by_continent[annotation_key].values.tolist()
             ))
         style = {
             'width': '100%'
