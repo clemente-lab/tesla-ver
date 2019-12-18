@@ -27,3 +27,6 @@
 
 # Rope Projects
 .ropeproject/*
+
+.spyproject
+*.swn
