@@ -27,3 +27,13 @@
 
 # Rope Projects
 .ropeproject/*
+
+.spyproject
+*.swn
+
+**/*.swk
+**/*.swp
+**/*.swo
+**/*.swn
+**/*.swl
+**/*.swm
