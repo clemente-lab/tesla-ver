@@ -12,7 +12,7 @@ from tesla_ver.layout import LAYOUT
 
 app = dash.Dash(__name__)  # , external_stylesheets=external_stylesheets)
 
-app.layout = LAYOUT
+app.layout = LAYOUT   
 
 
 def parse_contents(contents, filename, date):
@@ -46,17 +46,26 @@ def upload_data(contents, filename, last_modified):
         Output('graph-with-slider', 'figure'),
         Output('year-slider', 'marks'),
         Output('year-slider', 'min'),
-        Output('year-slider', 'max')
+        Output('year-slider', 'max'),
+        Output('y_dropdown', 'options'),
+        Output('x_dropdown', 'options'),
+        Output('size_dropdown', 'options'),
+        Output('annotation_dropdown', 'options')
     ],
     [
         Input('upload-button', 'n_clicks'),
-        Input('year-slider', 'value')
+        Input('year-slider', 'value'),
+        Input('y_dropdown', 'value'), 
+        Input('x_dropdown', 'value'),
+        Input('size_dropdown', 'value'),
+        Input('annotation_dropdown', 'value')
     ],
     [
         State('hidden-data', 'children')
     ]
 )
-def update_figure(clicks, selected_year, df):
+# Function update_figure takes inputs from user to determine x axis, y axis, point size, and annotation
+def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, selected_annotation, df):
     """
     This callback handles updating the graph in response to user actions. All updates must
     pass through this callback. The functionality should be split out into library files
@@ -72,13 +81,29 @@ def update_figure(clicks, selected_year, df):
     x_key = 'ad_fert_data'
     y_key = 'adjusted_income_data'
     size_key = 'contraceptive_data'
-    # If the is data uploaded
+    annotation_key = 'contraceptive_data'
+    y_dropdown_options = []
+    x_dropdown_options = []
+    size_dropdown_options = []
+    annotation_dropdown_options = []
+    # If the is data uploaded    
     if df is not None:
         df = pd.read_json(df)
         marks = {str(year): str(year) for year in df['X'].unique()}
         year_min = df['X'].min()
         year_max = df['X'].max()
-
+        y_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]        
+        x_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]
+        annotation_dropdown_options = [{"label": i, "value": i} for i in df.columns]
+        size_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]
+        if selected_y is not None:
+            y_key = selected_y
+        if selected_x is not None: 
+            x_key = selected_x
+        if selected_size is not None:
+            size_key = selected_size
+        if selected_annotation is not None: 
+            annotation_key = selected_annotation
         # Filtering by year is the only interaction currently support
         if selected_year is None:
             filtered_df = df
@@ -92,17 +117,17 @@ def update_figure(clicks, selected_year, df):
             traces.append(go.Scatter(
                 x=df_by_continent[x_key],
                 y=df_by_continent[y_key],
-                text=df_by_continent[size_key],
                 mode='markers',
                 opacity=0.7,
                 marker={
                     # The size is determined from the value of the dropdown given for size,
                     # and starts at a default size of 15 with no data and scales
                     'size': list(map(lambda increm: int((50 * (increm/100)) + 15),
-                                     list(df_by_continent[size_key].fillna(0)))),
+                            list(df_by_continent[size_key].fillna(0)))),
                     'line': {'width': 0.5, 'color': 'white'}
                 },
-                name=i
+                name = i,
+                hovertext=df_by_continent[annotation_key].values.tolist()
             ))
         style = {
             'width': '100%'
@@ -130,7 +155,9 @@ def update_figure(clicks, selected_year, df):
                 }
             )
         }
-    return style, figure, marks, year_min, year_max
+    return (style, figure, marks, year_min, year_max,
+           y_dropdown_options, x_dropdown_options,
+           size_dropdown_options, annotation_dropdown_options)
 
 
 if __name__ == '__main__':
