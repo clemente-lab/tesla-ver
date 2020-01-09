@@ -8,11 +8,12 @@ import plotly.graph_objs as go
 import pandas as pd
 
 from tesla_ver.layout import LAYOUT
+from numbers import Number
 
 
 app = dash.Dash(__name__)  # , external_stylesheets=external_stylesheets)
 
-app.layout = LAYOUT   
+app.layout = LAYOUT
 
 
 def parse_contents(contents, filename, date):
@@ -55,7 +56,7 @@ def upload_data(contents, filename, last_modified):
     [
         Input('upload-button', 'n_clicks'),
         Input('year-slider', 'value'),
-        Input('y_dropdown', 'value'), 
+        Input('y_dropdown', 'value'),
         Input('x_dropdown', 'value'),
         Input('size_dropdown', 'value'),
         Input('annotation_dropdown', 'value')
@@ -86,23 +87,24 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
     x_dropdown_options = []
     size_dropdown_options = []
     annotation_dropdown_options = []
-    # If the is data uploaded    
+    # If the is data uploaded
     if df is not None:
         df = pd.read_json(df)
         marks = {str(year): str(year) for year in df['X'].unique()}
         year_min = df['X'].min()
         year_max = df['X'].max()
-        y_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]        
-        x_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]
+        numeric_df = df.select_dtypes(include='number')
+        y_dropdown_options = [{"label": i, "value": i} for i in list(numeric_df.columns)]
+        x_dropdown_options = [{"label": i, "value": i} for i in list(numeric_df.columns)]
         annotation_dropdown_options = [{"label": i, "value": i} for i in df.columns]
-        size_dropdown_options = [{"label": i, "value": i} for i in list(filter(lambda x: '_data' in x, df.columns))]
+        size_dropdown_options = [{"label": i, "value": i} for i in list(numeric_df.columns)]
         if selected_y is not None:
             y_key = selected_y
-        if selected_x is not None: 
+        if selected_x is not None:
             x_key = selected_x
         if selected_size is not None:
             size_key = selected_size
-        if selected_annotation is not None: 
+        if selected_annotation is not None:
             annotation_key = selected_annotation
         # Filtering by year is the only interaction currently support
         if selected_year is None:
