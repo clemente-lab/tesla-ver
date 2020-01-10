@@ -8,7 +8,6 @@ import plotly.graph_objs as go
 import pandas as pd
 
 from tesla_ver.layout import LAYOUT
-from numbers import Number
 
 
 app = dash.Dash(__name__)  # , external_stylesheets=external_stylesheets)
