@@ -90,7 +90,11 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
     # If the is data uploaded
     if df is not None:
         df = pd.read_json(df)
-        marks = {str(year): str(year) for year in df['X'].unique()}
+        marks_edited =  {str(year) : {'label':str(year), 'style':{'visibility':'hidden'}} for year in df['X'].unique()}
+        for update_key in list(marks_edited.keys())[::3]:
+        #FIXME: remove float rendering (maybe start with the casting order?)
+             marks_edited[str(int(float(update_key)))]['style']['visibility'] = 'visible'
+        marks = marks_edited
         year_min = df['X'].min()
         year_max = df['X'].max()
         numeric_df = df.select_dtypes(include='number')
@@ -157,6 +161,7 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
                 }
             )
         }
+    # breakpoint()
     return (style, figure, marks, year_min, year_max,
            y_dropdown_options, x_dropdown_options,
            size_dropdown_options, annotation_dropdown_options)
