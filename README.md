@@ -12,11 +12,11 @@ Main Repository for Tesla-ver, an extensible web platform for longitudinal data 
 
 ----
 
-For debug/usage run `app.py` and connect to `localhost:8050`
+For debug/usage select your env, run `python3 setup.py install` and then `flask run`  Connect to the default flask server address, `127.0.0.1:5000` to test.
 
 ---
 
-## Users
+## Availability
 
 Currently, the Tesla-ver server is not running, but will be available as a web app in future iterations
 
