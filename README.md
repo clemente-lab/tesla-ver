@@ -6,7 +6,7 @@
 
 ---
 
-Main Repository for Tesla-ver, an extensible platform for longitudinal data analysis and vizualization.
+Main Repository for Tesla-ver, an extensible web platform for longitudinal data analysis and vizualization.
 
 ## Installation
 
