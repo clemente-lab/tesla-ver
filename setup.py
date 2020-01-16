@@ -44,6 +44,11 @@ setup(
         'dash_core_components',
         'plotly',
         'pandas',
-        'dash_renderer'
+        'dash_renderer',
+        'flask',
     ],
+    entry_points={
+        'console_scripts': [
+            'run = wsgi:main',
+        ]},
     zip_safe=False)
