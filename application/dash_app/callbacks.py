@@ -10,7 +10,7 @@ import pandas as pd
 def create_callbacks(app):
   def parse_contents(contents, filename, date):
         """ Parse a Dash Upload into a DataFrame """
-        content_type, content_string = contents.split(',')
+        content_type, content_string = contents.split(', ')
 
         decoded = base64.b64decode(content_string)
         fileish = io.StringIO(decoded.decode('utf-8'))
@@ -86,7 +86,7 @@ def create_callbacks(app):
         marks = marks_edited
         year_min = df['X'].min()
         year_max = df['X'].max()
-        numeric_df = df.select_dtypes(include='number')
+        numeric_df = df.select_dtypes(include = 'number')
         numeric_df_columns = list(numeric_df.columns)
         y_dropdown_options = [{"label": i, "value": i} for i in numeric_df_columns]
         x_dropdown_options = [{"label": i, "value": i} for i in numeric_df_columns]
@@ -119,11 +119,11 @@ def create_callbacks(app):
         for i in filtered_df.name.unique():
             df_by_continent = filtered_df[filtered_df['name'] == i]
             traces.append(go.Scatter(
-                x=df_by_continent[x_key],
-                y=df_by_continent[y_key],
-                mode='markers',
-                opacity=0.7,
-                marker={
+                x = df_by_continent[x_key],
+                y = df_by_continent[y_key],
+                mode = 'markers',
+                opacity = 0.7,
+                marker = {
                     # The size is determined from the value of the dropdown given for size,
                     # and starts at a default size of 15 with no data and scales
                     'size': list(map(lambda increm: int((50 * (increm/100)) + 15),
@@ -131,7 +131,7 @@ def create_callbacks(app):
                     'line': {'width': 0.5, 'color': 'white'}
                 },
                 name = i,
-                hovertext=df_by_continent[annotation_key].values.tolist()
+                hovertext = df_by_continent[annotation_key].values.tolist()
             ))
         style = {
             'width': '100%'
@@ -140,20 +140,20 @@ def create_callbacks(app):
             'data': traces,
             # Lays out axis types and ranges based on slider slections
             'layout': dict(
-                xaxis={
+                xaxis = {
                     'type': 'log',
                     'title': ' '.join(x_key.split('_')).title(),
                     'autorange': 'true'
                 },
-                yaxis={
+                yaxis = {
                     'title': ' '.join(y_key.split('_')).title(),
                     'autorange': 'true'
                 },
-                margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
-                legend={'x': 0, 'y': 1},
-                hovermode='closest',
+                margin = {'l': 40, 'b': 40, 't': 10, 'r': 10},
+                legend = {'x': 0, 'y': 1},
+                hovermode = 'closest',
                 # Defines transition behaviors
-                transition={
+                transition = {
                     'duration': 500,
                     'easing': 'cubic-in-out'
                 }
