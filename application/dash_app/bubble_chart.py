@@ -10,7 +10,6 @@ from .callbacks import create_callbacks
 from .layout import LAYOUT
 
 
-
 def create_bubble_graph(server):
     app = dash.Dash(server = server,
                     routes_pathname_prefix = '/bubble_graph/')  # , external_stylesheets = external_stylesheets)

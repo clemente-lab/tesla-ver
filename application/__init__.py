@@ -2,6 +2,7 @@ from flask import Flask
 from application import routes
 from application.dash_app.bubble_chart import create_bubble_graph
 
+
 def create_app():
   """ Construct the Core application """
   app = Flask(__name__,
