@@ -1,4 +1,6 @@
 from flask import Flask
+from application import routes
+from application.dash_app.bubble_chart import create_bubble_graph
 
 def create_app():
   """ Construct the Core application """
@@ -8,10 +10,8 @@ def create_app():
 
   with app.app_context():
     # Blueprints
-    from application import routes
     app.register_blueprint(routes.main_bp)
 
-    from application.dash_app.bubble_chart import create_bubble_graph
     app = create_bubble_graph(app)
 
     return app
