@@ -63,26 +63,26 @@ def create_callbacks(app):
       as it gets more complex.
       """
       # Set default values for when no data has yet been loaded
-      year_min = 0
-      year_max = 1
-      figure = {}
-      marks = {}
-      style = {'display': 'none'}  # Don't display the graph until data is uploaded
-      traces = []
-      x_key = ''
-      y_key = ''
-      size_key = ''
-      annotation_key = ''
-      y_dropdown_options = []
-      x_dropdown_options = []
-      size_dropdown_options = []
-      annotation_dropdown_options = []
+      year_min=0
+      year_max=1
+      figure={}
+      marks={}
+      style={'display': 'none'}  # Don't display the graph until data is uploaded
+      traces=[]
+      x_key=''
+      y_key=''
+      size_key=''
+      annotation_key=''
+      y_dropdown_options=[]
+      x_dropdown_options=[]
+      size_dropdown_options=[]
+      annotation_dropdown_options=[]
       # If the is data uploaded
       if df is not None:
           df = pd.read_json(df)
           marks_edited =  {str(year) : {'label':str(year), 'style':{'visibility':'hidden'}} for year in df['X'].unique()}
           for update_key in list(marks_edited.keys())[::3]:
-          #FIXME: remove float rendering (maybe start with the casting order?)
+          #TODO: remove float rendering (maybe start with the casting order?)
                marks_edited[str(int(float(update_key)))]['style']['visibility'] = 'visible'
           marks = marks_edited
           year_min = df['X'].min()
