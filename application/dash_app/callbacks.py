@@ -9,12 +9,15 @@ import pandas as pd
 
 
 def create_callbacks(app):
+    """Add callbacks to a dash app
+
+    Positional Arguments
+    app -- the existing app object to add calbacks to
+    """
     def parse_contents(contents, filename, date):
           """ Parse a Dash Upload into a DataFrame """
           content_type, content_string = contents.split(', ')
-
-          decoded = base64.b64decode(content_string)
-          fileish = io.StringIO(decoded.decode('utf-8'))
+          fileish = io.StringIO(base64.b64decode(content_string).decode('utf-8'))
           df = pd.read_csv(fileish)
           return df
 
@@ -160,7 +163,6 @@ def create_callbacks(app):
                   }
               )
           }
-      # breakpoint()
       return (style, figure, marks, year_min, year_max,
              y_dropdown_options, x_dropdown_options,
              size_dropdown_options, annotation_dropdown_options)
