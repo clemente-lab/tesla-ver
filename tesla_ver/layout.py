@@ -20,13 +20,16 @@ LAYOUT = html.Div(
         ),
         # This triggers the plot to load
         html.Button(id='upload-button', n_clicks=0, children='Graph'),
+
         # This contains all the components of the graph itself
         html.Div(id='graph',
                  # All graph components should go here
                  children=[
                      # Provides an empty graph object for updates in callback
                      dcc.Graph(id='graph-with-slider'),
-                     # Creates Slider from min-max X values to give input for graph updates
+                     # Creates Slider from min-max X values...
+                     # to give input for graph updates
+
                     html.Div([
                         dcc.Slider(id='year-slider', min=0,
                                    max=1,
@@ -34,6 +37,7 @@ LAYOUT = html.Div(
                                    marks={},
                                    updatemode='drag'
                                    )]),
+
                     html.Div(id='dropdown_menus',
                              children=[
                                 html.Div([
@@ -45,7 +49,8 @@ LAYOUT = html.Div(
                                         placeholder='Y Axis Values',
                                         className='dropdowns'
                                         ),
-                                        ], style={'width': '25%', 'position': 'absolute', 'left': '-10px', 'top': '650px'}),
+                                        ]),
+
                                 html.Div([
                                     html.P('X Axis'),
                                     dcc.Dropdown(
@@ -55,7 +60,8 @@ LAYOUT = html.Div(
                                         placeholder='X Axis Values',
                                         className='dropdowns'
                                         ),
-                                        ], style={'width': '25%', 'position': 'absolute', 'left': '470px', 'top': '650px'}),
+                                        ]),
+
                                 html.Div([
                                     html.P('Sizing Values'),
                                     dcc.Dropdown(
@@ -65,7 +71,8 @@ LAYOUT = html.Div(
                                         placeholder='Sizing Values',
                                         className='dropdowns'
                                         ),
-                                        ], style={'width': '25%', 'position': 'absolute', 'left': '950px', 'top': '650px'}),
+                                        ]),
+
                                 html.Div([
                                     html.P('Annotation'),
                                     dcc.Dropdown(
@@ -76,20 +83,13 @@ LAYOUT = html.Div(
                                         multi=True,
                                         className='dropdowns'
                                         )
-                                    ], style={'width': '25%', 'position': 'absolute', 'left': '1430px', 'top': '650px'}),
+                                    ]),
                               ])
                           ]),
+
         # Hidden component for storing data
         html.Div(id='hidden-data', style={'display': 'none'}),
+        # End outer div's children
     ],
-    style={
-        'width': '100%',
-        'height': '60px',
-        'lineHeight': '60px',
-        'borderWidth': '1px',
-        'borderStyle': 'dashed',
-        'borderRadius': '50px',
-        'textAlign': 'center',
-        'margin': '10px'
-    }
+    # End outer div
 )
