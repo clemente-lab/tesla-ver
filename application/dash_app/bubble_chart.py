@@ -11,8 +11,9 @@ from .layout import LAYOUT
 
 
 def create_bubble_graph(server):
-    app = dash.Dash(server = server,
-                    routes_pathname_prefix = '/bubble_graph/')  # , external_stylesheets = external_stylesheets)
+    app = dash.Dash(
+        server=server, routes_pathname_prefix="/bubble_graph/"
+    )  # , external_stylesheets = external_stylesheets)
 
     app.layout = LAYOUT
     create_callbacks(app)
