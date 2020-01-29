@@ -29,6 +29,16 @@
   height: 100vh;
   flex-flow: column-wrap;
 }
+#upload{
+    text-align: center;
+}
+#upload-button{
+    background-color: LightSkyBlue;
+    color: black;
+    margin-left: 45vw;
+    margin-right: 45vw;
+    width: 10vw;
+}
 
 #graph-with-slider{
     display: flex;
@@ -37,7 +47,6 @@
 
 #year-slider{
     display: flex;
-    step:4;
     height: 10vh;
 }
 #dropdown_menus{
@@ -46,23 +55,7 @@
     flex-flow: row-wrap;
     width: 100vw;
     height: 30vh;
-}
-
-#y_dropdown{
-    display: flex;
-    width: 25vw;
-}
-#x_dropdown{
-    display: flex;
-    width: 25vw;
-}
-#size_dropdown{
-    display: flex;
-    width: 25vw;
-}
-#annotation_dropdown{
-    display: flex;
-    width: 25vw;
+    text-align: center;
 }
 
 .axes_div{
@@ -70,9 +63,16 @@
   width: 90vw
 }
 
+.Select-placeholder{
+    background-color: LightSkyBlue;
+    color: black;
+
+}
 .dropdowns{
   flex: 1;
-  width: 10vw;
+  width: 25vw;
+  color: black;
+  backgroundColor: green;
 }
 
 .labelText{
