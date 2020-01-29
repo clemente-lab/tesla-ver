@@ -30,8 +30,14 @@
   flex-flow: column-wrap;
 }
 
+#graph-with-slider{
+    display: flex;
+    width: 100vw;
+}
+
 #year-slider{
     display: flex;
+    step:4;
     height: 10vh;
 }
 #dropdown_menus{
@@ -40,6 +46,23 @@
     flex-flow: row-wrap;
     width: 100vw;
     height: 30vh;
+}
+
+#y_dropdown{
+    display: flex;
+    width: 25vw;
+}
+#x_dropdown{
+    display: flex;
+    width: 25vw;
+}
+#size_dropdown{
+    display: flex;
+    width: 25vw;
+}
+#annotation_dropdown{
+    display: flex;
+    width: 25vw;
 }
 
 .axes_div{
