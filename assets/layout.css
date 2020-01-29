@@ -27,8 +27,13 @@
   flex: 1;
   width: 100vw;
   height: 100vh;
+  flex-flow: column-wrap;
 }
 
+#year-slider{
+    display: flex;
+    height: 10vh;
+}
 #dropdown_menus{
     display: flex;
     justify-content: center;
