@@ -17,6 +17,7 @@ def create_callbacks(app):
 
     def parse_contents(contents, filename, date):
         """ Parse a Dash Upload into a DataFrame """
+        breakpoint()
         content_type, content_string = contents.split(", ")
         fileish = io.StringIO(base64.b64decode(content_string).decode("utf-8"))
         df = pd.read_csv(fileish)

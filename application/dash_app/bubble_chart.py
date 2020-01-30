@@ -11,9 +11,8 @@ from .layout import LAYOUT
 
 
 def create_bubble_graph(server):
-    app = dash.Dash(
-        server=server, routes_pathname_prefix="/bubble_graph/"
-    )  # , external_stylesheets = external_stylesheets)
+    """Adds a dash pages to a flask application by registering it as a seperate path"""
+    app = dash.Dash(server=server, routes_pathname_prefix="/bubble_graph/")
 
     app.layout = LAYOUT
     create_callbacks(app)
