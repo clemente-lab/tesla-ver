@@ -19,7 +19,9 @@ LAYOUT = html.Div(
             multiple=False,
         ),
         # This triggers the plot to load
-        html.Button(id='upload-button', n_clicks=0, children='Graph'),
+        html.Div(id='button',
+                 children=[
+                    html.Button('Graph', id='upload-button', n_clicks=0)]),
 
         # This contains all the components of the graph itself
         html.Div(id='graph',

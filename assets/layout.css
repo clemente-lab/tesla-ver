@@ -16,7 +16,7 @@
   -ms-webkit: flex initial;
   -o-webkit: flex initial;
   flex: initial;
-  width: 20%;
+  width: 20vw;
 }
 
 #graph_div{
@@ -24,21 +24,35 @@
   -moz-webkit: flex 1;
   -ms-webkit: flex 1;
   -o-webkit: flex 1;
-  flex: 1;
+  '''flex: 1;'''
+  display: flex;
   width: 100vw;
   height: 100vh;
+  align-items: center;
   flex-flow: column-wrap;
 }
 #upload{
     text-align: center;
 }
+
 #upload-button{
+    display: flex;
+    justify-content: center;
     background-color: LightSkyBlue;
     color: black;
-    margin-left: 45vw;
-    margin-right: 45vw;
+    text-align: center;
     width: 10vw;
 }
+
+#button{
+    display: flex;
+    justify-content: center;
+    background-color: White;
+    color: black;
+    text-align: center;
+    width: 10vw;
+}
+
 
 #graph-with-slider{
     display: flex;
