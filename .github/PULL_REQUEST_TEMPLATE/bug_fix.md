@@ -1,3 +1,8 @@
+---
+name: Bug Fix
+about: Use this one for bug fixes
+
+---
 ## What has changed
 Include each file that was changed, how it was changed (in broad terms), and why it was changed.
 Example:
@@ -19,3 +24,4 @@ Example: Only numeric columns appear as options for selecting the size of the do
 ## If the user interface was modified include screenshots here
 
 ## Additional notes
+

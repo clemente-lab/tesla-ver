@@ -1,3 +1,8 @@
+---
+name: Design Change
+about: Use this one for changes to existing code that don't specifically address a bug
+
+---
 ## What has changed
 Include each file that was changed, how it was changed (in broad terms), and why it was changed.
 Example:
@@ -18,7 +23,7 @@ Example: Functions A, B, and C are now all methods of Class D.
 ## Why that change was necessary?
 Example: Previously 5 different functions were passing around A, B, and C as inputs. Changing these to methods reduced complexity.
 
-# If the request involves changes to the layout
+## If the request involves changes to the layout
 
 ## If the user interface was modified include screenshots here
 

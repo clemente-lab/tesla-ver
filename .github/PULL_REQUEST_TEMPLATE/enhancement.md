@@ -1,3 +1,8 @@
+---
+name: Enhancement
+about: Use this one for new features
+
+---
 # Enhancement Pull Request
 
 
@@ -20,3 +25,4 @@ Example: To do X run new function Y with parameters A, B, and C which gives resu
 ## If the user interface was modified include screenshots here
 
 ## Additional notes
+
