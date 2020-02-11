@@ -1,7 +1,6 @@
----
 name: Pull Request Template
 about: Fill this out for your pull request
----## What has changed
+\---## What has changed
 
 Include each file that was changed, how it was changed (in broad terms), and why it was changed.
 Example:
