@@ -18,8 +18,7 @@ All of these need to be checked in order to request a review on the Pull Request
 -   [ ] Does the code run?  
 -   [ ] Does the code follow the repository style?  
 -   [ ] Is the code tested?  
--   [ ] Has Black been run on all the python files in the repository?
-
+-   [ ] Has Black been run on all the python files in the repository (with line length 120 `black -l 120 *`)?
 
 ## If the user interface was modified include screenshots here
 
