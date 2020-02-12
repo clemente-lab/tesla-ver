@@ -10,11 +10,7 @@ LAYOUT = html.Div(
     id="graph_div",
     children=[
         # This handles the upload of files
-        dcc.Upload(
-            id="upload",
-            children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
-            multiple=False,
-        ),
+        dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ", html.A("Select Files")]), multiple=False),
         # This triggers the plot to load
         html.Button(id="upload-button", n_clicks=0, children="Graph"),
         # This contains all the components of the graph itself
