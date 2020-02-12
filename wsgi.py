@@ -12,6 +12,7 @@ app = generateBubbleChart(server=server)
 @server.route("/")
 def index():
     """Renders the landing page."""
+    # TODO: Create an HTML import function
     return """
 <html>
 <div><h1>Flask App</h1>
