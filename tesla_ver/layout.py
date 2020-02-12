@@ -6,18 +6,11 @@ import dash_core_components as dcc
 # All parts of the webpage should be part of the 'children'
 # of 'graph_div', the top level div
 LAYOUT = html.Div(
-    className='card z-depth-3',
-    id='graph_div',
+    className="card z-depth-3",
+    id="graph_div",
     children=[
         # This handles the upload of files
-        dcc.Upload(
-            id='upload',
-            children=html.Div([
-                'Drag and Drop or ',
-                html.A('Select Files')
-            ]),
-            multiple=False,
-        ),
+        dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ", html.A("Select Files")]), multiple=False),
         # This triggers the plot to load
         html.Div(id='button',
                  children=[
