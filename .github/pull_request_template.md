@@ -1,8 +1,12 @@
 ---
-name: Pull Request Template
+name: Pull Request Form
 about: Fill this out for your pull request
 
 ---
+
+## Issues Addressed
+Link to any issues this pull request addresses
+
 ## What has changed
 Include each file that was changed, how it was changed (in broad terms), and why it was changed.
 Example:
