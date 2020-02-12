@@ -14,11 +14,13 @@ from numbers import Number
 def generateBubbleChart(server):
     app = dash.Dash(
         __name__, server=server, url_base_pathname="/bubblechart.html/"
-    )  # , external_stylesheets=external_stylesheets)
+    )
     app.layout = LAYOUT
 
-    def parse_contents(contents, filename, date):
-        """Parse a Dash Upload into a DataFrame."""
+    def parse_contents(contents):
+        """Parse a Dash Upload into a DataFrame.
+        contents is a string read from the upload component
+        filename and date are just information paramteres  """
         content_type, content_string = contents.split(",")
 
         decoded = base64.b64decode(content_string)
@@ -40,7 +42,7 @@ def generateBubbleChart(server):
         component."""
         df = None
         if contents is not None:
-            df = parse_contents(contents, filename, last_modified).to_json()
+            df = parse_contents(contents).to_json()
         return df
 
     @app.callback(
