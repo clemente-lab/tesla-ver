@@ -24,8 +24,7 @@
   -moz-webkit: flex 1;
   -ms-webkit: flex 1;
   -o-webkit: flex 1;
-  '''flex: 1;'''
-  display: flex;
+  flex: 1;
   width: 100vw;
   height: 100vh;
   align-items: center;
@@ -50,7 +49,7 @@
     background-color: White;
     color: black;
     text-align: center;
-    width: 10vw;
+    width: 100vw;
 }
 
 
@@ -73,7 +72,7 @@
 }
 
 .axes_div{
-  /* display: flex; */
+  display: flex;
   width: 90vw
 }
 
@@ -103,8 +102,8 @@
 }
 
 .upload-div-exterior{
-  width: 100%;
-  padding: 1em;
-  padding-right: 3em;
-  padding-left: 3em;
+    width: 100vw;
+    padding: 1em;
+    padding-right: 3em;
+    padding-left: 3em;
 }
