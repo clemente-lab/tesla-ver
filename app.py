@@ -74,7 +74,6 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
     marks = {}
     style = {"display": "none"}  # Don't display the graph until data is uploaded
     traces = []
-
     x_key = "ad_fert_data"
     y_key = "adjusted_income_data"
     size_key = "contraceptive_data"
@@ -86,7 +85,6 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
     # If the is data uploaded
     if df is not None:
         df = pd.read_json(df)
-
         marks = {str(year): str(year) for year in df["X"].unique()}
         year_min = df["X"].min()
         year_max = df["X"].max()
@@ -95,7 +93,6 @@ def update_figure(clicks, selected_year, selected_y, selected_x, selected_size, 
         x_dropdown_options = [{"label": i, "value": i} for i in list(numeric_df.columns)]
         annotation_dropdown_options = [{"label": i, "value": i} for i in df.columns]
         size_dropdown_options = [{"label": i, "value": i} for i in list(numeric_df.columns)]
-
         if selected_y is not None:
             y_key = selected_y
         if selected_x is not None:
