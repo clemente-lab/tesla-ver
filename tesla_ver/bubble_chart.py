@@ -8,20 +8,19 @@ import plotly.graph_objs as go
 import pandas as pd
 
 from tesla_ver.layout import LAYOUT
-from numbers import Number
 
 
 def generateBubbleChart(server):
-    app = dash.Dash(
-        __name__, server=server, url_base_pathname="/bubblechart.html/"
-    )
+    app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
     app.layout = LAYOUT
 
     def parse_contents(contents):
         """Parse a Dash Upload into a DataFrame.
-        contents is a string read from the upload component
-        filename and date are just information paramteres  """
-        content_type, content_string = contents.split(",")
+
+        contents is a string read from the upload component filename and
+        date are just information paramteres
+        """
+        _, content_string = contents.split(",")
 
         decoded = base64.b64decode(content_string)
         fileish = io.StringIO(decoded.decode("utf-8"))
@@ -184,7 +183,6 @@ def generateBubbleChart(server):
                     transition={"duration": 500, "easing": "cubic-in-out"},
                 ),
             }
-        # breakpoint()
         return (
             style,
             figure,
