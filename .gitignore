@@ -29,12 +29,6 @@
 .ropeproject/*
 
 .spyproject
-*.swn
 
-/.sw*
-**/*.swk
-**/*.swp
-**/*.swo
-**/*.swn
-**/*.swl
-**/*.swm
+# All vim swap files
+**/.sw*
