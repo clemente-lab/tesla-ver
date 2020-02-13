@@ -81,7 +81,6 @@ LAYOUT = html.Div(
                                     ]),
                               ])
                           ]),
-
         # Hidden component for storing data
         html.Div(id='hidden-data', style={'display': 'none'}),
         # End outer div's children
