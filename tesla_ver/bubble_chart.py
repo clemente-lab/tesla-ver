@@ -24,9 +24,12 @@ def generateBubbleChart(server):
 
         decoded = base64.b64decode(content_string)
         fileish = io.StringIO(decoded.decode("utf-8"))
-        df = pd.read_csv(fileish)
-
-        return df
+        df = pd.read_csv(fileish,sep='\t')
+        df[['X','Y']] = df[['X','Y']].applymap(lambda x: x.split(','))
+        df.set_index('ID', inplace=True)
+        df = df.apply(pd.Series.explode)
+        print(df)
+        return pd.DataFrame()
 
     @app.callback(
         Output("hidden-data", "children"),
