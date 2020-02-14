@@ -29,7 +29,7 @@ def generateBubbleChart(server):
         df.set_index('ID', inplace=True)
         df = df.apply(pd.Series.explode)
         print(df)
-        return pd.DataFrame()
+        return df
 
     @app.callback(
         Output("hidden-data", "children"),
