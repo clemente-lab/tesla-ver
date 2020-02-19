@@ -54,12 +54,10 @@ def generateBubbleChart(server):
             Input("a", "disabled")
         ],
     )
-    def play_button(n_intervals, n_clicks):
+    def play_button(n_intervals, n_clicks, disabled):
         """ docstring """
+        import pudb; pudb.set_trace()
         return_val = []
-        disabled = False
-        if 1 != 0:
-            print("Hello World")
         step_num = (n_intervals+1960) % 2014
         return_val = [step_num]
         return return_val

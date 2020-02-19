@@ -22,7 +22,6 @@ LAYOUT = html.Div(
                     html.Button('Animate', id='animate-button', n_clicks=0)]),
         dcc.Interval(id='a',
             interval=1*1000, # in milliseconds
-            disabled=True,
             n_intervals=None),
         # This contains all the components of the graph itself
         html.Div(id='graph',
