@@ -50,19 +50,16 @@ def generateBubbleChart(server):
         ],
         [
             Input("a", "n_intervals"),
-            Input("animate-button", "n_clicks"),
-            Input("a", "disabled")
+            Input("animate-button", "n_clicks")
         ],
     )
     def play_button(n_intervals, n_clicks):
         """ docstring """
-        return_val = []
-        disabled = False
-        if 1 != 0:
-            print("Hello World")
-        step_num = (n_intervals+1960) % 2014
-        return_val = [step_num]
-        return return_val
+        ret_val = None
+        if n_clicks > 1:
+            return [(n_intervals+1) % 54]
+        else:
+            return 0
 
     @app.callback(
         [

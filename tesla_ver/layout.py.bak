@@ -10,20 +10,12 @@ LAYOUT = html.Div(
     id="graph_div",
     children=[
         # This handles the upload of files
-        dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ",
-                   html.A("Select Files")]), multiple=False),
+        dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ", html.A("Select Files")]), multiple=False),
         # This triggers the plot to load
         html.Div(id='button',
                  children=[
                     html.Button('Graph', id='upload-button', n_clicks=0)]),
-        # This button allows you to animate the graph
-        html.Div(id='animate',
-                 children=[
-                    html.Button('Animate', id='animate-button', n_clicks=0)]),
-        dcc.Interval(id='a',
-            interval=1*1000, # in milliseconds
-            disabled=True,
-            n_intervals=None),
+
         # This contains all the components of the graph itself
         html.Div(id='graph',
                  # All graph components should go here
