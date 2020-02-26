@@ -69,9 +69,14 @@ def generateBubbleChart(server):
                   .format(n_intervals, n_clicks, disabled, value, intervals_on_click))
             step_num = ((n_intervals-intervals_on_click) + 1960) % 2016
             return_val = [step_num]
+            print("step_num: {}", step_num)
             if value == 2015:
                 raise dash.exceptions.PreventUpdate
-        return return_val, str(intervals_on_click)
+        return (
+               return_val,
+               intervals_on_click,
+               )
+
     @app.callback(
         [
             Output("graph", "style"),
@@ -164,6 +169,7 @@ def generateBubbleChart(server):
                 filtered_df = df
             else:
                 # Filters to a given x value from the slider
+                print("df: {}, selected_year: {}".format(len(df["X"]), len(selected_year)))
                 filtered_df = df[df["X"] == selected_year]
             # Iterates over all 'continents' for a given x value to generate all the bubbles in the graph
             # TODO: Add general handling for other 'contintents' not using the 'name' axis (dropdown/textfield?)
