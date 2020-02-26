@@ -14,10 +14,10 @@ __email__ = "alexanderkyim@gmail.com"
 
 _version_re = re.compile(r"__version__\s+=\s+(.*)")
 
-with open("tesla_ver/__init__.py", "rb") as f:
+with open("tesla_ver/__init__.py", "rb+") as f:
     version = str(ast.literal_eval(_version_re.search(f.read().decode("utf-8")).group(1)))
 
-with open("README.md", "r") as f:
+with open("README.md", "r+") as f:
     long_description = f.read()
 
 setup(
