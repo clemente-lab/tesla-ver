@@ -21,7 +21,7 @@ LAYOUT = html.Div(
                  children=[
                     html.Button('Animate', id='animate-button', n_clicks=0)]),
         dcc.Interval(id='a',
-            interval=1*1000, # in milliseconds
+            interval=1000, # in milliseconds
             n_intervals=None),
         # This contains all the components of the graph itself
         html.Div(id='graph',
@@ -90,6 +90,7 @@ LAYOUT = html.Div(
                           ]),
         # Hidden component for storing data
         html.Div(id='hidden-data', style={'display': 'none'}),
+        html.Div(id='hidden-variables', style={'display': 'none'}),
         # End outer div's children
     ],
     # End outer div

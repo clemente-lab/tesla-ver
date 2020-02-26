@@ -46,23 +46,32 @@ def generateBubbleChart(server):
 
     @app.callback(
         [
-            Output("year-slider", "value")
+            Output("year-slider", "value"),
+            Output("hidden-variables", "children")
         ],
         [
             Input("a", "n_intervals"),
             Input("animate-button", "n_clicks"),
-            Input("a", "disabled")
+            Input("a", "disabled"),
         ],
+        [
+            State("year-slider", "value"),
+            State("hidden-variables", "children")
+        ]
     )
-    def play_button(n_intervals, n_clicks, disabled):
-        """ docstring """
+    def play_button(n_intervals, n_clicks, disabled, value, children):
         # import pudb; pudb.set_trace()
-        print("play button plays n_intervals: {}, n_clicks: {}, disabled: {}".format(n_intervals, n_clicks, disabled))
         return_val = []
-        step_num = (n_intervals+1960) % 2014
-        return_val = [step_num]
-        return return_val
-
+        intervals_on_click = 0
+        if n_clicks > 0 and n_clicks % 2 == 1:
+            intervals_on_click = n_intervals
+            print("play button plays n_intervals: {}, n_clicks: {}, disabled: {}, value: {}, intervals_on_click: {}"
+                  .format(n_intervals, n_clicks, disabled, value, intervals_on_click))
+            step_num = ((n_intervals-intervals_on_click) + 1960) % 2016
+            return_val = [step_num]
+            if value == 2015:
+                raise dash.exceptions.PreventUpdate
+        return return_val, str(intervals_on_click)
     @app.callback(
         [
             Output("graph", "style"),
