@@ -55,6 +55,7 @@ def generateBubbleChart(server):
             Output("x_dropdown", "options"),
             Output("size_dropdown", "options"),
             Output("annotation_dropdown", "options"),
+            Output('interval-component', 'disabled'),
         ],
         [
             Input("upload-button", "n_clicks"),
@@ -63,6 +64,9 @@ def generateBubbleChart(server):
             Input("x_dropdown", "value"),
             Input("size_dropdown", "value"),
             Input("annotation_dropdown", "value"),
+            Input('interval-component', 'n_intervals'),
+            Input("play-button", 'n_clicks'),
+            Input('stop-button', 'n_clicks')
         ],
         [State("hidden-data", "children")],
     )
@@ -74,6 +78,9 @@ def generateBubbleChart(server):
         selected_x,
         selected_size,
         selected_annotation,
+        interval,
+        play,
+        stop,
         df,
     ):
         """This callback handles updating the graph in response to user
@@ -82,6 +89,8 @@ def generateBubbleChart(server):
         All updates must pass through this callback. The functionality
         should be split out into library files as it gets more complex.
         """
+        ctx = dash.callback_context
+        print(interval)
         # Set default values for when no data has yet been loaded
         year_min = 0
         year_max = int()
@@ -132,11 +141,15 @@ def generateBubbleChart(server):
             if selected_annotation is not None:
                 annotation_key = selected_annotation
             # Filtering by year is the only interaction currently support
-            if selected_year is None:
-                filtered_df = df
-            else:
+            if interval is not None:
+                # Filters to a given x value from the slider
+                filtered_df = df[df["X"] == df["X"][interval]]
+                print(df["X"][interval])
+            elif selected_year is not None:
                 # Filters to a given x value from the slider
                 filtered_df = df[df["X"] == selected_year]
+            else:
+                filtered_df = df
             # Iterates over all 'continents' for a given x value to generate all the bubbles in the graph
             # TODO: Add general handling for other 'contintents' not using the 'name' axis (dropdown/textfield?)
             for i in filtered_df.name.unique():
@@ -183,6 +196,17 @@ def generateBubbleChart(server):
                     transition={"duration": 500, "easing": "cubic-in-out"},
                 ),
             }
+            if selected_year is not None:
+                disable = True
+            elif ctx.triggered[0]['prop_id'].split('.')[0] == 'play-button' and\
+                    ctx.triggered[0]['prop_id'].split('.')[0] == 'interval-component':
+                disable = False
+            elif ctx.triggered[0]['prop_id'].split('.')[0] == 'stop-button' or interval >= len(df["X"]):
+                disable = True
+            elif play == 0 and stop == 0:
+                disable = True
+            else:
+                disable = False
         return (
             style,
             figure,
@@ -193,6 +217,7 @@ def generateBubbleChart(server):
             x_dropdown_options,
             size_dropdown_options,
             annotation_dropdown_options,
+            disable,
         )
 
     return app
