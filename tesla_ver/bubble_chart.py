@@ -141,13 +141,12 @@ def generateBubbleChart(server):
             if selected_annotation is not None:
                 annotation_key = selected_annotation
             # Filtering by year is the only interaction currently support
-            if interval is not None:
+            if selected_year is not None:
+                filtered_df = df[df["X"] == selected_year]
+            elif interval > 0:
                 # Filters to a given x value from the slider
                 filtered_df = df[df["X"] == df["X"][interval]]
                 print(df["X"][interval])
-            elif selected_year is not None:
-                # Filters to a given x value from the slider
-                filtered_df = df[df["X"] == selected_year]
             else:
                 filtered_df = df
             # Iterates over all 'continents' for a given x value to generate all the bubbles in the graph
@@ -196,9 +195,7 @@ def generateBubbleChart(server):
                     transition={"duration": 500, "easing": "cubic-in-out"},
                 ),
             }
-            if selected_year is not None:
-                disable = True
-            elif ctx.triggered[0]['prop_id'].split('.')[0] == 'play-button' and\
+            if ctx.triggered[0]['prop_id'].split('.')[0] == 'play-button' and\
                     ctx.triggered[0]['prop_id'].split('.')[0] == 'interval-component':
                 disable = False
             elif ctx.triggered[0]['prop_id'].split('.')[0] == 'stop-button' or interval >= len(df["X"]):
