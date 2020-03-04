@@ -68,7 +68,10 @@ def generateBubbleChart(server):
             Input("play-button", 'n_clicks'),
             Input('stop-button', 'n_clicks')
         ],
-        [State("hidden-data", "children")],
+        [
+         State("hidden-data", "children"),
+         State("hidden-state-variables", "children")
+        ]
     )
     # Function update_figure takes inputs from user to determine x axis, y axis, point size, and annotation
     def update_figure(
@@ -106,9 +109,11 @@ def generateBubbleChart(server):
         x_dropdown_options = []
         size_dropdown_options = []
         annotation_dropdown_options = []
+        disable = True
         # If the is data uploaded
         if df is not None:
             df = pd.read_json(df)
+            print('interval: {}, selected_year: {}'.format(interval, selected_year))
             marks_edited = {
                 str(year): {"label": str(year), "style": {"visibility": "hidden"}}
                 for year in df["X"].unique()
@@ -144,11 +149,20 @@ def generateBubbleChart(server):
             if selected_year is not None:
                 filtered_df = df[df["X"] == selected_year]
             elif interval > 0:
-                # Filters to a given x value from the slider
                 filtered_df = df[df["X"] == df["X"][interval]]
                 print(df["X"][interval])
             else:
                 filtered_df = df
+
+            if ctx.triggered[0]['prop_id'].split('.')[0] == 'play-button' and\
+                    ctx.triggered[0]['prop_id'].split('.')[0] == 'interval-component':
+                disable = False
+            elif ctx.triggered[0]['prop_id'].split('.')[0] == 'stop-button' or interval >= len(df["X"]):
+                disable = True
+            elif play == 0 and stop == 0:
+                disable = True
+            else:
+                disable = False
             # Iterates over all 'continents' for a given x value to generate all the bubbles in the graph
             # TODO: Add general handling for other 'contintents' not using the 'name' axis (dropdown/textfield?)
             for i in filtered_df.name.unique():
@@ -182,28 +196,19 @@ def generateBubbleChart(server):
                     xaxis={
                         "type": "log",
                         "title": " ".join(x_key.split("_")).title(),
-                        "autorange": "true",
+                        "autorange": autorange,
                     },
                     yaxis={
                         "title": " ".join(y_key.split("_")).title(),
-                        "autorange": "true",
+                        "autorange": autorange,
                     },
                     margin={"l": 40, "b": 40, "t": 10, "r": 10},
                     legend={"x": 0, "y": 1},
                     hovermode="closest",
                     # Defines transition behaviors
-                    transition={"duration": 500, "easing": "cubic-in-out"},
+                    transition={"duration": 50, "easing": "cubic-in-out"},
                 ),
             }
-            if ctx.triggered[0]['prop_id'].split('.')[0] == 'play-button' and\
-                    ctx.triggered[0]['prop_id'].split('.')[0] == 'interval-component':
-                disable = False
-            elif ctx.triggered[0]['prop_id'].split('.')[0] == 'stop-button' or interval >= len(df["X"]):
-                disable = True
-            elif play == 0 and stop == 0:
-                disable = True
-            else:
-                disable = False
         return (
             style,
             figure,
