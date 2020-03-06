@@ -26,7 +26,7 @@ LAYOUT = html.Div(
                      # to give input for graph updates
 
                     html.Div([
-                        dcc.Slider(id='year-slider', min=0,
+                        dcc.Slider(id='time-slider', min=0,
                                    max=1,
                                    value=None,
                                    marks={},

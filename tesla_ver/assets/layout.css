@@ -10,7 +10,7 @@
   font-weight: 900;
 }
 
-#controls_div{
+#controls_div {
   -webkit-webkit: flex initial;
   -moz-webkit: flex initial;
   -ms-webkit: flex initial;
@@ -19,7 +19,7 @@
   width: 20vw;
 }
 
-#graph_div{
+#graph_div {
   -webkit-webkit: flex 1;
   -moz-webkit: flex 1;
   -ms-webkit: flex 1;
@@ -30,80 +30,83 @@
   align-items: center;
   flex-flow: column-wrap;
 }
-#upload{
-    text-align: center;
+
+#upload {
+  text-align: center;
 }
 
-#upload-button{
-    display: flex;
-    justify-content: center;
-    background-color: LightSkyBlue;
-    color: black;
-    text-align: center;
-    width: 10vw;
+#upload-button {
+  display: flex;
+  justify-content: center;
+  background-color: LightSkyBlue;
+  color: black;
+  text-align: center;
+  width: 10vw;
 }
 
-#button{
-    display: flex;
-    justify-content: center;
-    background-color: White;
-    color: black;
-    text-align: center;
-    width: 100vw;
+#button {
+  display: flex;
+  justify-content: center;
+  background-color: White;
+  color: black;
+  text-align: center;
+  width: 100vw;
 }
 
 
-#graph-with-slider{
-    display: flex;
-    width: 100vw;
+#graph-with-slider {
+  display: flex;
+  width: 100vw;
 }
 
-#year-slider{
-    display: flex;
-    height: 10vh;
-}
-#dropdown_menus{
-    display: flex;
-    justify-content: center;
-    flex-flow: row-wrap;
-    width: 100vw;
-    height: 30vh;
-    text-align: center;
+#time-slider {
+  display: flex;
+  height: 10vh;
 }
 
-.axes_div{
+#dropdown_menus {
+  display: flex;
+  justify-content: center;
+  flex-flow: row-wrap;
+  width: 100vw;
+  height: 30vh;
+  text-align: center;
+}
+
+.axes_div {
   display: flex;
   width: 90vw
 }
 
-.Select-placeholder{
-    background-color: LightSkyBlue;
-    color: black;
-    font-weight: 500;
+.Select-placeholder {
+  background-color: LightSkyBlue;
+  color: black;
+  font-weight: 500;
 
 }
-.dropdowns{
+
+.dropdowns {
   flex: 1;
   width: 25vw;
 }
 
-.labelText{
+.labelText {
   font-family: 'Quicksand', sans-serif;
   font-weight: 300;
   color: white;
   font-size: 140%
 }
 
-.upload-div-interior{
+.upload-div-interior {
   text-align: center;
   font-family: 'Quicksand', sans-serif;
   font-weight: 400;
   padding: 1em;
 }
 
-.upload-div-exterior{
-    width: 100vw;
-    padding: 1em;
-    padding-right: 3em;
-    padding-left: 3em;
+.upload-div-exterior {
+  width: 100vw;
+  padding: 1em;
+  padding-right: 3em;
+  padding-left: 3em;
 }
