@@ -1,8 +1,10 @@
 import flask
+from werkzeug.debug import DebuggedApplication
 from tesla_ver.bubble_chart import generateBubbleChart
 
 # Creates the flask server
 server = flask.Flask(__name__)
+server.wsgi_app = DebuggedApplication(server.wsgi_app, evalex=True)
 
 # Creates the dashboard and connects it to the flask server
 app = generateBubbleChart(server=server)
