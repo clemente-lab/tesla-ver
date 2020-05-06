@@ -62,6 +62,8 @@
 #time-slider {
   display: flex;
   height: 10vh;
+  margin-right: 5vh;
+  margin-left: 5vh;
 }
 
 #dropdown_menus {
