@@ -88,7 +88,7 @@ def generateBubbleChart(server):
                     on=[
                         column
                         for column in left_frame.columns
-                        if column not in [*filename_titles, "cause_name"]
+                        if column not in [*filename_titles]
                     ],
                     left_by="X",
                     fill_method="ffill",
@@ -96,7 +96,7 @@ def generateBubbleChart(server):
                 df_list,
             )
             df = df.convert_dtypes()
-            df[filename_titles] = df[filename_titles].apply(
+            df[["X", *filename_titles]] = df[["X", *filename_titles]].apply(
                 pd.to_numeric, errors="coerce"
             )
             return df
