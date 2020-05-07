@@ -1,5 +1,8 @@
 import base64
 import io
+from pathlib import Path
+from functools import reduce
+
 
 import dash
 import pandas as pd
@@ -24,6 +27,8 @@ def generateBubbleChart(server):
         [Input("hidden-data", "children")],
     )
     def update_slider(data):
+        """This callback updates the slider values from a hidden div containing trajectory data
+        Data produced by upload_data callback function"""
         if data is None:
             raise PreventUpdate
         df = pd.read_json(data)
@@ -35,6 +40,7 @@ def generateBubbleChart(server):
         }
         for key in list(marks.keys())[::5]:
             marks[key]["style"] = {"visibility": "visible"}
+        print(df.columns)
         return [marks, time_min, time_max]
 
     @app.callback(
@@ -45,50 +51,65 @@ def generateBubbleChart(server):
             Input("upload", "last_modified"),
         ],
     )
-    def upload_data(contents, filename, last_modified):
+    def upload_data(list_of_contents, list_of_filenames, _):
         """This callback handles storing the dataframe as JSON in the hidden
         component."""
 
-        def parse_contents(contents):
+        def parse_contents(contents, filenames):
             """Parse a Dash Upload into a DataFrame.
 
             contents is a string read from the upload component.
             filename and date are just information paramteres
             """
-            _, content_string = contents.split(",")
+            # parses contents into dataframes
+            df_list = list()
+            filename_titles = list()
+            for content, filename in zip(contents, filenames):
+                _, content_string = content.split(",")
+                # Append filename
+                filename = Path(filename).stem
+                filename_titles.append(filename)
+                decoded = base64.b64decode(content_string)
+                fileish = io.StringIO(decoded.decode("utf-8"))
+                df = pd.read_csv(fileish, sep="\t")
+                # Separates time series into a single value
+                df[["X", "Y"]] = df[["X", "Y"]].applymap(lambda x: x.split(","))
+                df = df.apply(pd.Series.explode)
+                df.reset_index(drop=True, inplace=True)
+                df = df.rename(columns={"Y": filename})
+                df_list.append(df)
+                print(df.columns)
 
-            decoded = base64.b64decode(content_string)
-            fileish = io.StringIO(decoded.decode("utf-8"))
-            df = pd.read_csv(fileish, sep="\t")
-            df[
-                [
-                    "X",
-                    *[
-                        column[0:-5]
-                        for column in df.columns[0].split(",")
-                        if column.endswith("_data")
+            # merges all dataframes into a single list
+            df = reduce(
+                lambda left_frame, right_frame: pd.merge_ordered(
+                    left_frame,
+                    right_frame,
+                    on=[
+                        column
+                        for column in left_frame.columns
+                        if column not in [*filename_titles, "cause_name"]
                     ],
-                ]
-            ] = df[
-                [
-                    "X",
-                    *[
-                        column[0:-5]
-                        for column in df.columns[0].split(",")
-                        if column.endswith("_data")
-                    ],
-                ]
-            ].applymap(
-                lambda x: x.split(",")
+                    left_by="X",
+                    fill_method="ffill",
+                ),
+                df_list,
             )
-            df = df.apply(pd.Series.explode)
-            df.reset_index(drop=True, inplace=True)
+            df = df.convert_dtypes()
+            df[filename_titles] = df[filename_titles].apply(
+                pd.to_numeric, errors="coerce"
+            )
             return df
 
         df = None
-        if contents is not None:
-            df = parse_contents(contents).to_json()
-        return df
+        if list_of_contents is not None:
+            df = parse_contents(list_of_contents, list_of_filenames)
+
+            print(df.columns)
+            print(df.dtypes)
+            print(df.head())
+            return df.to_json()
+        return
 
     # @app.callback(
     #     Output("graph", "style"),
@@ -106,15 +127,22 @@ def generateBubbleChart(server):
     #         Output("y_dropdown", "options"),
     #         Output("x_dropdown", "options"),
     #         Output("size_dropdown", "options"),
-    #         Output("annotation_dropdown", "options")
+    #         Output("annotation_dropdown", "options"),
     #     ],
-    #     [Input("hidden-data", "children"),],)
+    #     [Input("hidden-data", "children"),],
+    # )
     # def update_dropdowns(json_data):
     #     if json_data is None:
     #         raise PreventUpdate
     #     df = pd.read_json(json_data)
     #     columns = df.select_dtypes(include=[np.number]).columns
-    #     return [[{'label': option.replace('_',' ').title() ,'value': option} for option in columns] for dropdown in range(0,4)]
+    #     return [
+    #         [
+    #             {"label": option.replace("_", " ").title(), "value": option}
+    #             for option in columns
+    #         ]
+    #         for dropdown in range(0, 4)
+    #     ]
 
     # @app.callback(
     #     Output("graph-with-slider", "figure"),
