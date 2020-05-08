@@ -10,7 +10,6 @@ server.wsgi_app = DebuggedApplication(server.wsgi_app, evalex=True)
 app = generateBubbleChart(server=server)
 
 
-
 @server.route("/")
 def index():
     """Renders the landing page."""
@@ -24,11 +23,11 @@ def index():
 """
 
 
-
 @server.route("/bubblechart.html")
 def render_bubble_chart():
     """Redirects to the Dash Bubble chart."""
     return flask.redirect("/bubblechart.html")
+
 
 if __name__ == "__main__":
     server.run(debug=True)
