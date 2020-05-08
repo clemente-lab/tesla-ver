@@ -78,7 +78,6 @@ def generateBubbleChart(server):
                 df.reset_index(drop=True, inplace=True)
                 df = df.rename(columns={"Y": filename})
                 df_list.append(df)
-                print(df.columns)
 
             # merges all dataframes into a single list
             df = reduce(
@@ -104,9 +103,6 @@ def generateBubbleChart(server):
         df = None
         if list_of_contents is not None:
             df = parse_contents(list_of_contents, list_of_filenames)
-
-            print(df.columns)
-            print(df.dtypes)
             print(df.head())
             return df.to_json()
         return
@@ -122,27 +118,49 @@ def generateBubbleChart(server):
     #         return {"display": "flex"}
     #     return {"display": "none"}
 
-    # @app.callback(
-    #     [
-    #         Output("y_dropdown", "options"),
-    #         Output("x_dropdown", "options"),
-    #         Output("size_dropdown", "options"),
-    #         Output("annotation_dropdown", "options"),
-    #     ],
-    #     [Input("hidden-data", "children"),],
-    # )
-    # def update_dropdowns(json_data):
-    #     if json_data is None:
-    #         raise PreventUpdate
-    #     df = pd.read_json(json_data)
-    #     columns = df.select_dtypes(include=[np.number]).columns
-    #     return [
-    #         [
-    #             {"label": option.replace("_", " ").title(), "value": option}
-    #             for option in columns
-    #         ]
-    #         for dropdown in range(0, 4)
-    #     ]
+    @app.callback(
+        [
+            Output("y_dropdown", "options"),
+            Output("x_dropdown", "options"),
+            Output("size_dropdown", "options"),
+            Output("annotation_dropdown", "options"),
+        ],
+        [Input("hidden-data", "children"),],
+    )
+    def update_dropdowns(json_data):
+        if json_data is None:
+            raise PreventUpdate
+        df = pd.read_json(json_data)
+        data_columns = [
+            title for title in df.select_dtypes(include=[np.number]).columns
+        ]
+        data_options = [
+            {"label": option.replace("_", " ").title(), "value": option}
+            for option in data_columns
+            if ("trajs" in option)
+        ]
+        size_options = [
+            {"label": option.replace("_", " ").title(), "value": option}
+            for option in [
+                sizeopt
+                for sizeopt in data_columns
+                if ("trajs" not in sizeopt and sizeopt not in ["X"])
+            ]
+        ]
+        annotation_options = [
+            {"label": option.replace("_", " ").title(), "value": option}
+            for option in [
+                anno
+                for anno in df.columns
+                if ("trajs" not in anno and anno not in ["ID", "X"])
+            ]
+        ]
+        return [
+            data_options,
+            data_options,
+            size_options,
+            annotation_options,
+        ]
 
     # @app.callback(
     #     Output("graph-with-slider", "figure"),
