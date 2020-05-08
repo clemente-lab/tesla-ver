@@ -68,8 +68,6 @@ def generateBubbleChart(server):
         df = None
         if list_of_contents is not None:
             df = parse_contents(list_of_contents, list_of_filenames)
-            # print(df.head(100))
-            df.to_csv("head.csv")
             return df.to_json()
         return
 
