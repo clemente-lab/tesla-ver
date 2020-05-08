@@ -7,7 +7,7 @@ from functools import reduce
 import dash
 import pandas as pd
 import numpy as np
-import plotly.graph_objs as go
+from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
@@ -17,31 +17,6 @@ from tesla_ver.layout import LAYOUT
 def generateBubbleChart(server):
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
     app.layout = LAYOUT
-
-    @app.callback(
-        [
-            Output("time-slider", "marks"),
-            Output("time-slider", "min"),
-            Output("time-slider", "max"),
-        ],
-        [Input("hidden-data", "children")],
-    )
-    def update_slider(data):
-        """This callback updates the slider values from a hidden div containing trajectory data
-        Data produced by upload_data callback function"""
-        if data is None:
-            raise PreventUpdate
-        df = pd.read_json(data)
-        time_min = df["X"].min()
-        time_max = df["X"].max()
-        marks = {
-            str(year): {"label": str(year), "style": {"visibility": "hidden"}}
-            for year in df["X"].unique()
-        }
-        for key in list(marks.keys())[::5]:
-            marks[key]["style"] = {"visibility": "visible"}
-        print(df.columns)
-        return [marks, time_min, time_max]
 
     @app.callback(
         Output("hidden-data", "children"),
@@ -95,7 +70,7 @@ def generateBubbleChart(server):
                 df_list,
             )
             df = df.convert_dtypes()
-            df[["X", *filename_titles]] = df[["X", *filename_titles]].apply(
+            df[filename_titles] = df[filename_titles].apply(
                 pd.to_numeric, errors="coerce"
             )
             return df
@@ -103,20 +78,36 @@ def generateBubbleChart(server):
         df = None
         if list_of_contents is not None:
             df = parse_contents(list_of_contents, list_of_filenames)
-            print(df.head())
+            # print(df.head(100))
+            df.to_csv("head.csv")
             return df.to_json()
         return
 
-    # @app.callback(
-    #     Output("graph", "style"),
-    #     [Input("upload-button", "n_clicks")],
-    #     [State("hidden-data", "children")],
-    # )
-    # def display_graph(_, data):
-    #     """Shows and hides the graph depending if data is uploaded."""
-    #     if data is not None:
-    #         return {"display": "flex"}
-    #     return {"display": "none"}
+    @app.callback(
+        [
+            Output("time-slider", "marks"),
+            Output("time-slider", "min"),
+            Output("time-slider", "max"),
+        ],
+        [Input("hidden-data", "children")],
+    )
+    def update_slider(data):
+        """This callback updates the slider values from a hidden div containing trajectory data
+        Data produced by upload_data callback function"""
+        if data is None:
+            raise PreventUpdate
+        df = pd.read_json(data)
+        time_min = df["X"].min()
+        time_max = df["X"].max()
+        marks = {
+            str(year): {"label": str(year), "style": {"visibility": "hidden"}}
+            for year in df["X"].unique()
+        }
+        for idx, key in enumerate(marks.keys()):
+            if idx % 4 == 0:
+                marks[key]["style"] = {"visibility": "visible"}
+        print(df.columns)
+        return [marks, time_min, time_max]
 
     @app.callback(
         [
@@ -128,6 +119,7 @@ def generateBubbleChart(server):
         [Input("hidden-data", "children"),],
     )
     def update_dropdowns(json_data):
+        """This callback generates dictionaries of options for dropdown selection"""
         if json_data is None:
             raise PreventUpdate
         df = pd.read_json(json_data)
@@ -162,58 +154,79 @@ def generateBubbleChart(server):
             annotation_options,
         ]
 
-    # @app.callback(
-    #     Output("graph-with-slider", "figure"),
-    #     [
-    #         Input("upload-button", "n_clicks"),
-    #         Input("time-slider", "value"),
-    #         Input("y_dropdown", "value"),
-    #         Input("x_dropdown", "value"),
-    #         Input("size_dropdown", "value"),
-    #         Input("annotation_dropdown", "value"),
-    #     ],
-    #     [State("hidden-data", "children"), State('time-slider', 'marks')],
-    # )
-    # def update_figure(_, time_value, y_column_name, x_column_name,
-    #                   size_dropdown_name,annotation_column_name,
-    #                   json_data, marks):
-    #     """This callback handles updating the graph in response to user
-    #     actions."""
-    #     if not all(val is not None for val in [json_data, size_dropdown_name,
-    #                                        annotation_column_name, x_column_name, y_column_name]):
-    #         raise PreventUpdate
-    #     df = pd.read_json(json_data)
-    #     traces = list()
-    #     filtered_df = df[df["X"] == time_value]
-    #     for entity in filtered_df.name.unique():
-    #         df_by_value = filtered_df[filtered_df['name'] == entity]
-    #         traces.append(
-    #             go.scatter(
-    #                 x = df_by_value[x_column_name],
-    #                 y = df_by_value[y_column_name],
-    #                 mode='markers',
-    #                 opacity=0.9,
-    #                 name=entity,
-    #                 hovertext=df_by_value[annotation_column_name].values.tolist()
-    #             ),
-    #         )
+    @app.callback(
+        Output("graph-with-slider", "figure"),
+        [
+            Input("upload-button", "n_clicks"),
+            Input("time-slider", "value"),
+            Input("y_dropdown", "value"),
+            Input("x_dropdown", "value"),
+            Input("size_dropdown", "value"),
+            Input("annotation_dropdown", "value"),
+        ],
+        [State("hidden-data", "children"), State("time-slider", "marks")],
+    )
+    def update_figure(
+        _,
+        time_value,
+        y_column_name,
+        x_column_name,
+        size_dropdown_name,
+        annotation_column_name,
+        json_data,
+        marks,
+    ):
+        """This callback handles updating the graph in response to user
+        actions."""
+        # Prevents updates without data
+        if not all(
+            val is not None
+            for val in [
+                json_data,
+                size_dropdown_name,
+                annotation_column_name,
+                x_column_name,
+                y_column_name,
+            ]
+        ):
+            raise PreventUpdate
 
-    #     figure = {
-    #         "data": traces,
-    #         "layout": dict(
-    #             xaxis={
-    #             "type": "log",
-    #             "title": " ".join(x_column_name.split("_")).title(),
-    #             "autorange": "true",
-    #         },
-    #         yaxis={"title": " ".join(y_column_name.split("_")).title(), "autorange": "true",},
-    #         margin={"l": 40, "b": 40, "t": 10, "r": 10},
-    #         legend={"x": 0, "y": 1},
-    #         hovermode="closest",
-    #         # Defines transition behaviors
-    #         transition={"duration": 500, "easing": "cubic-in-out"},
-    #         )
-    #     }
+        df = pd.read_json(json_data)
+        traces = list()
+        filtered_df = df[df["X"] == time_value]
+        for entity in filtered_df["alpha-2"].unique():
+            df_by_value = filtered_df[filtered_df["alpha-2"] == entity]
+            traces.append(
+                Scatter(
+                    x=df_by_value[x_column_name],
+                    y=df_by_value[y_column_name],
+                    mode="markers",
+                    opacity=0.9,
+                    name=entity,
+                    hovertext=df_by_value[annotation_column_name].values.tolist(),
+                ),
+            )
 
-    #     return figure
+        figure = {
+            "data": traces,
+            "layout": dict(
+                xaxis={
+                    "type": "log",
+                    "title": " ".join(x_column_name.split("_")).title(),
+                    "autorange": "true",
+                },
+                yaxis={
+                    "title": " ".join(y_column_name.split("_")).title(),
+                    "autorange": "true",
+                },
+                margin={"l": 40, "b": 40, "t": 10, "r": 10},
+                legend={"x": 0, "y": 1},
+                hovermode="closest",
+                # Defines transition behaviors
+                transition={"duration": 500, "easing": "cubic-in-out"},
+            ),
+        }
+
+        return figure
+
     return app
