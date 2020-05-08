@@ -10,15 +10,9 @@ LAYOUT = html.Div(
     id="graph_div",
     children=[
         # This handles the upload of files
-        dcc.Upload(
-            id="upload",
-            children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
-            multiple=True,
-        ),
+        dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ", html.A("Select Files")]), multiple=True,),
         # This triggers the plot to load
-        html.Div(
-            id="button", children=[html.Button("Graph", id="upload-button", n_clicks=0)]
-        ),
+        html.Div(id="button", children=[html.Button("Graph", id="upload-button", n_clicks=0)]),
         # This contains all the components of the graph itself
         html.Div(
             id="graph",
@@ -28,18 +22,7 @@ LAYOUT = html.Div(
                 dcc.Graph(id="graph-with-slider"),
                 # Creates Slider from min-max X values...
                 # to give input for graph updates
-                html.Div(
-                    [
-                        dcc.Slider(
-                            id="time-slider",
-                            min=0,
-                            max=1,
-                            value=None,
-                            marks={},
-                            updatemode="drag",
-                        )
-                    ]
-                ),
+                html.Div([dcc.Slider(id="time-slider", min=0, max=1, value=None, marks={}, updatemode="drag",)]),
                 html.Div(
                     id="dropdown_menus",
                     children=[

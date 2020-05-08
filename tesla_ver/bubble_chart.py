@@ -20,11 +20,7 @@ def generateBubbleChart(server):
 
     @app.callback(
         Output("hidden-data", "children"),
-        [
-            Input("upload", "contents"),
-            Input("upload", "filename"),
-            Input("upload", "last_modified"),
-        ],
+        [Input("upload", "contents"), Input("upload", "filename"), Input("upload", "last_modified"),],
     )
     def upload_data(list_of_contents, list_of_filenames, _):
         """This callback handles storing the dataframe as JSON in the hidden
@@ -59,20 +55,14 @@ def generateBubbleChart(server):
                 lambda left_frame, right_frame: pd.merge_ordered(
                     left_frame,
                     right_frame,
-                    on=[
-                        column
-                        for column in left_frame.columns
-                        if column not in [*filename_titles]
-                    ],
+                    on=[column for column in left_frame.columns if column not in [*filename_titles]],
                     left_by="X",
                     fill_method="ffill",
                 ),
                 df_list,
             )
             df = df.convert_dtypes()
-            df[filename_titles] = df[filename_titles].apply(
-                pd.to_numeric, errors="coerce"
-            )
+            df[filename_titles] = df[filename_titles].apply(pd.to_numeric, errors="coerce")
             return df
 
         df = None
@@ -84,11 +74,7 @@ def generateBubbleChart(server):
         return
 
     @app.callback(
-        [
-            Output("time-slider", "marks"),
-            Output("time-slider", "min"),
-            Output("time-slider", "max"),
-        ],
+        [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
         [Input("hidden-data", "children")],
     )
     def update_slider(data):
@@ -99,10 +85,7 @@ def generateBubbleChart(server):
         df = pd.read_json(data)
         time_min = df["X"].min()
         time_max = df["X"].max()
-        marks = {
-            str(year): {"label": str(year), "style": {"visibility": "hidden"}}
-            for year in df["X"].unique()
-        }
+        marks = {str(year): {"label": str(year), "style": {"visibility": "hidden"}} for year in df["X"].unique()}
         for idx, key in enumerate(marks.keys()):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
@@ -123,9 +106,7 @@ def generateBubbleChart(server):
         if json_data is None:
             raise PreventUpdate
         df = pd.read_json(json_data)
-        data_columns = [
-            title for title in df.select_dtypes(include=[np.number]).columns
-        ]
+        data_columns = [title for title in df.select_dtypes(include=[np.number]).columns]
         data_options = [
             {"label": option.replace("_", " ").title(), "value": option}
             for option in data_columns
@@ -133,19 +114,11 @@ def generateBubbleChart(server):
         ]
         size_options = [
             {"label": option.replace("_", " ").title(), "value": option}
-            for option in [
-                sizeopt
-                for sizeopt in data_columns
-                if ("trajs" not in sizeopt and sizeopt not in ["X"])
-            ]
+            for option in [sizeopt for sizeopt in data_columns if ("trajs" not in sizeopt and sizeopt not in ["X"])]
         ]
         annotation_options = [
             {"label": option.replace("_", " ").title(), "value": option}
-            for option in [
-                anno
-                for anno in df.columns
-                if ("trajs" not in anno and anno not in ["ID", "X"])
-            ]
+            for option in [anno for anno in df.columns if ("trajs" not in anno and anno not in ["ID", "X"])]
         ]
         return [
             data_options,
@@ -167,27 +140,14 @@ def generateBubbleChart(server):
         [State("hidden-data", "children"), State("time-slider", "marks")],
     )
     def update_figure(
-        _,
-        time_value,
-        y_column_name,
-        x_column_name,
-        size_dropdown_name,
-        annotation_column_name,
-        json_data,
-        marks,
+        _, time_value, y_column_name, x_column_name, size_dropdown_name, annotation_column_name, json_data, marks,
     ):
         """This callback handles updating the graph in response to user
         actions."""
         # Prevents updates without data
         if not all(
             val is not None
-            for val in [
-                json_data,
-                size_dropdown_name,
-                annotation_column_name,
-                x_column_name,
-                y_column_name,
-            ]
+            for val in [json_data, size_dropdown_name, annotation_column_name, x_column_name, y_column_name,]
         ):
             raise PreventUpdate
 
@@ -210,15 +170,8 @@ def generateBubbleChart(server):
         figure = {
             "data": traces,
             "layout": dict(
-                xaxis={
-                    "type": "log",
-                    "title": " ".join(x_column_name.split("_")).title(),
-                    "autorange": "true",
-                },
-                yaxis={
-                    "title": " ".join(y_column_name.split("_")).title(),
-                    "autorange": "true",
-                },
+                xaxis={"type": "log", "title": " ".join(x_column_name.split("_")).title(), "autorange": "true",},
+                yaxis={"title": " ".join(y_column_name.split("_")).title(), "autorange": "true",},
                 margin={"l": 40, "b": 40, "t": 10, "r": 10},
                 legend={"x": 0, "y": 1},
                 hovermode="closest",
