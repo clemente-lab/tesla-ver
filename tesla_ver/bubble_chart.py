@@ -32,7 +32,7 @@ def generateBubbleChart(server):
             contents is a string read from the upload component.
             filename and date are just information paramteres
             """
-            # parses contents into dataframes
+            # Parses contents into dataframes
             df_list = list()
             filename_titles = list()
             for content, filename in zip(contents, filenames):
@@ -50,7 +50,7 @@ def generateBubbleChart(server):
                 df = df.rename(columns={"Y": filename})
                 df_list.append(df)
 
-            # merges all dataframes into a single list
+            # Merges all dataframes into a single list
             df = reduce(
                 lambda left_frame, right_frame: pd.merge_ordered(
                     left_frame,
