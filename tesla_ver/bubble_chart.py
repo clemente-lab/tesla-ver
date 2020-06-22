@@ -7,7 +7,7 @@ from functools import reduce
 import dash
 import pandas as pd
 import numpy as np
-from plotly.graph_objects import Scatter
+from plotly.graph_objects import Scattergl
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
@@ -155,7 +155,7 @@ def generateBubbleChart(server):
         for entity in filtered_df["alpha-3"].unique():
             df_by_value = filtered_df[filtered_df["alpha-3"] == entity]
             traces.append(
-                Scatter(
+                Scattergl(
                     x=df_by_value[x_column_name],
                     y=df_by_value[y_column_name],
                     mode="markers",
