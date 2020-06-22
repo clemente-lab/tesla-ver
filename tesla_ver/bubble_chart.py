@@ -63,6 +63,7 @@ def generateBubbleChart(server):
             )
             df = df.convert_dtypes()
             df[filename_titles] = df[filename_titles].apply(pd.to_numeric, errors="coerce")
+            df[df.select_dtypes(np.number).columns] = df[df.select_dtypes(np.number).columns].fillna(0)
             return df
 
         df = None
@@ -87,7 +88,6 @@ def generateBubbleChart(server):
         for idx, key in enumerate(marks.keys()):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
-        print(df.columns)
         return [marks, time_min, time_max]
 
     @app.callback(
@@ -151,9 +151,9 @@ def generateBubbleChart(server):
 
         df = pd.read_json(json_data)
         traces = list()
-        filtered_df = df[df["X"] == time_value]
-        for entity in filtered_df["alpha-2"].unique():
-            df_by_value = filtered_df[filtered_df["alpha-2"] == entity]
+        filtered_df = df[df["X"] == time_value].convert_dtypes()
+        for entity in filtered_df["alpha-3"].unique():
+            df_by_value = filtered_df[filtered_df["alpha-3"] == entity]
             traces.append(
                 Scatter(
                     x=df_by_value[x_column_name],
