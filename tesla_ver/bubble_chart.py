@@ -18,11 +18,11 @@ def generateBubbleChart(server):
     app.layout = LAYOUT
 
     @app.callback(
-        Output("hidden-data", "children"),
+        [Output("df-data", "data"), Output("df-mdata", "data")],
         [Input("upload", "contents"), Input("upload", "filename"), Input("upload", "last_modified"),],
     )
     def upload_data(list_of_contents, list_of_filenames, _):
-        """This callback handles storing the dataframe as JSON in the hidden
+        """This callback handles storing the dataframe as JSON in the data storage
         component."""
 
         df = None
@@ -76,22 +76,20 @@ def generateBubbleChart(server):
 
     @app.callback(
         [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
-        [Input("hidden-data", "children")],
+        [Input("df-mdata", "modified_timestamp")],
+        [State("df-mdata", "data")],
     )
-    def update_slider(data):
-        """This callback updates the slider values from a hidden div containing trajectory data
+    def update_slider(timestamp, mdata):
+        """This callback updates the slider values from a storage component containing trajectory data
         Data produced by upload_data callback function"""
-        if data is None:
+        if mdata is None:
             raise PreventUpdate
-        df = pd.read_json(data)
-        time_min = df["X"].min()
-        time_max = df["X"].max()
-
+        time_min = int(mdata.get("time_min"))
+        time_max = int(mdata.get("time_max"))
         # Generates a dictionary of slider marks, one for each time point.
         # All marks are styled to be hidden.  The loop below then makes some marks visible
         # an example mark for 1960 would look like {"1960":{"label":"1960","style":{"visiblitity":"hidden"}}}
-        marks = {str(year): {"label": str(year), "style": {"visibility": "hidden"}} for year in df["X"].unique()}
-
+        marks = {str(year): {"label": str(year), "style": {"visibility": "hidden"}} for year in mdata.get("x_vals")}
         # Changes the styling of every fourth mark to be visible for readablity
         # (time values overlap and become unreadable if every mark is shown)
         # Every fourth is just chosen for a balance of convenience and usability
@@ -107,13 +105,15 @@ def generateBubbleChart(server):
             Output("size_dropdown", "options"),
             Output("annotation_dropdown", "options"),
         ],
-        [Input("hidden-data", "children"),],
+        [Input("df-data", "modified_timestamp")],
+        [State("df-data", "data"),],
     )
-    def update_dropdowns(json_data):
+    def update_dropdowns(timestamp, json_data):
         """This callback generates dictionaries of options for dropdown selection"""
         if json_data is None:
             raise PreventUpdate
-        df = pd.read_json(json_data)
+        data_dict = json.loads(json_data)
+        df = pd.read_json(list(data_dict.values())[0])
         data_columns = [title for title in df.select_dtypes(include=[np.number]).columns]
         data_options = [
             {"label": option.replace("_", " ").title(), "value": option}
@@ -135,6 +135,7 @@ def generateBubbleChart(server):
             annotation_options,
         ]
 
+    # Update figure still needs to be refactored, but other callbacks are optimized with seperate mdata dictionary
     @app.callback(
         Output("graph-with-slider", "figure"),
         [
@@ -145,7 +146,7 @@ def generateBubbleChart(server):
             Input("size_dropdown", "value"),
             Input("annotation_dropdown", "value"),
         ],
-        [State("hidden-data", "children"), State("time-slider", "marks")],
+        [State("df-data", "data"), State("time-slider", "marks")],
     )
     def update_figure(
         _, time_value, y_column_name, x_column_name, size_dropdown_name, annotation_column_name, json_data, marks,
@@ -161,7 +162,7 @@ def generateBubbleChart(server):
             y_column_name,
         ]:
             raise PreventUpdate
-
+        print("json checking breakpoint")
         df = pd.read_json(json_data)
         traces = list()
 
