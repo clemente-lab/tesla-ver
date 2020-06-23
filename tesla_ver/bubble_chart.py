@@ -156,6 +156,7 @@ def generateBubbleChart(server):
             data_options,
         ]
 
+    # Update figure still needs to be refactored, but other callbacks are optimized with seperate mdata dictionary
     @app.callback(
         Output("graph-with-slider", "figure"),
         [
