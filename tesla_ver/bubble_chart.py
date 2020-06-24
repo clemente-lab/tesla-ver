@@ -27,10 +27,16 @@ def generateBubbleChart(server):
 
         df = None
 
-        if None in [list_of_contents, list_of_filenames]:
+        if None in [list_of_contents, list_of_filenames] or len(list_of_contents) != 1:
             raise PreventUpdate
 
-        def parse_contents(contents, filenames):
+        def upload_string_to_df(content):
+            _, content_string = content.split(",")
+            decoded = base64.b64decode(content_string)
+            fileish = io.StringIO(decoded.decode("utf-8"))
+            return pd.read_csv(fileish, sep="\t")
+
+        def parse_multiple_contents(contents, filenames):
             """Parse a Dash Upload into a DataFrame.
 
             contents is a string read from the upload component.
@@ -40,13 +46,7 @@ def generateBubbleChart(server):
             df_list = list()
             filename_titles = list()
             for content, filename in zip(contents, filenames):
-                _, content_string = content.split(",")
-                # Append filename
-                filename = Path(filename).stem
-                filename_titles.append(filename)
-                decoded = base64.b64decode(content_string)
-                fileish = io.StringIO(decoded.decode("utf-8"))
-                df = pd.read_csv(fileish, sep="\t")
+                df = upload_string_to_df(content)
                 # Separates time series into a single value
                 df[["X", "Y"]] = df[["X", "Y"]].applymap(lambda x: x.split(","))
                 df = df.apply(pd.Series.explode)
@@ -70,9 +70,31 @@ def generateBubbleChart(server):
             df[df.select_dtypes(np.number).columns] = df[df.select_dtypes(np.number).columns].fillna(0)
             return df
 
-        df = parse_contents(list_of_contents, list_of_filenames)
+        def extract_mdata(df, x_column_name):
+            """Extracts dataframe metadata to make processing quicker and easier to debug
 
-        return df.to_json()
+            Args:
+                df (Dataframe): overall dataframe to extract metadata from
+                x_column_name (str): name of column with time values
+            Returns:
+                dict: In the format of {time_max:int, time_min:int, x_vals:list(int), numeric_cols:list(str), mdata_cols:list(str)})
+
+            """
+            x_vals = sorted(df[x_column_name].unique())
+            return {
+                "time_min": min(x_vals),
+                "time_max": max(x_vals),
+                "x_vals": x_vals,
+                "data_cols": [col for col in df.columns.values.tolist() if col not in ["X", "Year", "Subject"]],
+            }
+
+
+        
+        df = upload_string_to_df(list_of_contents[0])
+        mdata = extract_mdata(df, "Year")
+        df.rename(columns={"Year": "X"}, inplace=True)
+        df = json.dumps({group_name: df_group.to_json() for group_name, df_group in df.groupby("X")})
+        return [df, mdata]
 
     @app.callback(
         [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
@@ -163,7 +185,8 @@ def generateBubbleChart(server):
         ]:
             raise PreventUpdate
         print("json checking breakpoint")
-        df = pd.read_json(json_data)
+        df_dict = json.loads(json_data)
+        df = pd.read_json(json_data.get(str(time_value)))
         traces = list()
 
         # filtered_df contains only the X values from the time point specified by the slider
