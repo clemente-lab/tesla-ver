@@ -127,34 +127,46 @@ def generateBubbleChart(server):
             Output("size_dropdown", "options"),
             Output("annotation_dropdown", "options"),
         ],
-        [Input("df-data", "modified_timestamp")],
-        [State("df-data", "data"),],
+        [Input("df-mdata", "modified_timestamp")],
+        [State("df-mdata", "data")],
     )
-    def update_dropdowns(timestamp, json_data):
-        """This callback generates dictionaries of options for dropdown selection"""
-        if json_data is None:
+    def update_dropdowns(timestamp, mdata):
+        """This callback generates dictionaries of options for dropdown selection
+
+        Args:
+            timestamp (timestamp): timestamp to capture data updates
+            json_data (json string): json string for the metadata
+
+        Raises:
+            PreventUpdate: prevents update for initial callback
+
+        Returns:
+            dict: dictionaries of options that populate dcc.Dropdown's
+        """
+        if mdata is None:
             raise PreventUpdate
-        data_dict = json.loads(json_data)
-        df = pd.read_json(list(data_dict.values())[0])
-        data_columns = [title for title in df.select_dtypes(include=[np.number]).columns]
         data_options = [
-            {"label": option.replace("_", " ").title(), "value": option}
-            for option in data_columns
-            if ("trajs" in option)
+            {"label": option.replace("_", " ").title(), "value": option} for option in mdata.get("data_cols")
         ]
-        size_options = [
-            {"label": option.replace("_", " ").title(), "value": option}
-            for option in [sizeopt for sizeopt in data_columns if ("trajs" not in sizeopt and sizeopt not in ["X"])]
-        ]
-        annotation_options = [
-            {"label": option.replace("_", " ").title(), "value": option}
-            for option in [anno for anno in df.columns if ("trajs" not in anno and anno not in ["ID", "X"])]
-        ]
+        # data_columns = [title for title in df.select_dtypes(include=[np.number]).columns]
+        # data_options = [
+        #     {"label": option.replace("_", " ").title(), "value": option}
+        #     for option in data_columns
+        #     if ("trajs" in option)
+        # ]
+        # size_options = [
+        #     {"label": option.replace("_", " ").title(), "value": option}
+        #     for option in [sizeopt for sizeopt in data_columns if ("trajs" not in sizeopt and sizeopt not in ["X"])]
+        # ]
+        # annotation_options = [
+        #     {"label": option.replace("_", " ").title(), "value": option}
+        #     for option in [anno for anno in df.columns if ("trajs" not in anno and anno not in ["ID", "X"])]
+        # ]
         return [
             data_options,
             data_options,
-            size_options,
-            annotation_options,
+            data_options,
+            data_options,
         ]
 
     # Update figure still needs to be refactored, but other callbacks are optimized with seperate mdata dictionary
