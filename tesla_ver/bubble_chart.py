@@ -3,8 +3,8 @@ import io
 import dash
 import pandas as pd
 import numpy as np
-
-from plotly.graph_objects import Scattergl
+import ast
+from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from pathlib import Path
@@ -196,33 +196,40 @@ def generateBubbleChart(server):
             y_column_name,
         ]:
             raise PreventUpdate
-        print("json checking breakpoint")
-        df_dict = json.loads(json_data)
-        df = pd.read_json(json_data.get(str(time_value)))
-        traces = list()
 
-        # filtered_df contains only the X values from the time point specified by the slider
-        filtered_df = df[df["X"] == time_value].convert_dtypes()
+        df_by_time = pd.DataFrame.from_dict(ast.literal_eval(json.loads(json_data).get(str(time_value))))
 
-        # Using "alpha-3" as a unique identifier, the loop then creates a new trace for each entity defined by "alpha-3"
-        # and then appends it to the list of traces that defines the data for the figure to be graphed.
-        for entity in filtered_df["alpha-3"].unique():
-            df_by_value = filtered_df[filtered_df["alpha-3"] == entity]
-            traces.append(
-                Scattergl(
-                    x=df_by_value[x_column_name],
-                    y=df_by_value[y_column_name],
-                    mode="markers",
-                    opacity=0.9,
-                    name=entity,
-                    hovertext=df_by_value[annotation_column_name].values.tolist(),
-                ),
-            )
+        # splot = Scattergl(
+        #     x=df_by_value[x_column_name],
+        #     y=df_by_value[y_column_name],
+        #     mode="markers",
+        #     opacity=0.9,
+        #     size=15
+        #     name=df_by_time,
+        #     hovertext=df_by_value[annotation_column_name].values.tolist(),
+        # )
+
+        # scatterplot = Scatter(
+        #     x=df_by_time[x_column_name],
+        #     y=df_by_time[y_column_name],
+        #     mode="markers",
+        #     opacity=0.9,
+        #     # size=15,
+        #     hovertext=df_by_time["Subject"],
+        # )
 
         figure = {
-            "data": traces,
+            "data": [
+                dict(
+                    x=df_by_time[x_column_name],
+                    y=df_by_time[y_column_name],
+                    text=df_by_time["Subject"],
+                    mode="markers",
+                    marker={"size": 15, "opacity": 0.5, "line": {"width": 0.5, "color": "white"}},
+                )
+            ],
             "layout": dict(
-                xaxis={"type": "log", "title": " ".join(x_column_name.split("_")).title(), "autorange": "true",},
+                xaxis={"title": " ".join(x_column_name.split("_")).title(), "autorange": "true",},
                 yaxis={"title": " ".join(y_column_name.split("_")).title(), "autorange": "true",},
                 margin={"l": 40, "b": 40, "t": 10, "r": 10},
                 legend={"x": 0, "y": 1},
