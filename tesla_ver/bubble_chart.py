@@ -156,7 +156,6 @@ def generateBubbleChart(server):
             data_options,
         ]
 
-    # Update figure still needs to be refactored, but other callbacks are optimized with seperate mdata dictionary
     @app.callback(
         Output("graph-with-slider", "figure"),
         [
@@ -229,7 +228,7 @@ def generateBubbleChart(server):
     def playIncrement(n_intervals, time_value):
         if time_value is None:
             raise PreventUpdate
-        print(time_value)
         return str(int(time_value) + 1)
 
+        print(time_value)
     return app
