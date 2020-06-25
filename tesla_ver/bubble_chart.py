@@ -148,20 +148,7 @@ def generateBubbleChart(server):
         data_options = [
             {"label": option.replace("_", " ").title(), "value": option} for option in mdata.get("data_cols")
         ]
-        # data_columns = [title for title in df.select_dtypes(include=[np.number]).columns]
-        # data_options = [
-        #     {"label": option.replace("_", " ").title(), "value": option}
-        #     for option in data_columns
-        #     if ("trajs" in option)
-        # ]
-        # size_options = [
-        #     {"label": option.replace("_", " ").title(), "value": option}
-        #     for option in [sizeopt for sizeopt in data_columns if ("trajs" not in sizeopt and sizeopt not in ["X"])]
-        # ]
-        # annotation_options = [
-        #     {"label": option.replace("_", " ").title(), "value": option}
-        #     for option in [anno for anno in df.columns if ("trajs" not in anno and anno not in ["ID", "X"])]
-        # ]
+
         return [
             data_options,
             data_options,
@@ -199,35 +186,20 @@ def generateBubbleChart(server):
 
         df_by_time = pd.DataFrame.from_dict(ast.literal_eval(json.loads(json_data).get(str(time_value))))
 
-        # splot = Scattergl(
-        #     x=df_by_value[x_column_name],
-        #     y=df_by_value[y_column_name],
-        #     mode="markers",
-        #     opacity=0.9,
-        #     size=15
-        #     name=df_by_time,
-        #     hovertext=df_by_value[annotation_column_name].values.tolist(),
-        # )
+        scatterplot = Scatter(
+            x=df_by_time[x_column_name],
+            y=df_by_time[y_column_name],
+            mode="markers",
+            opacity=0.7,
+            marker={"size": 15, "line": {"width": 0.5, "color": "white"}},
+            hovertext=df_by_time["Subject"],
+        )
 
-        # scatterplot = Scatter(
-        #     x=df_by_time[x_column_name],
-        #     y=df_by_time[y_column_name],
-        #     mode="markers",
-        #     opacity=0.9,
-        #     # size=15,
-        #     hovertext=df_by_time["Subject"],
-        # )
+        traces_data = list()
+        traces_data.append(scatterplot)
 
         figure = {
-            "data": [
-                dict(
-                    x=df_by_time[x_column_name],
-                    y=df_by_time[y_column_name],
-                    text=df_by_time["Subject"],
-                    mode="markers",
-                    marker={"size": 15, "opacity": 0.5, "line": {"width": 0.5, "color": "white"}},
-                )
-            ],
+            "data": traces_data,
             "layout": dict(
                 xaxis={"title": " ".join(x_column_name.split("_")).title(), "autorange": "true",},
                 yaxis={"title": " ".join(y_column_name.split("_")).title(), "autorange": "true",},
