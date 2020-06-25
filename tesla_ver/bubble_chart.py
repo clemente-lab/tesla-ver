@@ -156,7 +156,6 @@ def generateBubbleChart(server):
             data_options,
         ]
 
-    # Update figure still needs to be refactored, but other callbacks are optimized with seperate mdata dictionary
     @app.callback(
         Output("graph-with-slider", "figure"),
         [
@@ -212,5 +211,12 @@ def generateBubbleChart(server):
         }
 
         return figure
+
+    @app.callback(Output("play-pause-button", "children"), [Input("play-pause-button", "n_clicks")])
+    def playPauseSwitch(n_clicks):
+        if n_clicks % 2 == 0:
+            return "Pause"
+        elif n_clicks % 2 != 0:
+            return "Play"
 
     return app
