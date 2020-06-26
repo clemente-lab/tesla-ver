@@ -248,7 +248,7 @@ def generateBubbleChart(server):
     def play_increment(n_intervals, time_value):
         if time_value is None:
             raise PreventUpdate
+        print(time_value)
         return str(int(time_value) + 1)
 
-        print(time_value)
     return app
