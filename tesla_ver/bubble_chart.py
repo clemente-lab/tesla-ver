@@ -212,11 +212,23 @@ def generateBubbleChart(server):
 
         return figure
 
-    @app.callback(Output("play-pause-button", "children"), [Input("play-pause-button", "n_clicks")])
+    @app.callback(
+        [Output("play-pause-button", "children"), Output("play-interval", "disabled")],
+        [Input("play-pause-button", "n_clicks")],
+    )
     def playPauseSwitch(n_clicks):
         if n_clicks % 2 == 0:
-            return "Pause"
+            return ["Pause", False]
         elif n_clicks % 2 != 0:
-            return "Play"
+            return ["Play", True]
+
+    @app.callback(
+        Output("time-slider", "value"), [Input("play-interval", "n_intervals")], [State("time-slider", "value")]
+    )
+    def playIncrement(n_intervals, time_value):
+        if time_value is None:
+            raise PreventUpdate
+        print(time_value)
+        return str(int(time_value) + 1)
 
     return app

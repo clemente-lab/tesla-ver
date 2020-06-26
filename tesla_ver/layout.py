@@ -27,6 +27,7 @@ LAYOUT = html.Div(
                     id="controls-div",
                     children=[
                         html.Button("Play", id="play-pause-button", n_clicks=1),
+                        dcc.Interval(id="play-interval", interval=1 * 1000, n_intervals=0, disabled=True),
                         dcc.Slider(id="time-slider", min=0, max=1, value=None, marks={}, updatemode="drag",),
                     ],
                 ),
