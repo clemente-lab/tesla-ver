@@ -32,6 +32,9 @@ def generate_bubble_chart(server):
             raise PreventUpdate
 
         def upload_string_to_df(content):
+            """Parse a dash upload string into a single dataframe
+                content is a string passed from the upload component
+            """
             _, content_string = content.split(",")
             decoded = base64.b64decode(content_string)
             fileish = io.StringIO(decoded.decode("utf-8"))
