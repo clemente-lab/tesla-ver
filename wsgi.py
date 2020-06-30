@@ -7,7 +7,7 @@ server = flask.Flask(__name__)
 server.wsgi_app = DebuggedApplication(server.wsgi_app, evalex=True)
 
 # Creates the dashboard and connects it to the flask server
-app = generateBubbleChart(server=server)
+generateBubbleChart(server=server)
 
 
 @server.route("/")
