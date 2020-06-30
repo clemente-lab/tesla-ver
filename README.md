@@ -10,9 +10,14 @@ Main Repository for Tesla-ver, an extensible platform for longitudinal data anal
 
 ## Installation
 
-----
+---
 
-For debug/usage run `app.py` and connect to `localhost:8050`
+### Docker
+  The most complete version requires running with docker-compose.  Run `docker-compose up --build`
+  and connect on `localhost:5000` to the server
+---
+### Flask
+  For debug/usage run `wsgi.py` and connect to `localhost:5000`.
 
 ---
 
