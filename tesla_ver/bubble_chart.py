@@ -3,19 +3,18 @@ import io
 import dash
 import pandas as pd
 import numpy as np
-import ast
 import json
-
+from ast import literal_eval
 from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from pathlib import Path
 from functools import reduce
 
-from tesla_ver.layout import LAYOUT
+from tesla_ver.bubble_chart_layout import LAYOUT
 
 
-def generateBubbleChart(server):
+def generate_bubble_chart(server):
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
     app.layout = LAYOUT
 
@@ -183,7 +182,7 @@ def generateBubbleChart(server):
         ]:
             raise PreventUpdate
 
-        df_by_time = pd.DataFrame.from_dict(ast.literal_eval(json.loads(json_data).get(str(time_value))))
+        df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
 
         scatterplot = Scatter(
             x=df_by_time[x_column_name],
