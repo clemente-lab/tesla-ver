@@ -1,7 +1,7 @@
 import flask
 from werkzeug.debug import DebuggedApplication
-from tesla_ver.bubble_chart import generate_bubble_chart
-from tesla_ver.data_uploading import generate_data_uploading
+from tesla_ver.bubble_chart.bubble_chart import generate_bubble_chart
+from tesla_ver.data_uploading.data_uploading import generate_data_uploading
 
 # Creates the flask server
 server = flask.Flask(__name__)
