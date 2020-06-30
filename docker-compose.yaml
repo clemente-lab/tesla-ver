@@ -1,0 +1,9 @@
+tesla-ver:
+  build: .
+  ports:
+    - "5000:5000"
+  volumes:
+    - .:/tesla-ver
+  environment:
+    FLASK_ENV: development
+    FLASK_APP: wsgi.py
