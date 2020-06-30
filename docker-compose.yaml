@@ -1,9 +1,17 @@
-tesla-ver:
-  build: .
-  ports:
-    - "5000:5000"
-  volumes:
-    - .:/tesla-ver
-  environment:
-    FLASK_ENV: development
-    FLASK_APP: wsgi.py
+version: "3"
+services:
+  tesla-ver:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/tesla-ver
+    environment:
+      FLASK_ENV: development
+      FLASK_APP: wsgi.py
+    depends_on:
+      - data-cache
+  data-cache:
+    image: "redis:alpine"
+    expose:
+      - "6379"
