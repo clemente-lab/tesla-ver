@@ -4,6 +4,8 @@ import dash
 import pandas as pd
 import numpy as np
 import ast
+import json
+
 from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -88,8 +90,6 @@ def generateBubbleChart(server):
                 "data_cols": [col for col in df.columns.values.tolist() if col not in ["X", "Year", "Subject"]],
             }
 
-
-        
         df = upload_string_to_df(list_of_contents[0])
         mdata = extract_mdata(df, "Year")
         df.rename(columns={"Year": "X"}, inplace=True)
