@@ -25,6 +25,11 @@ def generateBubbleChart(server):
         """This callback handles storing the dataframe as JSON in the hidden
         component."""
 
+        df = None
+
+        if None in [list_of_contents, list_of_filenames]:
+            raise PreventUpdate
+
         def parse_contents(contents, filenames):
             """Parse a Dash Upload into a DataFrame.
 
@@ -65,11 +70,9 @@ def generateBubbleChart(server):
             df[df.select_dtypes(np.number).columns] = df[df.select_dtypes(np.number).columns].fillna(0)
             return df
 
-        df = None
-        if list_of_contents is not None:
-            df = parse_contents(list_of_contents, list_of_filenames)
-            return df.to_json()
-        return
+        df = parse_contents(list_of_contents, list_of_filenames)
+
+        return df.to_json()
 
     @app.callback(
         [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
