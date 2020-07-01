@@ -1,15 +1,14 @@
 import base64
 import io
-from pathlib import Path
-from functools import reduce
-
-
 import dash
 import pandas as pd
 import numpy as np
+
 from plotly.graph_objects import Scattergl
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+from pathlib import Path
+from functools import reduce
 
 from tesla_ver.layout import LAYOUT
 
@@ -84,7 +83,15 @@ def generateBubbleChart(server):
         df = pd.read_json(data)
         time_min = df["X"].min()
         time_max = df["X"].max()
+
+        # Generates a dictionary of slider marks, one for each time point.
+        # All marks are styled to be hidden.  The loop below then makes some marks visible
+        # an example mark for 1960 would look like {"1960":{"label":"1960","style":{"visiblitity":"hidden"}}}
         marks = {str(year): {"label": str(year), "style": {"visibility": "hidden"}} for year in df["X"].unique()}
+
+        # Changes the styling of every fourth mark to be visible for readablity
+        # (time values overlap and become unreadable if every mark is shown)
+        # Every fourth is just chosen for a balance of convenience and usability
         for idx, key in enumerate(marks.keys()):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
@@ -143,12 +150,23 @@ def generateBubbleChart(server):
         """This callback handles updating the graph in response to user
         actions."""
         # Prevents updates without data
-        if None in [json_data, size_dropdown_name, annotation_column_name, x_column_name, y_column_name,]:
+        if None in [
+            json_data,
+            size_dropdown_name,
+            annotation_column_name,
+            x_column_name,
+            y_column_name,
+        ]:
             raise PreventUpdate
 
         df = pd.read_json(json_data)
         traces = list()
+
+        # filtered_df contains only the X values from the time point specified by the slider
         filtered_df = df[df["X"] == time_value].convert_dtypes()
+
+        # Using "alpha-3" as a unique identifier, the loop then creates a new trace for each entity defined by "alpha-3"
+        # and then appends it to the list of traces that defines the data for the figure to be graphed.
         for entity in filtered_df["alpha-3"].unique():
             df_by_value = filtered_df[filtered_df["alpha-3"] == entity]
             traces.append(
