@@ -1,17 +1,15 @@
 import base64
 import io
-import json
-from pathlib import Path
-from functools import reduce
-
-
 import dash
 import pandas as pd
 import numpy as np
+import json
 from ast import literal_eval
 from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+from pathlib import Path
+from functools import reduce
 
 from tesla_ver.bubble_chart.bubble_chart_layout import LAYOUT
 
@@ -27,6 +25,11 @@ def generate_bubble_chart(server):
     def upload_data(list_of_contents, list_of_filenames, _):
         """This callback handles storing the dataframe as JSON in the data storage
         component."""
+
+        df = None
+
+        if None in [list_of_contents, list_of_filenames] or len(list_of_contents) != 1:
+            raise PreventUpdate
 
         def upload_string_to_df(content):
             """Parse a dash upload string into a single dataframe
@@ -77,7 +80,6 @@ def generate_bubble_chart(server):
             Args:
                 df (Dataframe): overall dataframe to extract metadata from
                 x_column_name (str): name of column with time values
-
             Returns:
                 dict: In the format of {time_max:int, time_min:int, x_vals:list(int), numeric_cols:list(str), mdata_cols:list(str)})
 
@@ -90,21 +92,11 @@ def generate_bubble_chart(server):
                 "data_cols": [col for col in df.columns.values.tolist() if col not in ["X", "Year", "Subject"]],
             }
 
-        df = None
-
-        if list_of_contents is not None:
-            if len(list_of_contents) > 1:
-                df = parse_multiple_contents(list_of_contents, list_of_filenames)
-                df_mdata = extract_mdata(df, "X")
-                df = json.dumps({group_name: df_group.to_json() for group_name, df_group in df.groupby("X")})
-                return [df, df_mdata]
-            elif len(list_of_contents) == 1:
-                df = upload_string_to_df(list_of_contents[0])
-                mdata = extract_mdata(df, "Year")
-                df.rename(columns={"Year": "X"}, inplace=True)
-                df = json.dumps({group_name: df_group.to_json() for group_name, df_group in df.groupby("X")})
-                return [df, mdata]
-        return [None, None]
+        df = upload_string_to_df(list_of_contents[0])
+        mdata = extract_mdata(df, "Year")
+        df.rename(columns={"Year": "X"}, inplace=True)
+        df = json.dumps({group_name: df_group.to_json() for group_name, df_group in df.groupby("X")})
+        return [df, mdata]
 
     @app.callback(
         [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
@@ -118,7 +110,13 @@ def generate_bubble_chart(server):
             raise PreventUpdate
         time_min = int(mdata.get("time_min"))
         time_max = int(mdata.get("time_max"))
+        # Generates a dictionary of slider marks, one for each time point.
+        # All marks are styled to be hidden.  The loop below then makes some marks visible
+        # an example mark for 1960 would look like {"1960":{"label":"1960","style":{"visiblitity":"hidden"}}}
         marks = {str(year): {"label": str(year), "style": {"visibility": "hidden"}} for year in mdata.get("x_vals")}
+        # Changes the styling of every fourth mark to be visible for readablity
+        # (time values overlap and become unreadable if every mark is shown)
+        # Every fourth is just chosen for a balance of convenience and usability
         for idx, key in enumerate(marks.keys()):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
@@ -178,10 +176,13 @@ def generate_bubble_chart(server):
         """This callback handles updating the graph in response to user
         actions."""
         # Prevents updates without data
-        if not all(
-            val is not None
-            for val in [json_data, size_dropdown_name, annotation_column_name, x_column_name, y_column_name, time_value]
-        ):
+        if None in [
+            json_data,
+            size_dropdown_name,
+            annotation_column_name,
+            x_column_name,
+            y_column_name,
+        ]:
             raise PreventUpdate
 
         df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
