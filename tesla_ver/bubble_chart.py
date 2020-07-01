@@ -143,10 +143,7 @@ def generateBubbleChart(server):
         """This callback handles updating the graph in response to user
         actions."""
         # Prevents updates without data
-        if not all(
-            val is not None
-            for val in [json_data, size_dropdown_name, annotation_column_name, x_column_name, y_column_name,]
-        ):
+        if None in [json_data, size_dropdown_name, annotation_column_name, x_column_name, y_column_name,]:
             raise PreventUpdate
 
         df = pd.read_json(json_data)
