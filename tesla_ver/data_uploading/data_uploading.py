@@ -46,7 +46,7 @@ def generate_data_uploading(server):
             pass
 
         df = pd.DataFrame()
-        if not any([contents, filename]):
+        if None in [contents, filename]:
             raise PreventUpdate
         if len(contents) > 1:
             parse_multiple_contents(contents, filename)
