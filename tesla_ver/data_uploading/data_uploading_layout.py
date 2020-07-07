@@ -12,7 +12,7 @@ LAYOUT = html.Div(
         html.Div(
             id="data-table-div",
             children=[
-                html.P("Select data columns and rows to graph"),
+                html.P("Select data columns and rows to graph. (If no rows are selected, they will all be graphed)"),
                 # Datatable that gets populated
                 DataTable(
                     id="data-table-visualization",
