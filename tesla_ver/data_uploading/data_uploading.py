@@ -60,10 +60,14 @@ def generate_data_uploading(server):
 
     @app.callback(
         Output("data-table-visualization", "style_data_conditional"),
-        [Input("data-table-visualization", "selected_columns")],
+        [Input("data-table-visualization", "selected_columns"), Input("data-table-visualization", "selected_rows"),],
     )
-    def update_styles(selected_columns):
-        return [{"if": {"column_id": i}, "background_color": "#D2F3FF"} for i in selected_columns]
+    def update_styles(selected_columns, selected_rows):
+        # Generates a list of dictionaries that style the selected rows and columns with a light blue highlight
+        return [
+            *[{"if": {"column_id": i}, "background_color": "#D2F3FF"} for i in selected_columns],
+            *[{"if": {"row_index": i}, "background_color": "#D2F3FF"} for i in selected_rows],
+        ]
 
     return app
 
