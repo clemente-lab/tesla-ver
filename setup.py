@@ -42,7 +42,7 @@ setup(
         "dash_html_components",
         "dash_core_components",
         "plotly",
-        "pandas",
+        "pandas>=1.0.0",
         "dash_renderer",
     ],
     zip_safe=False,
