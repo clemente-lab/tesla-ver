@@ -1,8 +1,9 @@
 import dash
+import redis
 
-import dash
 import pandas as pd
-import numpy as np
+import pyarrow as pa
+
 
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -10,6 +11,7 @@ from base64 import b64decode
 from io import StringIO
 
 from tesla_ver.data_uploading.data_uploading_layout import LAYOUT
+from tesla_ver.redis_manager import redis_manager
 
 
 def generate_data_uploading(server):
@@ -68,6 +70,49 @@ def generate_data_uploading(server):
             *[{"if": {"column_id": i}, "background_color": "#D2F3FF"} for i in selected_columns],
             *[{"if": {"row_index": i}, "background_color": "#D2F3FF"} for i in selected_rows],
         ]
+
+    @app.callback(
+        Output("upload-confirmation", "style"),
+        [Input("redis-upload-button", "n_clicks")],
+        [
+            State("data-table-visualization", "data"),
+            State("data-table-visualization", "selected_columns"),
+            State("data-table-visualization", "selected_rows"),
+        ],
+    )
+    def push_to_redis(button_clicks, data_dict, selected_columns, selected_rows):
+        if None in [button_clicks, data_dict, selected_columns]:
+            raise PreventUpdate
+
+        # if selected_columns is None:
+        #     raise DataColumnsNotSelectedError
+
+        df = (
+            pd.DataFrame.from_records(data_dict)
+            if selected_rows is None
+            else pd.DataFrame.from_records(data_dict).iloc[selected_rows]
+        )
+
+        if selected_rows is None or len(selected_rows) == 0:
+            print(selected_rows)
+            selected_rows = list(df.index.values)
+
+        mdata_cols = sorted(set(df.columns) - set(selected_columns))
+
+        serialization_context = pa.default_serialization_context()
+
+        redis_manager.redis.set(
+            "data_numeric",
+            serialization_context.serialize(df[sorted(set(["Year", "Subject", *selected_columns]))])
+            .to_buffer()
+            .to_pybytes(),
+        )
+        redis_manager.redis.set(
+            "data_mdata",
+            serialization_context.serialize(df[["Year", "Subject", *mdata_cols]]).to_buffer().to_pybytes(),
+        )
+        redis_manager.redis.set("test", "Hello World, this is a test!")
+        return {"visibility": "visible"}
 
     return app
 
