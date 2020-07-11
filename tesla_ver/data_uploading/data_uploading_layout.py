@@ -12,7 +12,9 @@ LAYOUT = html.Div(
         html.Div(
             id="data-table-div",
             children=[
-                html.P("Select data columns and rows to graph. (If no rows are selected, they will all be graphed)"),
+                html.P(
+                    "Select data columns, including time and ID value, and rows to graph. (If no rows are selected, they will all be graphed)"
+                ),
                 # Datatable that gets populated
                 DataTable(
                     id="data-table-visualization",
@@ -42,6 +44,7 @@ LAYOUT = html.Div(
             ],
             style={"visibility": "hidden"},
         ),
+        html.P("🚀 ✅ Data Successfully Uploaded ", id="upload-confirmation", style={"visibility": "hidden"},),
     ],
 )
 
