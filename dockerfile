@@ -15,4 +15,4 @@ COPY . .
 # ENV FLASK_APP="wsgi.py"
 # ENV FLASK_ENV=development
 RUN ["conda","init","--all"]
-CMD source /root/.bashrc && conda activate tesla-ver && flask run --host 0.0.0.0
+CMD source /root/.bashrc && conda activate tesla-ver && gunicorn --workers=2 --bind=0.0.0.0:5000 wsgi:server
