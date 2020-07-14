@@ -10,7 +10,7 @@ LAYOUT = html.Div(
     id="graph_div",
     children=[
         # This handles the upload of files
-        dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ", html.A("Select Files")]), multiple=True,),
+        # dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ", html.A("Select Files")]), multiple=True,),
         # This triggers the plot to load
         html.Div(id="button", children=[html.Button("Graph", id="upload-button", n_clicks=0)]),
         # This contains all the components of the graph itself
@@ -86,6 +86,7 @@ LAYOUT = html.Div(
                     ],
                 ),
             ],
+            style={"visibility": "visible"},
         ),
         # Storage component for storing parsed data
         dcc.Store(id="df-data"),
