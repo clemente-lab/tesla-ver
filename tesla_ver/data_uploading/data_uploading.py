@@ -84,18 +84,11 @@ def generate_data_uploading(server):
         if None in [button_clicks, data_dict, selected_columns]:
             raise PreventUpdate
 
-        # if selected_columns is None:
-        #     raise DataColumnsNotSelectedError
-
         df = (
             pd.DataFrame.from_records(data_dict)
-            if selected_rows is None
+            if len(selected_rows) == 0
             else pd.DataFrame.from_records(data_dict).iloc[selected_rows]
         )
-
-        if selected_rows is None or len(selected_rows) == 0:
-            print(selected_rows)
-            selected_rows = list(df.index.values)
 
         mdata_cols = sorted(set(df.columns) - set(selected_columns))
 
