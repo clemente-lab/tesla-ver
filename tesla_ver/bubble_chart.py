@@ -29,6 +29,9 @@ def generateBubbleChart(server):
 
         df = None
 
+        # Checks to make sure that there exist contents to act on, and that only one file has been opened
+        # Dash fires every callback when starting the app, so raising PreventUpate ensures that processing only happens
+        # when data actually exists.  This is a standard pattern found in https://dash.plotly.com/advanced-callbacks
         if None in [list_of_contents, list_of_filenames] or len(list_of_contents) != 1:
             raise PreventUpdate
 
@@ -50,8 +53,12 @@ def generateBubbleChart(server):
             for content, filename in zip(contents, filenames):
                 df = upload_string_to_df(content)
                 # Separates time series into a single value
+                # Explodes a single row into many rows,
+                # by splitting the strings of time values into lists and then exploding those
                 df[["X", "Y"]] = df[["X", "Y"]].applymap(lambda x: x.split(","))
                 df = df.apply(pd.Series.explode)
+                # Resets index, renames the generic 'Y' column
+                # to a more specific name taken from the title of the file/dataset
                 df.reset_index(drop=True, inplace=True)
                 df = df.rename(columns={"Y": filename})
                 df_list.append(df)
