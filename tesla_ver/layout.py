@@ -79,8 +79,11 @@ LAYOUT = html.Div(
                 ),
             ],
         ),
-        # Hidden component for storing data
-        html.Div(id="hidden-data", style={"display": "none"}),
+        # Storage component for storing parsed data
+        dcc.Store(id="df-data"),
+        # Stores metadata from parsed data  with the "int" being a standin for whatever time format is used
+        # (in the format {time_max:int, time_min:int, x_vals:list(int), numeric_cols:list(str), mdata_cols:list(str)})
+        dcc.Store(id="df-mdata")
         # End outer div's children
     ],
     # End outer div
