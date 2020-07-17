@@ -140,6 +140,8 @@ def generate_bubble_chart(server):
         if time_value == None:
             time_value = int(mdata.get("time_min"))
 
+        # Loads dataframe at specific time value by getting the time as a key from a dictionary,
+        # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
         df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
 
         scatterplot = Scatter(
@@ -173,11 +175,14 @@ def generate_bubble_chart(server):
         [Output("play-pause-button", "children"), Output("play-interval", "disabled")],
         [Input("play-pause-button", "n_clicks")],
     )
-    def playPauseSwitch(n_clicks):
+    def play_pause_switch(n_clicks):
+        play_status = str()
+        play_bool = bool()
         if n_clicks % 2 == 0:
-            return ["Pause", False]
+            play_status, play_bool = ["Pause", False]
         elif n_clicks % 2 != 0:
-            return ["Play", True]
+            play_status, play_bool = ["Play", True]
+        return [play_status, play_bool]
 
     @app.callback(
         Output("time-slider", "value"), [Input("play-interval", "n_intervals")], [State("time-slider", "value")]
