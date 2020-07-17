@@ -2,6 +2,7 @@ import dash
 import redis
 
 import pandas as pd
+import numpy as np
 import pyarrow as pa
 
 
@@ -54,6 +55,9 @@ def generate_data_uploading(server):
             parse_multiple_contents(contents, filename)
         else:
             df = upload_string_to_df(*contents)
+            df[df < 0] = 0
+            df[~df.isin([np.nan, np.inf, -np.inf]).any(1)]
+            df = df.fillna(0)
             return [
                 {"visibility": "visible"},
                 df.to_dict("records"),
