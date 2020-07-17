@@ -20,9 +20,17 @@ LAYOUT = html.Div(
             children=[
                 # Provides an empty graph object for updates in callback
                 dcc.Graph(id="graph-with-slider"),
-                # Creates Slider from min-max X values...
+                # Div contains play/pause button and slider
+                # Creates Slider from min-max X values
                 # to give input for graph updates
-                html.Div([dcc.Slider(id="time-slider", min=0, max=1, value=None, marks={}, updatemode="drag",)]),
+                html.Div(
+                    id="controls-div",
+                    children=[
+                        html.Button("Play", id="play-pause-button", n_clicks=1),
+                        dcc.Interval(id="play-interval", interval=1 * 1000, n_intervals=0, disabled=True),
+                        dcc.Slider(id="time-slider", min=0, max=1, value=None, marks={}, updatemode="drag",),
+                    ],
+                ),
                 html.Div(
                     id="dropdown_menus",
                     children=[

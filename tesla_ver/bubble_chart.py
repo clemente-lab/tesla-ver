@@ -36,6 +36,14 @@ def generateBubbleChart(server):
             raise PreventUpdate
 
         def upload_string_to_df(content):
+            """Generates a dataframe from a base64 encoded upload string
+
+            Args:
+                content (base64 encoded string): Data taken from dash upload component
+
+            Returns:
+                DataFrame: dataframe parsed from uploaded csv/tsv
+            """
             _, content_string = content.split(",")
             decoded = base64.b64decode(content_string)
             fileish = io.StringIO(decoded.decode("utf-8"))
@@ -163,7 +171,6 @@ def generateBubbleChart(server):
             data_options,
         ]
 
-    # Update figure still needs to be refactored, but other callbacks are optimized with seperate mdata dictionary
     @app.callback(
         Output("graph-with-slider", "figure"),
         [
@@ -191,6 +198,8 @@ def generateBubbleChart(server):
         ]:
             raise PreventUpdate
 
+        # Loads dataframe at specific time value by getting the time as a key from a dictionary,
+        # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
         df_by_time = pd.DataFrame.from_dict(ast.literal_eval(json.loads(json_data).get(str(time_value))))
 
         scatterplot = Scatter(
@@ -219,5 +228,27 @@ def generateBubbleChart(server):
         }
 
         return figure
+
+    @app.callback(
+        [Output("play-pause-button", "children"), Output("play-interval", "disabled")],
+        [Input("play-pause-button", "n_clicks")],
+    )
+    def play_pause_switch(n_clicks):
+        play_status = str()
+        play_bool = bool()
+        if n_clicks % 2 == 0:
+            play_status, play_bool = ["Pause", False]
+        elif n_clicks % 2 != 0:
+            play_status, play_bool = ["Play", True]
+        return [play_status, play_bool]
+
+    @app.callback(
+        Output("time-slider", "value"), [Input("play-interval", "n_intervals")], [State("time-slider", "value")]
+    )
+    def play_increment(n_intervals, time_value):
+        if time_value is None:
+            raise PreventUpdate
+        print(time_value)
+        return str(int(time_value) + 1)
 
     return app
