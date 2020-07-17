@@ -47,6 +47,11 @@ def generate_bubble_chart(server):
                 "time_max": max(x_vals),
                 "x_vals": x_vals,
                 "data_cols": [col for col in df.columns.values.tolist() if col not in ["X", "Year", "Subject"]],
+                "ranges": {
+                    col: (min(df[col]) * 1.25, max(df[col] * 1.25))
+                    for col in df.columns.values.tolist()
+                    if col not in ["X", "Year", "Subject"]
+                },
             }
 
         context = pa.default_serialization_context()
@@ -144,6 +149,9 @@ def generate_bubble_chart(server):
         # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
         df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
 
+        x_range = list(mdata.get("ranges").get(x_column_name))
+        y_range = list(mdata.get("ranges").get(y_column_name))
+
         scatterplot = Scatter(
             x=df_by_time[x_column_name],
             y=df_by_time[y_column_name],
@@ -159,8 +167,8 @@ def generate_bubble_chart(server):
         figure = {
             "data": traces_data,
             "layout": dict(
-                xaxis={"title": " ".join(x_column_name.split("_")).title(), "autorange": "true",},
-                yaxis={"title": " ".join(y_column_name.split("_")).title(), "autorange": "true",},
+                xaxis={"title": " ".join(x_column_name.split("_")).title(), "range": x_range,},
+                yaxis={"title": " ".join(y_column_name.split("_")).title(), "range": y_range,},
                 margin={"l": 40, "b": 40, "t": 10, "r": 10},
                 legend={"x": 0, "y": 1},
                 hovermode="closest",
