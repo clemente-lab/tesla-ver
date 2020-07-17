@@ -33,6 +33,14 @@ def generateBubbleChart(server):
             raise PreventUpdate
 
         def upload_string_to_df(content):
+            """Generates a dataframe from a base64 encoded upload string
+
+            Args:
+                content (base64 encoded string): Data taken from dash upload component
+
+            Returns:
+                DataFrame: dataframe parsed from uploaded csv/tsv
+            """
             _, content_string = content.split(",")
             decoded = base64.b64decode(content_string)
             fileish = io.StringIO(decoded.decode("utf-8"))
@@ -183,6 +191,8 @@ def generateBubbleChart(server):
         ]:
             raise PreventUpdate
 
+        # Loads dataframe at specific time value by getting the time as a key from a dictionary,
+        # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
         df_by_time = pd.DataFrame.from_dict(ast.literal_eval(json.loads(json_data).get(str(time_value))))
 
         scatterplot = Scatter(
