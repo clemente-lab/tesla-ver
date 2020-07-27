@@ -13,9 +13,22 @@ from io import StringIO
 
 from tesla_ver.data_uploading.data_uploading_layout import LAYOUT
 from tesla_ver.redis_manager import redis_manager
+from tesla_ver.data_uploading.utils import upload_string_to_df
 
 
 def generate_data_uploading(server):
+    """Generates a dash app and attaches it to an existing flask server
+
+    Args:
+        server (Flask): Flask app to attach data uploading screen to
+
+    Raises:
+        PreventUpdate: Prevents using none values, since dash has to set initial state
+        PreventUpdate: Also prevents using none values since dash has to set initial state
+
+    Returns:
+        Dash: dash app with data uploading screen
+    """
     app = dash.Dash(__name__, server=server, url_base_pathname="/datauploading.html/")
     app.layout = LAYOUT
 
@@ -28,35 +41,22 @@ def generate_data_uploading(server):
         [Input("upload", "contents"), Input("upload", "filename")],
     )
     def upload_data_parsing(contents, filename):
-        def upload_string_to_df(content):
-            """Parse a dash upload string into a single dataframe
+        """Parses csv file uploaded into a dataframe
 
-                Args:
-                    content (b64 string): string passed from the upload component
-            """
-            _, content_string = content.split(",")
-            decoded = b64decode(content_string)
-            fileish = StringIO(decoded.decode("utf-8"))
-            return pd.read_csv(fileish, sep="\t")
-
-        def parse_multiple_contents(contents, filenames):
-            """parses and merges multiple dataframes into a single selection
-
-            Args:
-                contents (list(b64 encoded string)): list of base64 encoded strings representing dataframes from dash upload
-                filenames (list(str)): list of file names corresponding to each dataframe
-            """
-            pass
+        Args:
+            contents (Base64(str)): Base64 encoded string of dataframe values from csv
+            filename (str): name of file
+        """
 
         df = pd.DataFrame()
         if None in [contents, filename]:
             raise PreventUpdate
-        if len(contents) > 1:
-            parse_multiple_contents(contents, filename)
         else:
             df = upload_string_to_df(*contents)
+
+            # Removes Nan, negativve, and infinite values from the dataframe and replaces sets them to 0
             df[df < 0] = 0
-            df[~df.isin([np.nan, np.inf, -np.inf]).any(1)]
+            df[~df.isin([np.nan, np.inf, -np.inf]).any(axis=1)]
             df = df.fillna(0)
             return [
                 {"visibility": "visible"},
@@ -69,7 +69,15 @@ def generate_data_uploading(server):
         [Input("data-table-visualization", "selected_columns"), Input("data-table-visualization", "selected_rows"),],
     )
     def update_styles(selected_columns, selected_rows):
-        # Generates a list of dictionaries that style the selected rows and columns with a light blue highlight
+        """Generates a list of dictionaries that style the selected rows and columns with a light blue highlight
+
+        Args:
+            selected_columns (list): list of selected columns
+            selected_rows (list): list of selected rows
+
+        Returns:
+            dict: dictionary of styling values with highlighted styling for selected columns and rows
+        """
         return [
             *[{"if": {"column_id": i}, "background_color": "#D2F3FF"} for i in selected_columns],
             *[{"if": {"row_index": i}, "background_color": "#D2F3FF"} for i in selected_rows],
@@ -85,12 +93,26 @@ def generate_data_uploading(server):
         ],
     )
     def push_to_redis(button_clicks, data_dict, selected_columns, selected_rows):
+        """Pushes dataframe and selection subset to redis cache
+
+        Args:
+            button_clicks (int): number of clicks of the button -- exists to start update
+            data_dict (dict): dictionary of all uploaded data -- pulled from the datatable
+            selected_columns (list): list of selected column names
+            selected_rows (list of selected): list of selected row indicies
+
+        Raises:
+            PreventUpdate: prevents initial setstate from causing errors
+
+        Returns:
+            dict: sets a confirmation message to be visible
+        """
         if None in [button_clicks, data_dict, selected_columns]:
             raise PreventUpdate
 
         df = (
             pd.DataFrame.from_records(data_dict)
-            if len(selected_rows) == 0
+            if not selected_rows
             else pd.DataFrame.from_records(data_dict).iloc[selected_rows]
         )
 
@@ -108,7 +130,6 @@ def generate_data_uploading(server):
             "data_mdata",
             serialization_context.serialize(df[["Year", "Subject", *mdata_cols]]).to_buffer().to_pybytes(),
         )
-        redis_manager.redis.set("test", "Hello World, this is a test!")
         return {"visibility": "visible"}
 
     return app

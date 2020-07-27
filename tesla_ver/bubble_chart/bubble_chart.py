@@ -210,7 +210,7 @@ def generate_bubble_chart(server):
     @app.callback(
         Output("time-slider", "value"), [Input("play-interval", "n_intervals")], [State("time-slider", "value")]
     )
-    def playIncrement(n_intervals, time_value):
+    def play_increment(n_intervals, time_value):
         if time_value is None:
             raise PreventUpdate
         print(time_value)

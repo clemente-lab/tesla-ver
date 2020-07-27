@@ -8,7 +8,7 @@ LAYOUT = html.Div(
     id="graph_div",
     children=[
         # This handles the upload of files
-        dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ", html.A("Select Files")]), multiple=True),
+        dcc.Upload(id="upload", children=html.Div(["Drag and Drop or ", html.A("Select Files")]), multiple=False),
         html.Div(
             id="data-table-div",
             children=[
