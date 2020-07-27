@@ -44,7 +44,14 @@ LAYOUT = html.Div(
             ],
             style={"visibility": "hidden"},
         ),
-        html.P("🚀 ✅ Data Successfully Uploaded ", id="upload-confirmation", style={"visibility": "hidden"},),
+        html.Div(
+            [
+                html.P("🚀 ✅ Data Successfully Uploaded ", id="confirmation-text"),
+                html.A("Go to graphing ➡️", href="/bubblechart.html"),
+            ],
+            id="upload-confirmation",
+            style={"visibility": "hidden"},
+        ),
     ],
 )
 
