@@ -8,8 +8,6 @@ import pyarrow as pa
 
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-from base64 import b64decode
-from io import StringIO
 
 from tesla_ver.data_uploading.data_uploading_layout import LAYOUT
 from tesla_ver.redis_manager import redis_manager
@@ -52,7 +50,7 @@ def generate_data_uploading(server):
         if None in [contents, filename]:
             raise PreventUpdate
         else:
-            df = upload_string_to_df(*contents)
+            df = upload_string_to_df(contents)
 
             # Removes Nan, negativve, and infinite values from the dataframe and replaces sets them to 0
             df[df < 0] = 0
