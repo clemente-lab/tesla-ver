@@ -2,7 +2,7 @@ import base64
 import io
 import dash
 import json
-import pdb
+import logging
 
 import pandas as pd
 import numpy as np
@@ -21,7 +21,10 @@ from tesla_ver.redis_manager import redis_manager
 
 def generate_bubble_chart(server):
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
+    logging.debug("Bubble Chart app created")
+
     app.layout = LAYOUT
+    logging.debug("Bubble Chart layout created")
 
     @app.callback(
         [Output("df-data", "data"), Output("df-mdata", "data"), Output("graph", "style")],
@@ -29,6 +32,7 @@ def generate_bubble_chart(server):
     )
     def load_redis_data(n_clicks):
         if n_clicks == 0:
+            logging.debug("Bubble Chart Load Data Initial State Set")
             raise PreventUpdate
 
         def extract_mdata(df, x_column_name):
@@ -84,6 +88,7 @@ def generate_bubble_chart(server):
         for idx, key in enumerate(marks.keys()):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
+        logging.debug(f"✅ Marks Dictionary Created, time values are: {marks.keys()}")
         return [marks, time_min, time_max]
 
     @app.callback(
@@ -114,6 +119,8 @@ def generate_bubble_chart(server):
         data_options = [
             {"label": option.replace("_", " ").title(), "value": option} for option in mdata.get("data_cols")
         ]
+
+        logging.debug(f'✅ Data Options created, values are {mdata.get("data_cols")}')
 
         return [
             data_options,
@@ -149,8 +156,12 @@ def generate_bubble_chart(server):
         # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
         df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
 
+        logging.debug("✅ dataframe filtered by time")
+
         x_range = list(mdata.get("ranges").get(x_column_name))
         y_range = list(mdata.get("ranges").get(y_column_name))
+
+        logging.debug("✅ X and Y axis ranges created")
 
         scatterplot = Scatter(
             x=df_by_time[x_column_name],
@@ -164,6 +175,8 @@ def generate_bubble_chart(server):
         traces_data = list()
         traces_data.append(scatterplot)
 
+        logging.debug("✅ Bubble Chart Scatterplot appended for graphing")
+
         figure = {
             "data": traces_data,
             "layout": dict(
@@ -176,6 +189,8 @@ def generate_bubble_chart(server):
                 transition={"duration": 500, "easing": "cubic-in-out"},
             ),
         }
+
+        logging.debug("✅ Bubble Chart figure created")
 
         return figure
 

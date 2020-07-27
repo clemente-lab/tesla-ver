@@ -1,4 +1,5 @@
 import redis
+import logging
 
 
 class RedisManager(object):
@@ -10,3 +11,4 @@ class RedisManager(object):
 
 
 redis_manager = RedisManager()
+logging.debug("✅ Redis Connection established")
