@@ -3,7 +3,7 @@ services:
   tesla-ver:
     build: .
     ports:
-      - "5000:5000"
+      - "80:5000"
     volumes:
       - .:/tesla-ver
     environment:
