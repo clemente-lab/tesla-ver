@@ -18,7 +18,7 @@ logging.debug(f"==Log Start==")
 # Creates the flask server
 logging.debug("Starting Flask Server")
 
-server = flask.Flask(__name__)
+server = flask.Flask(__name__, static_folder="homepage/build/static", template_folder="homepage/build/")
 
 logging.debug("✅ Flask server created")
 
@@ -39,14 +39,7 @@ logging.debug("✅ Bubble Chart Screen created and connected")
 def index():
     """Renders the landing page."""
     # TODO: Create an HTML import function
-    return """
-<html>
-<div><h1>Flask App</h1>
-    <a href="/datauploading.html">Data Uploading</a>
-    <a href="/bubblechart.html">Bubble Chart</a>
-</div>
-</html>
-"""
+    return flask.render_template("index.html")
 
 
 @server.route("/bubblechart.html")
