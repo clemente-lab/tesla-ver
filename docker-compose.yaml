@@ -6,9 +6,6 @@ services:
       - "80:5000"
     volumes:
       - .:/tesla-ver
-    environment:
-      FLASK_ENV: development
-      FLASK_APP: wsgi.py
     depends_on:
       - data-cache
   data-cache:
