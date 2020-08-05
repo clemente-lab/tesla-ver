@@ -16,18 +16,43 @@ LAYOUT = html.Div(
             id="graph",
             # All graph components should go here
             children=[
-                # Provides an empty graph object for updates in callback
-                dcc.Graph(id="graph-with-slider"),
-                # Div contains play/pause button and slider
-                # Creates Slider from min-max X values
-                # to give input for graph updates
-                html.Div(
-                    id="controls-div",
-                    children=[
-                        html.Button("Play", id="play-pause-button", n_clicks=1),
-                        dcc.Interval(id="play-interval", interval=1 * 1000, n_intervals=0, disabled=True),
-                        dcc.Slider(id="time-slider", min=0, max=1, value=None, marks={}, updatemode="drag",),
-                    ],
+                dcc.Tabs(
+                    [
+                        dcc.Tab(
+                            label="Bubble Chart Animation",
+                            children=[  # Provides an empty graph object for updates in callback
+                                dcc.Graph(id="bubble-graph-with-slider"),
+                                # Div contains play/pause button and slider
+                                # Creates Slider from min-max X values
+                                # to give input for graph updates
+                                html.Div(
+                                    id="controls-div",
+                                    children=[
+                                        html.Button("Play", id="play-pause-button", n_clicks=1),
+                                        dcc.Interval(
+                                            id="play-interval", interval=1 * 1000, n_intervals=0, disabled=True
+                                        ),
+                                        dcc.Slider(
+                                            id="time-slider", min=0, max=1, value=None, marks={}, updatemode="drag",
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        ),
+                        dcc.Tab(
+                            label="Line Plots",
+                            children=[
+                                html.Div(
+                                    children=[dcc.Graph(id="left-line-plot-graph")],
+                                    style={"width": "45%", "display": "inline-block"},
+                                ),
+                                html.Div(
+                                    children=[dcc.Graph(id="right-line-plot-graph")],
+                                    style={"width": "45%", "display": "inline-block"},
+                                ),
+                            ],
+                        ),
+                    ]
                 ),
                 html.Div(
                     id="dropdown_menus",

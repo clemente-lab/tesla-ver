@@ -130,7 +130,7 @@ def generate_bubble_chart(server):
         ]
 
     @app.callback(
-        Output("graph-with-slider", "figure"),
+        Output("bubble-graph-with-slider", "figure"),
         [
             Input("time-slider", "value"),
             Input("y_dropdown", "value"),
@@ -215,5 +215,67 @@ def generate_bubble_chart(server):
             raise PreventUpdate
         print(time_value)
         return str(int(time_value) + 1)
+
+    @app.callback(
+        [Output("left-line-plot-graph", "figure"), Output("right-line-plot-graph", "figure")],
+        [Input("y_dropdown", "value"), Input("x_dropdown", "value"),],
+        [State("df-data", "data"), State("df-mdata", "data")],
+    )
+    def update_line_plots(left_value, right_value, json_data, mdata):
+        """Generates line plots from given data values
+
+        Args:
+            y_value (str):y dropdown column name
+            x_value (str): x dropdown column name
+            json_data (dict): loaded json data from redis
+            mdata (dict): extracted metadata from redis
+        """
+        if None in [left_value, right_value, json_data, mdata]:
+            raise PreventUpdate
+
+        x_range = list(mdata.get("ranges").get(right_value))
+        y_range = list(mdata.get("ranges").get(left_value))
+        # Converts year dict group objects into a dataframe
+        framify = lambda frame_dict: pd.DataFrame.from_dict(literal_eval(frame_dict))
+        # Generates a dictionary with the keys being time values and the values as tuples of the values for the
+        # y dropdown value and x_dropdown value in that order
+        time_values = {
+            time_val: (framify(data_val)[left_value], framify(data_val)[right_value])
+            for time_val, data_val in json.loads(json_data).items()
+        }
+        left_traces = list()
+        right_traces = list()
+        left_traces.append(
+            Scatter(x=list(time_values.keys()), y=[val[0] for val in list(time_values.values())], mode="lines")
+        )
+        right_traces.append(
+            Scatter(x=list(time_values.keys()), y=[val[1] for val in list(time_values.values())], mode="lines")
+        )
+        return [
+            {
+                "data": left_traces,
+                "layout": dict(
+                    xaxis={"title": " ".join(left_value.split("_")).title(), "autorange": "true"},
+                    yaxis={"title": " ".join(left_value.split("_")).title(), "autorange": "true",},
+                    margin={"l": 40, "b": 40, "t": 10, "r": 10},
+                    legend={"x": 0, "y": 1},
+                    hovermode="closest",
+                    # Defines transition behaviors
+                    transition={"duration": 500, "easing": "cubic-in-out"},
+                ),
+            },
+            {
+                "data": right_traces,
+                "layout": dict(
+                    xaxis={"title": " ".join(right_value.split("_")).title(), "autorange": "true",},
+                    yaxis={"title": " ".join(right_value.split("_")).title(), "autorange": "true",},
+                    margin={"l": 40, "b": 40, "t": 10, "r": 10},
+                    legend={"x": 0, "y": 1},
+                    hovermode="closest",
+                    # Defines transition behaviors
+                    transition={"duration": 500, "easing": "cubic-in-out"},
+                ),
+            },
+        ]
 
     return app
