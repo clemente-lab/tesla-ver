@@ -112,10 +112,12 @@ LAYOUT = html.Div(
             style={"visibility": "visible"},
         ),
         # Storage component for storing parsed data
-        dcc.Store(id="df-data"),
+        dcc.Store(id="df-timedata"),
         # Stores metadata from parsed data  with the "int" being a standin for whatever time format is used
         # (in the format {time_max:int, time_min:int, x_vals:list(int), numeric_cols:list(str), mdata_cols:list(str)})
-        dcc.Store(id="df-mdata")
+        dcc.Store(id="df-mdata"),
+        # Stores grouped id data
+        dcc.Store(id="df-iddata"),
         # End outer div's children
     ],
     # End outer div
