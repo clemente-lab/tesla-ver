@@ -240,15 +240,19 @@ def generate_bubble_chart(server):
         if None in [left_value, right_value, json_data, mdata]:
             raise PreventUpdate
 
+        # Generates ranges for x and y dropdowns dependent values
         x_range = list(mdata.get("ranges").get(right_value))
         y_range = list(mdata.get("ranges").get(left_value))
 
+        # Left and right scatterplot lists
         left_traces, right_traces = list(), list()
 
+        # Populates lists of scatterplots by iterating over id
         for subject in literal_eval(json_data).keys():
             df = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(subject))))
             left_traces.append(Scatter(x=df["X"], y=df[left_value], mode="lines", name=f"Subject: {subject}"))
             right_traces.append(Scatter(x=df["X"], y=df[right_value], mode="lines", name=f"Subject: {subject}"))
+        # Generates title from column names
         dependentTitle = lambda value: " ".join(value.split("_")).title()
         return [
             {
