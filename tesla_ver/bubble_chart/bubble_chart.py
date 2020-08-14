@@ -1,91 +1,39 @@
 import base64
 import io
 import dash
+import json
+import logging
+
 import pandas as pd
 import numpy as np
-import ast
-import json
+import pyarrow as pa
 
+from ast import literal_eval
 from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from pathlib import Path
 from functools import reduce
 
-from tesla_ver.layout import LAYOUT
+from tesla_ver.bubble_chart.bubble_chart_layout import LAYOUT
+from tesla_ver.redis_manager import redis_manager
 
 
-def generateBubbleChart(server):
+def generate_bubble_chart(server):
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
+    logging.debug("Bubble Chart app created")
+
     app.layout = LAYOUT
+    logging.debug("Bubble Chart layout created")
 
     @app.callback(
-        [Output("df-data", "data"), Output("df-mdata", "data")],
-        [Input("upload", "contents"), Input("upload", "filename"), Input("upload", "last_modified"),],
+        [Output("df-data", "data"), Output("df-mdata", "data"), Output("graph", "style")],
+        [Input("upload-button", "n_clicks"),],
     )
-    def upload_data(list_of_contents, list_of_filenames, _):
-        """This callback handles storing the dataframe as JSON in the data storage
-        component."""
-
-        df = None
-
-        # Checks to make sure that there exist contents to act on, and that only one file has been opened
-        # Dash fires every callback when starting the app, so raising PreventUpate ensures that processing only happens
-        # when data actually exists.  This is a standard pattern found in https://dash.plotly.com/advanced-callbacks
-        if None in [list_of_contents, list_of_filenames] or len(list_of_contents) != 1:
+    def load_redis_data(n_clicks):
+        if n_clicks == 0:
+            logging.debug("Bubble Chart Load Data Initial State Set")
             raise PreventUpdate
-
-        def upload_string_to_df(content):
-            """Generates a dataframe from a base64 encoded upload string
-
-            Args:
-                content (base64 encoded string): Data taken from dash upload component
-
-            Returns:
-                DataFrame: dataframe parsed from uploaded csv/tsv
-            """
-            _, content_string = content.split(",")
-            decoded = base64.b64decode(content_string)
-            fileish = io.StringIO(decoded.decode("utf-8"))
-            return pd.read_csv(fileish, sep="\t")
-
-        def parse_multiple_contents(contents, filenames):
-            """Parse a Dash Upload into a DataFrame.
-
-            contents is a string read from the upload component.
-            filename and date are just information paramteres
-            """
-            # Parses contents into dataframes
-            df_list = list()
-            filename_titles = list()
-            for content, filename in zip(contents, filenames):
-                df = upload_string_to_df(content)
-                # Separates time series into a single value
-                # Explodes a single row into many rows,
-                # by splitting the strings of time values into lists and then exploding those
-                df[["X", "Y"]] = df[["X", "Y"]].applymap(lambda x: x.split(","))
-                df = df.apply(pd.Series.explode)
-                # Resets index, renames the generic 'Y' column
-                # to a more specific name taken from the title of the file/dataset
-                df.reset_index(drop=True, inplace=True)
-                df = df.rename(columns={"Y": filename})
-                df_list.append(df)
-
-            # Merges all dataframes into a single list
-            df = reduce(
-                lambda left_frame, right_frame: pd.merge_ordered(
-                    left_frame,
-                    right_frame,
-                    on=[column for column in left_frame.columns if column not in [*filename_titles]],
-                    left_by="X",
-                    fill_method="ffill",
-                ),
-                df_list,
-            )
-            df = df.convert_dtypes()
-            df[filename_titles] = df[filename_titles].apply(pd.to_numeric, errors="coerce")
-            df[df.select_dtypes(np.number).columns] = df[df.select_dtypes(np.number).columns].fillna(0)
-            return df
 
         def extract_mdata(df, x_column_name):
             """Extracts dataframe metadata to make processing quicker and easier to debug
@@ -103,13 +51,20 @@ def generateBubbleChart(server):
                 "time_max": max(x_vals),
                 "x_vals": x_vals,
                 "data_cols": [col for col in df.columns.values.tolist() if col not in ["X", "Year", "Subject"]],
+                "ranges": {
+                    col: (min(df[col]) * 1.25, max(df[col] * 1.25))
+                    for col in df.columns.values.tolist()
+                    if col not in ["X", "Year", "Subject"]
+                },
             }
 
-        df = upload_string_to_df(list_of_contents[0])
+        context = pa.default_serialization_context()
+        df = context.deserialize(redis_manager.redis.get("data_numeric"))
+        redis_manager.redis.flushdb()
         mdata = extract_mdata(df, "Year")
         df.rename(columns={"Year": "X"}, inplace=True)
         df = json.dumps({group_name: df_group.to_json() for group_name, df_group in df.groupby("X")})
-        return [df, mdata]
+        return [df, mdata, {"visibility": "visible"}]
 
     @app.callback(
         [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
@@ -133,6 +88,7 @@ def generateBubbleChart(server):
         for idx, key in enumerate(marks.keys()):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
+        logging.debug(f"✅ Marks Dictionary Created, time values are: {marks.keys()}")
         return [marks, time_min, time_max]
 
     @app.callback(
@@ -164,6 +120,8 @@ def generateBubbleChart(server):
             {"label": option.replace("_", " ").title(), "value": option} for option in mdata.get("data_cols")
         ]
 
+        logging.debug(f'✅ Data Options created, values are {mdata.get("data_cols")}')
+
         return [
             data_options,
             data_options,
@@ -174,33 +132,36 @@ def generateBubbleChart(server):
     @app.callback(
         Output("graph-with-slider", "figure"),
         [
-            Input("upload-button", "n_clicks"),
             Input("time-slider", "value"),
             Input("y_dropdown", "value"),
             Input("x_dropdown", "value"),
             Input("size_dropdown", "value"),
             Input("annotation_dropdown", "value"),
         ],
-        [State("df-data", "data"), State("time-slider", "marks")],
+        [State("df-data", "data"), State("time-slider", "marks"), State("df-mdata", "data")],
     )
     def update_figure(
-        _, time_value, y_column_name, x_column_name, size_dropdown_name, annotation_column_name, json_data, marks,
+        time_value, y_column_name, x_column_name, size_dropdown_name, annotation_column_name, json_data, marks, mdata
     ):
         """This callback handles updating the graph in response to user
         actions."""
         # Prevents updates without data
-        if None in [
-            json_data,
-            size_dropdown_name,
-            annotation_column_name,
-            x_column_name,
-            y_column_name,
-        ]:
+        if None in [json_data, size_dropdown_name, annotation_column_name, x_column_name, y_column_name, mdata]:
             raise PreventUpdate
+
+        if time_value == None:
+            time_value = int(mdata.get("time_min"))
 
         # Loads dataframe at specific time value by getting the time as a key from a dictionary,
         # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
-        df_by_time = pd.DataFrame.from_dict(ast.literal_eval(json.loads(json_data).get(str(time_value))))
+        df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
+
+        logging.debug("✅ dataframe filtered by time")
+
+        x_range = list(mdata.get("ranges").get(x_column_name))
+        y_range = list(mdata.get("ranges").get(y_column_name))
+
+        logging.debug("✅ X and Y axis ranges created")
 
         scatterplot = Scatter(
             x=df_by_time[x_column_name],
@@ -214,11 +175,13 @@ def generateBubbleChart(server):
         traces_data = list()
         traces_data.append(scatterplot)
 
+        logging.debug("✅ Bubble Chart Scatterplot appended for graphing")
+
         figure = {
             "data": traces_data,
             "layout": dict(
-                xaxis={"title": " ".join(x_column_name.split("_")).title(), "autorange": "true",},
-                yaxis={"title": " ".join(y_column_name.split("_")).title(), "autorange": "true",},
+                xaxis={"title": " ".join(x_column_name.split("_")).title(), "range": x_range,},
+                yaxis={"title": " ".join(y_column_name.split("_")).title(), "range": y_range,},
                 margin={"l": 40, "b": 40, "t": 10, "r": 10},
                 legend={"x": 0, "y": 1},
                 hovermode="closest",
@@ -226,6 +189,8 @@ def generateBubbleChart(server):
                 transition={"duration": 500, "easing": "cubic-in-out"},
             ),
         }
+
+        logging.debug("✅ Bubble Chart figure created")
 
         return figure
 

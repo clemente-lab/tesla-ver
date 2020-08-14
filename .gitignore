@@ -32,3 +32,6 @@
 
 # All vim swap files
 **/.sw*
+
+# All node modules files
+/homepage/node_modules
