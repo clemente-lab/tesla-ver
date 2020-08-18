@@ -68,6 +68,9 @@ def generate_bubble_chart(server):
         redis_manager.redis.flushdb()
         mdata = extract_mdata(df, "Year")
         df.rename(columns={"Year": "X"}, inplace=True)
+        # This lambda takes a tidy dataframe, and turns it into a dict where they keys are the group values
+        # and the values are the grouped dataframe chunks.
+        # This is used to remove the need to compute a groupby on every callback, which would be a major performance hit.
         grouper = lambda df, col: json.dumps(
             {group_name: df_group.to_json() for group_name, df_group in df.groupby(col)}
         )
