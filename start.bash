@@ -61,8 +61,8 @@ trap "shutdown_with_redis" SIGINT
 # Sources conda behavior scripts, and then generates/checks for existing tesla-ver environment,
 # and then activates the tesla-ver environment
 function start_conda_session {
-  CONDA_PREFIX=$(conda info | grep -i "base environment" | grep -oEe "\w{3,4}conda3")
-  source ~/$CONDA_PREFIX/etc/profile.d/conda.sh
+  CONDA_PREFIX=$(find $HOME -maxdepth 1 -type d | grep -E "\w{3,4}conda")
+  source $CONDA_PREFIX/etc/profile.d/conda.sh
   ENVS=$(conda env list | awk '{print $1}' )
   if [[ $ENVS = *"tesla-ver"* ]]; then
     echo "activating"
