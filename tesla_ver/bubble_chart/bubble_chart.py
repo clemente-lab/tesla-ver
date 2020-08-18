@@ -27,7 +27,12 @@ def generate_bubble_chart(server):
     logging.debug("Bubble Chart layout created")
 
     @app.callback(
-        [Output("df-data", "data"), Output("df-mdata", "data"), Output("graph", "style")],
+        [
+            Output("df-timedata", "data"),
+            Output("df-iddata", "data"),
+            Output("df-mdata", "data"),
+            Output("graph", "style"),
+        ],
         [Input("upload-button", "n_clicks"),],
     )
     def load_redis_data(n_clicks):
@@ -63,8 +68,13 @@ def generate_bubble_chart(server):
         redis_manager.redis.flushdb()
         mdata = extract_mdata(df, "Year")
         df.rename(columns={"Year": "X"}, inplace=True)
-        df = json.dumps({group_name: df_group.to_json() for group_name, df_group in df.groupby("X")})
-        return [df, mdata, {"visibility": "visible"}]
+        # This lambda takes a tidy dataframe, and turns it into a dict where they keys are the group values
+        # and the values are the grouped dataframe chunks.
+        # This is used to remove the need to compute a groupby on every callback, which would be a major performance hit.
+        grouper = lambda df, col: json.dumps(
+            {group_name: df_group.to_json() for group_name, df_group in df.groupby(col)}
+        )
+        return [grouper(df, "X"), grouper(df, "Subject"), mdata, {"visibility": "visible"}]
 
     @app.callback(
         [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
@@ -130,7 +140,7 @@ def generate_bubble_chart(server):
         ]
 
     @app.callback(
-        Output("graph-with-slider", "figure"),
+        Output("bubble-graph-with-slider", "figure"),
         [
             Input("time-slider", "value"),
             Input("y_dropdown", "value"),
@@ -138,7 +148,7 @@ def generate_bubble_chart(server):
             Input("size_dropdown", "value"),
             Input("annotation_dropdown", "value"),
         ],
-        [State("df-data", "data"), State("time-slider", "marks"), State("df-mdata", "data")],
+        [State("df-timedata", "data"), State("time-slider", "marks"), State("df-mdata", "data")],
     )
     def update_figure(
         time_value, y_column_name, x_column_name, size_dropdown_name, annotation_column_name, json_data, marks, mdata
@@ -215,5 +225,77 @@ def generate_bubble_chart(server):
             raise PreventUpdate
         print(time_value)
         return str(int(time_value) + 1)
+
+    @app.callback(
+        [Output("left-line-plot-graph", "figure"), Output("right-line-plot-graph", "figure")],
+        [Input("y_dropdown", "value"), Input("x_dropdown", "value"),],
+        [State("df-iddata", "data"), State("df-mdata", "data")],
+    )
+    def update_line_plots(left_value, right_value, json_data, mdata):
+        """Generates line plots from given data values
+
+        Args:
+            y_value (str):y dropdown column name
+            x_value (str): x dropdown column name
+            json_data (dict): loaded json data from redis
+            mdata (dict): extracted metadata from redis
+        """
+        if None in [left_value, right_value, json_data, mdata]:
+            raise PreventUpdate
+
+        # Generates ranges for x and y dropdowns dependent values
+        x_range = list(mdata.get("ranges").get(right_value))
+        y_range = list(mdata.get("ranges").get(left_value))
+
+        # Left and right scatterplot lists
+        left_traces, right_traces = list(), list()
+
+        # Populates lists of scatterplots by iterating over id
+        for subject in literal_eval(json_data).keys():
+            df = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(subject))))
+            left_traces.append(Scatter(x=df["X"], y=df[left_value], mode="lines", name=f"Subject: {subject}"))
+            right_traces.append(Scatter(x=df["X"], y=df[right_value], mode="lines", name=f"Subject: {subject}"))
+        # Generates title from column names
+        dependentTitle = lambda value: " ".join(value.split("_")).title()
+        return [
+            {
+                "data": left_traces,
+                "layout": dict(
+                    xaxis={"title": "Time", "autorange": "true"},
+                    yaxis={"title": dependentTitle(left_value), "autorange": "true",},
+                    title={
+                        "text": f"{dependentTitle(left_value)} vs Time",
+                        "y": 0.9,
+                        "x": 0.5,
+                        "xanchor": "center",
+                        "yanchor": "top",
+                    },
+                    margin={"l": 40, "b": 40, "t": 10, "r": 10},
+                    legend={"x": 0, "y": 1},
+                    hovermode="closest",
+                    # Defines transition behaviors
+                    transition={"duration": 500, "easing": "cubic-in-out"},
+                ),
+            },
+            {
+                "data": right_traces,
+                "layout": dict(
+                    xaxis={"title": "Time", "autorange": "true",},
+                    yaxis={"title": dependentTitle(right_value), "autorange": "true",},
+                    title={
+                        "text": f"{dependentTitle(right_value)} vs Time",
+                        "y": 0.9,
+                        "x": 0.5,
+                        "xanchor": "center",
+                        "yanchor": "top",
+                    },
+                    margin={"l": 40, "b": 40, "t": 10, "r": 10},
+                    legend={"x": 0, "y": 1},
+                    hovermode="closest",
+                    # Defines transition behaviors
+                    transition={"duration": 500, "easing": "cubic-in-out"},
+                ),
+            },
+        ]
 
     return app

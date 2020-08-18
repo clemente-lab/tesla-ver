@@ -13,4 +13,3 @@ def upload_string_to_df(content):
     decoded = b64decode(content_string)
     fileish = StringIO(decoded.decode("utf-8"))
     return read_csv(fileish, sep="\t")
-
