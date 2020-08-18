@@ -37,5 +37,5 @@
 /homepage/node_modules
 
 # Redis Installation files and datafiles
-/redis_dir/*
+/redis_dir/redis-stable
 **.rdb

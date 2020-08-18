@@ -20,6 +20,10 @@ then
 elif ! redis_loc="$(type -p "redis-server")" || [[ -z /usr/local/bin/.redis-server ]];
 then
   echo "Redis is not installed"
+  echo "Redis uses the license at https://redis.io/topics/license"
+  echo "The license may also be found at ./redis-dir/Redis-License,"
+  echo "although the linked license is the current, authoritative version"
+  echo "By installing, you agree to the terms of this license"
   read -r -p "Install Redis? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
   then
