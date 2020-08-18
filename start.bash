@@ -86,7 +86,8 @@ then
         l|L ) os_name="Linux";;
         * ) echo "invalid selection" && exit 1;;
       esac
-      curl -so - "https://repo.anaconda.com/miniconda/Miniconda3-latest-$os_name-x86_64.sh" | bash - -b -p $HOME/miniconda
+
+      curl -o miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash miniconda.sh -b -p $HOME/miniconda && rm miniconda.sh
       start_conda_session
   else
       exit 1
