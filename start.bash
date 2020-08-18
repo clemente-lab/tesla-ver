@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Takes redis server location, and asks user to confirm starting the server
 function start_local_redis {
   if [ -f $1 ];
   then
@@ -13,10 +14,13 @@ function start_local_redis {
   fi
 }
 
+# Checks if redis-server is already downloaded locally
 if [ -f "./redis_dir/redis-stable/src/redis-server" ]
 then
   echo "redis-server locally available"
   start_local_redis "./redis_dir/redis-stable/src/redis-server"
+
+# Alternatively, is redis-server available in the path, if not, download and build the server/cli
 elif ! redis_loc="$(type -p "redis-server")" || [[ -z /usr/local/bin/.redis-server ]];
 then
   echo "Redis is not installed"
@@ -34,12 +38,17 @@ then
   else
       exit 1
   fi
+
+# Starts redis server in path
 else
-  echo "Redis Installation Found at:"
+  redis_path = $(type -p redis-server | cut -d" " -f3)
+  echo "Redis Installation Found at: $redis_path"
   type -p "redis-server"
   echo "Starting redis:"
   redis-server
 fi
+
+# Function used with trap to shutdown redis server cleanly as part of exiting program
 function shutdown_with_redis {
   ./redis_dir/redis-stable/src/redis-cli SHUTDOWN
   echo "Redis Server shutdown"
@@ -48,6 +57,22 @@ function shutdown_with_redis {
 }
 trap "shutdown_with_redis" SIGINT
 
+# Sources conda behavior scripts, and then generates/checks for existing tesla-ver environment,
+# and then activates the tesla-ver environment
+function start_conda_session {
+  CONDA_PREFIX=$(conda info | grep -i "base environment" | grep -oEe "\w{3,4}conda3")
+  source ~/$CONDA_PREFIX/etc/profile.d/conda.sh
+  ENVS=$(conda env list | awk '{print $1}' )
+  if [[ $ENVS = *"tesla-ver"* ]]; then
+    echo "activating"
+    conda activate tesla-ver
+  else
+    echo "creating"
+    conda env create --file environment.yaml && conda activate tesla-ver
+  fi
+}
+
+# Checks if conda installation is found -- if not, it offers to install it via batch silent install
 if ! conda_loc="$(type -p "conda")";
 then
   echo "Conda installation not found"
@@ -62,21 +87,15 @@ then
         * ) echo "invalid selection" && exit 1;;
       esac
       curl -so - "https://repo.anaconda.com/miniconda/Miniconda3-latest-$os_name-x86_64.sh" | bash - -b -p $HOME/miniconda
+      start_conda_session
   else
       exit 1
   fi
+# If conda installation is found, start conda session
 else
-  CONDA_PREFIX=$(conda info | grep -i "base environment" | grep -oEe "\w{3,4}conda3")
-  source ~/$CONDA_PREFIX/etc/profile.d/conda.sh
-  ENVS=$(conda env list | awk '{print $1}' )
-  if [[ $ENVS = *"tesla-ver"* ]]; then
-    echo "activating"
-    conda activate tesla-ver
-  else
-    echo "creating"
-    conda env create --file environment.yaml && conda activate tesla-ver
-  fi
+  start_conda_session
 fi
 
+# Runs tesla-ver with gunicorn and 2 workers.
 gunicorn --workers=2 --bind=0.0.0.0:5000 wsgi:server
 
