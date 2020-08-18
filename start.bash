@@ -71,11 +71,9 @@ else
   ENVS=$(conda env list | awk '{print $1}' )
   if [[ $ENVS = *"tesla-ver"* ]]; then
     echo "activating"
-    find ./ -type f -maxdepth 1
     conda activate tesla-ver
   else
     echo "creating"
-    find ./ -type f -maxdepth 1
     conda env create --file environment.yaml && conda activate tesla-ver
   fi
 fi
