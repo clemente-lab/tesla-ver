@@ -65,10 +65,10 @@ function start_conda_session {
   source $CONDA_PREFIX/etc/profile.d/conda.sh
   ENVS=$(conda env list | awk '{print $1}' )
   if [[ $ENVS = *"tesla-ver"* ]]; then
-    echo "activating"
+    echo "Activating tesla-ver environment"
     conda activate tesla-ver
   else
-    echo "creating"
+    echo "Creating and activating tesla-ver environment"
     conda env create --file environment.yaml && conda activate tesla-ver
   fi
 }
