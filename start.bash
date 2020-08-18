@@ -74,11 +74,11 @@ function start_conda_session {
 }
 
 # Checks if conda installation is found -- if not, it offers to install it via batch silent install
-if ! conda_loc="$(type -p "conda")";
+if ! conda_loc="$(type -p "conda")" || [[ -f $(find $HOME -maxdepth 1 -type d | grep -E "\w{3,4}conda")/etc/profile.d/conda.sh ]];
 then
   echo "Conda installation not found"
   echo "By installing, you agree to the conda license at https://docs.conda.io/en/latest/license.html"
-  read -r -p "Install Conda for Linux? [y/N] " response
+  read -r -p "Install Conda? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
   then
       read -p "Mac or Linux (M/L)?" choice
