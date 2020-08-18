@@ -7,7 +7,7 @@ function start_local_redis {
     read -r -p "Start redis-server found at $1 [y/N] " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
     then
-        $1 &
+        $1 --daemonize yes
         echo "Redis Server Started"
     else
         exit 1
@@ -46,7 +46,7 @@ else
   echo "Redis Installation Found at: $redis_path"
   type -p "redis-server"
   echo "Starting redis:"
-  redis-server &
+  redis-server --daemonize yes
 fi
 
 # Function used with trap to shutdown redis server cleanly as part of exiting program
