@@ -131,4 +131,3 @@ def generate_data_uploading(server):
         return {"visibility": "visible"}
 
     return app
-
