@@ -8,6 +8,7 @@ function start_local_redis {
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
     then
         $1 &
+        echo "Redis Server Started"
     else
         exit 1
     fi
@@ -45,7 +46,7 @@ else
   echo "Redis Installation Found at: $redis_path"
   type -p "redis-server"
   echo "Starting redis:"
-  redis-server
+  redis-server &
 fi
 
 # Function used with trap to shutdown redis server cleanly as part of exiting program
