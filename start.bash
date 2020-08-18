@@ -83,8 +83,8 @@ then
   then
       read -p "Mac or Linux (M/L)? " choice
       case "$choice" in
-        m|M ) os_name="MacOSX";;
-        l|L ) os_name="Linux";;
+        m|M|mac|macOSX|Mac|MacOSX ) os_name="MacOSX";;
+        l|L|linux|Linux ) os_name="Linux";;
         * ) echo "invalid selection" && exit 1;;
       esac
 
