@@ -35,3 +35,7 @@
 
 # All node modules files
 /homepage/node_modules
+
+# Redis Installation files and datafiles
+/redis_dir/*
+**.rdb
