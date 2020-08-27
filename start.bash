@@ -32,7 +32,7 @@ then
   read -r -p "Install Redis? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
   then
-      rm -r ./redis_dir/redis-stable || true
+      [[ -d ./redis_dir/redis_dir ]] && rm -r ./redis_dir/redis-stable || echo "redis-stable directory handling"
       curl -so - http://download.redis.io/redis-stable.tar.gz | tar -C ./redis_dir -xvzf -
       make -C ./redis_dir/redis-stable
       start_local_redis "./redis_dir/redis-stable/src/redis-server"
