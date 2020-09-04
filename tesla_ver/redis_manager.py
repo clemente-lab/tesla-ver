@@ -7,7 +7,7 @@ class RedisManager(object):
         """Generates redis connection that is then passed around the application
         """
         # Connect to redis
-        self.redis = redis.Redis(host="data-cache", port=6379)
+        self.redis = redis.Redis(host="localhost", port=6379)
 
 
 redis_manager = RedisManager()

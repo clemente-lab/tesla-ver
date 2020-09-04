@@ -2,7 +2,6 @@ import base64
 import io
 import dash
 import json
-import logging
 
 import pandas as pd
 import numpy as np
@@ -21,10 +20,9 @@ from tesla_ver.redis_manager import redis_manager
 
 def generate_bubble_chart(server):
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
-    logging.debug("Bubble Chart app created")
 
     app.layout = LAYOUT
-    logging.debug("Bubble Chart layout created")
+    server.logger.debug("Bubble Chart layout loaded")
 
     @app.callback(
         [
@@ -37,7 +35,7 @@ def generate_bubble_chart(server):
     )
     def load_redis_data(n_clicks):
         if n_clicks == 0:
-            logging.debug("Bubble Chart Load Data Initial State Set")
+            server.logger.debug("Bubble Chart Load Data Initial State Set")
             raise PreventUpdate
 
         def extract_mdata(df, x_column_name):
@@ -66,8 +64,14 @@ def generate_bubble_chart(server):
         context = pa.default_serialization_context()
         df = context.deserialize(redis_manager.redis.get("data_numeric"))
         redis_manager.redis.flushdb()
+
+        server.logger.debug("redis db flushed")
+
         mdata = extract_mdata(df, "Year")
         df.rename(columns={"Year": "X"}, inplace=True)
+
+        server.logger.debug("numeric dataframe processed from redis")
+
         # This lambda takes a tidy dataframe, and turns it into a dict where they keys are the group values
         # and the values are the grouped dataframe chunks.
         # This is used to remove the need to compute a groupby on every callback, which would be a major performance hit.
@@ -98,7 +102,7 @@ def generate_bubble_chart(server):
         for idx, key in enumerate(marks.keys()):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
-        logging.debug(f"✅ Marks Dictionary Created, time values are: {marks.keys()}")
+        server.logger.debug(f"✅ Marks Dictionary Created, time values are: {marks.keys()}")
         return [marks, time_min, time_max]
 
     @app.callback(
@@ -130,7 +134,7 @@ def generate_bubble_chart(server):
             {"label": option.replace("_", " ").title(), "value": option} for option in mdata.get("data_cols")
         ]
 
-        logging.debug(f'✅ Data Options created, values are {mdata.get("data_cols")}')
+        server.logger.debug(f'✅ Data Options created, values are {mdata.get("data_cols")}')
 
         return [
             data_options,
@@ -166,12 +170,12 @@ def generate_bubble_chart(server):
         # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
         df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
 
-        logging.debug("✅ dataframe filtered by time")
+        server.logger.debug("✅ dataframe filtered by time")
 
         x_range = list(mdata.get("ranges").get(x_column_name))
         y_range = list(mdata.get("ranges").get(y_column_name))
 
-        logging.debug("✅ X and Y axis ranges created")
+        server.logger.debug("✅ X and Y axis ranges created")
 
         scatterplot = Scatter(
             x=df_by_time[x_column_name],
@@ -185,7 +189,7 @@ def generate_bubble_chart(server):
         traces_data = list()
         traces_data.append(scatterplot)
 
-        logging.debug("✅ Bubble Chart Scatterplot appended for graphing")
+        server.logger.debug("✅ Bubble Chart Scatterplot appended for graphing")
 
         figure = {
             "data": traces_data,
@@ -200,7 +204,7 @@ def generate_bubble_chart(server):
             ),
         }
 
-        logging.debug("✅ Bubble Chart figure created")
+        server.logger.debug("✅ Bubble Chart figure created")
 
         return figure
 
@@ -223,7 +227,6 @@ def generate_bubble_chart(server):
     def play_increment(n_intervals, time_value):
         if time_value is None:
             raise PreventUpdate
-        print(time_value)
         return str(int(time_value) + 1)
 
     @app.callback(

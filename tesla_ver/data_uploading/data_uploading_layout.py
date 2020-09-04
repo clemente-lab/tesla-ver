@@ -13,7 +13,8 @@ LAYOUT = html.Div(
             id="data-table-div",
             children=[
                 html.P(
-                    "Select data columns, including time and ID value, and rows to graph. (If no rows are selected, they will all be graphed)"
+                    """Select data columns, including time and ID value, and rows to graph.
+                    If no rows or columns are selected, tesla-ver will try to graph all of the data"""
                 ),
                 # Datatable that gets populated
                 DataTable(

@@ -28,7 +28,9 @@ def generate_data_uploading(server):
         Dash: dash app with data uploading screen
     """
     app = dash.Dash(__name__, server=server, url_base_pathname="/datauploading.html/")
+
     app.layout = LAYOUT
+    server.logger.debug("data uploading layout loaded")
 
     @app.callback(
         [
@@ -56,6 +58,9 @@ def generate_data_uploading(server):
             df[df < 0] = 0
             df[~df.isin([np.nan, np.inf, -np.inf]).any(axis=1)]
             df = df.fillna(0)
+
+            server.logger.debug("data uploaded")
+
             return [
                 {"visibility": "visible"},
                 df.to_dict("records"),
@@ -105,7 +110,7 @@ def generate_data_uploading(server):
         Returns:
             dict: sets a confirmation message to be visible
         """
-        if None in [button_clicks, data_dict, selected_columns]:
+        if None in [button_clicks, data_dict]:
             raise PreventUpdate
 
         df = (
@@ -113,6 +118,10 @@ def generate_data_uploading(server):
             if not selected_rows
             else pd.DataFrame.from_records(data_dict).iloc[selected_rows]
         )
+
+        # Selects all columns if none are selected
+        if not selected_columns:
+            selected_columns = df.columns
 
         mdata_cols = sorted(set(df.columns) - set(selected_columns))
 
@@ -124,10 +133,14 @@ def generate_data_uploading(server):
             .to_buffer()
             .to_pybytes(),
         )
+        server.logger.debug("redis numeric data set")
+
+        # This may be an empty dataframe (checking is needed once the mdata starts getting used)
         redis_manager.redis.set(
             "data_mdata",
             serialization_context.serialize(df[["Year", "Subject", *mdata_cols]]).to_buffer().to_pybytes(),
         )
+        server.logger.debug("redis mdata set")
         return {"visibility": "visible"}
 
     return app
