@@ -100,4 +100,3 @@ fi
 
 # Runs tesla-ver with gunicorn and 2 workers.
 gunicorn --workers=1 --bind=0.0.0.0:5000 --chdir ./src/ --log-level=debug wsgi:server
-
