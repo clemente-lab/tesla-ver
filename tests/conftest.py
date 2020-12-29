@@ -1,6 +1,13 @@
 import os
 
-pytest_plugins = "playwright", "dash", "parallel"
+pytest_plugins = ("playwright", "parallel")
+
+import pytest
+
+
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    return {**browser_context_args, "ignoreHTTPSErrors": True}
 
 
 def pytest_addoption(parser):
