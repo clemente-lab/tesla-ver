@@ -30,6 +30,7 @@ def generate_bubble_chart(server):
             Output("df-iddata", "data"),
             Output("df-mdata", "data"),
             Output("graph", "style"),
+            Output("button", "style")
         ],
         [Input("upload-button", "n_clicks"),],
     )
@@ -78,7 +79,7 @@ def generate_bubble_chart(server):
         grouper = lambda df, col: json.dumps(
             {group_name: df_group.to_json() for group_name, df_group in df.groupby(col)}
         )
-        return [grouper(df, "X"), grouper(df, "Subject"), mdata, {"visibility": "visible"}]
+        return [grouper(df, "X"), grouper(df, "Subject"), mdata, {"visibility": "visible"},{"visibility": "hidden"}]
 
     @app.callback(
         [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],

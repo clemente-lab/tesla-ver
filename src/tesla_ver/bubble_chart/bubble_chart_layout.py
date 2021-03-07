@@ -10,7 +10,7 @@ LAYOUT = html.Div(
     id="graph_div",
     children=[
         # This triggers the plot to load
-        html.Div(id="button", children=[html.Button("Graph", id="upload-button", n_clicks=0)]),
+        html.Div(id="button", children=[html.Button("Display Graph", id="upload-button", n_clicks=0)], style={"visibility":"visible"}),
         # This contains all the components of the graph itself
         html.Div(
             id="graph",
@@ -109,7 +109,7 @@ LAYOUT = html.Div(
                     ],
                 ),
             ],
-            style={"visibility": "visible"},
+            style={"visibility": "hidden"},
         ),
         # Storage component for storing parsed data
         dcc.Store(id="df-timedata"),
