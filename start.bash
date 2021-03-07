@@ -69,7 +69,7 @@ function start_conda_session {
     conda activate tesla-ver
   else
     echo "Creating and activating tesla-ver environment"
-    conda env create --file environment.yaml && conda activate tesla-ver
+    conda env create --file environment_run.yaml && conda activate tesla-ver
   fi
 }
 
@@ -99,4 +99,4 @@ else
 fi
 
 # Runs tesla-ver with gunicorn and 2 workers.
-gunicorn --workers=1 --bind=0.0.0.0:5000 --chdir ./src/ --log-level=debug wsgi:server
+gunicorn --workers=1 --bind=localhost:5000 --chdir ./src/ --log-level=debug wsgi:server
