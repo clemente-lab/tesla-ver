@@ -111,6 +111,14 @@ LAYOUT = html.Div(
             ],
             style={"visibility": "hidden"},
         ),
+        html.Div(
+            id="instructions",
+            children=[
+                html.P("In order to show graphs, press 'Display Graph' and select the data columns for each dropdown"),
+                html.P("Then, select a starting time value to show data beginning at that point."),
+                html.P("Controlling the animation is done via the play and pause buttons and the time bar")
+            ]
+        ),
         # Storage component for storing parsed data
         dcc.Store(id="df-timedata"),
         # Stores metadata from parsed data  with the "int" being a standin for whatever time format is used
