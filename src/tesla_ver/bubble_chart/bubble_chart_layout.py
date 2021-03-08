@@ -10,7 +10,11 @@ LAYOUT = html.Div(
     id="graph_div",
     children=[
         # This triggers the plot to load
-        html.Div(id="button", children=[html.Button("Display Graph", id="upload-button", n_clicks=0)], style={"visibility":"visible"}),
+        html.Div(
+            id="button",
+            children=[html.Button("Display Graph", id="upload-button", n_clicks=0)],
+            style={"visibility": "visible"},
+        ),
         # This contains all the components of the graph itself
         html.Div(
             id="graph",
@@ -28,7 +32,12 @@ LAYOUT = html.Div(
                                 html.Div(
                                     id="controls-div",
                                     children=[
-                                        html.Button("Play", id="play-pause-button", n_clicks=1, style={"background-color":"rgb(184, 255, 251)"}),
+                                        html.Button(
+                                            "Play",
+                                            id="play-pause-button",
+                                            n_clicks=1,
+                                            style={"background-color": "rgb(184, 255, 251)"},
+                                        ),
                                         dcc.Interval(
                                             id="play-interval", interval=1 * 1000, n_intervals=0, disabled=True
                                         ),
@@ -91,8 +100,8 @@ LAYOUT = html.Div(
             children=[
                 html.P("In order to show graphs, press 'Display Graph' and select the data columns for each dropdown"),
                 html.P("Select a starting time value to show data beginning at that point."),
-                html.P("Controlling the animation is done via the play and pause buttons and the time bar")
-            ]
+                html.P("Controlling the animation is done via the play and pause buttons and the time bar"),
+            ],
         ),
         # Storage component for storing parsed data
         dcc.Store(id="df-timedata"),

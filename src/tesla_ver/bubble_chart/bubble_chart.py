@@ -68,7 +68,6 @@ def generate_bubble_chart(server):
             # likely add a small bit of latency, which is this is left as a console-based error message.
             raise PreventUpdate("Data could not be loaded from redis")
 
-
         server.logger.debug("redis db flushed")
 
         mdata = extract_mdata(df, "Year")
@@ -82,7 +81,7 @@ def generate_bubble_chart(server):
         grouper = lambda df, col: json.dumps(
             {group_name: df_group.to_json() for group_name, df_group in df.groupby(col)}
         )
-        return [grouper(df, "X"), grouper(df, "Subject"), mdata, {"visibility": "visible"},{"visibility": "hidden"}]
+        return [grouper(df, "X"), grouper(df, "Subject"), mdata, {"visibility": "visible"}, {"visibility": "hidden"}]
 
     @app.callback(
         [
@@ -154,16 +153,10 @@ def generate_bubble_chart(server):
 
     @app.callback(
         Output("bubble-graph-with-slider", "figure"),
-        [
-            Input("time-slider", "value"),
-            Input("y_dropdown", "value"),
-            Input("x_dropdown", "value"),
-        ],
+        [Input("time-slider", "value"), Input("y_dropdown", "value"), Input("x_dropdown", "value"),],
         [State("df-timedata", "data"), State("time-slider", "marks"), State("df-mdata", "data")],
     )
-    def update_figure(
-        time_value, y_column_name, x_column_name, json_data, marks, mdata
-    ):
+    def update_figure(time_value, y_column_name, x_column_name, json_data, marks, mdata):
         """This callback handles updating the graph in response to user
         actions."""
         # Prevents updates without data

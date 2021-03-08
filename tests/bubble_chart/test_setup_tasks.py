@@ -5,4 +5,3 @@ def test_title(page):
     page.goto("/datauploading.html")
     sleep(1)
     assert page.title() == "Dash"
-
