@@ -1,5 +1,4 @@
 import pytest
-from playwright import _page
 
 
 def test_title(page):

@@ -1,18 +1,13 @@
-import base64
-import io
 import dash
 import json
 
 import pandas as pd
-import numpy as np
 import pyarrow as pa
 
 from ast import literal_eval
 from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-from pathlib import Path
-from functools import reduce
 
 from tesla_ver.bubble_chart.bubble_chart_layout import LAYOUT
 from tesla_ver.redis_manager import redis_manager
@@ -82,7 +77,12 @@ def generate_bubble_chart(server):
         return [grouper(df, "X"), grouper(df, "Subject"), mdata, {"visibility": "visible"},{"visibility": "hidden"}]
 
     @app.callback(
-        [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
+        [
+            Output("time-slider", "marks"),
+            Output("time-slider", "min"),
+            Output("time-slider", "max"),
+            Output("time-slider", "value"),
+        ],
         [Input("df-mdata", "modified_timestamp")],
         [State("df-mdata", "data")],
     )
@@ -104,7 +104,7 @@ def generate_bubble_chart(server):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
         server.logger.debug(f"✅ Marks Dictionary Created, time values are: {marks.keys()}")
-        return [marks, time_min, time_max]
+        return [marks, time_min, time_max, time_min]
 
     @app.callback(
         [
