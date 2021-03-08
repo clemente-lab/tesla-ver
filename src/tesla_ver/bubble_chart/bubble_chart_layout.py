@@ -81,31 +81,6 @@ LAYOUT = html.Div(
                                 ),
                             ]
                         ),
-                        html.Div(
-                            [
-                                html.P("Sizing Values"),
-                                dcc.Dropdown(
-                                    id="size_dropdown",
-                                    options=[],
-                                    value=None,
-                                    placeholder="Choose a data column for point size",
-                                    className="dropdowns",
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.P("Annotation"),
-                                dcc.Dropdown(
-                                    id="annotation_dropdown",
-                                    options=[],
-                                    value=None,
-                                    placeholder="Choose a data column for annotations",
-                                    multi=True,
-                                    className="dropdowns",
-                                ),
-                            ]
-                        ),
                     ],
                 ),
             ],

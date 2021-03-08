@@ -30,7 +30,7 @@ def generate_bubble_chart(server):
             Output("df-iddata", "data"),
             Output("df-mdata", "data"),
             Output("graph", "style"),
-            Output("button", "style")
+            Output("button", "style"),
         ],
         [Input("upload-button", "n_clicks"),],
     )
@@ -150,18 +150,16 @@ def generate_bubble_chart(server):
             Input("time-slider", "value"),
             Input("y_dropdown", "value"),
             Input("x_dropdown", "value"),
-            Input("size_dropdown", "value"),
-            Input("annotation_dropdown", "value"),
         ],
         [State("df-timedata", "data"), State("time-slider", "marks"), State("df-mdata", "data")],
     )
     def update_figure(
-        time_value, y_column_name, x_column_name, size_dropdown_name, annotation_column_name, json_data, marks, mdata
+        time_value, y_column_name, x_column_name, json_data, marks, mdata
     ):
         """This callback handles updating the graph in response to user
         actions."""
         # Prevents updates without data
-        if None in [json_data, size_dropdown_name, annotation_column_name, x_column_name, y_column_name, mdata]:
+        if None in [json_data, x_column_name, y_column_name, mdata]:
             raise PreventUpdate
 
         if time_value == None:
