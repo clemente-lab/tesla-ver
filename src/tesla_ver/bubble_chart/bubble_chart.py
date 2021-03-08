@@ -58,8 +58,16 @@ def generate_bubble_chart(server):
             }
 
         context = pa.default_serialization_context()
-        df = context.deserialize(redis_manager.redis.get("data_numeric"))
-        redis_manager.redis.flushdb()
+
+        if redis_manager.redis.exists("data_numeric"):
+            df = context.deserialize(redis_manager.redis.get("data_numeric"))
+            redis_manager.redis.flushdb()
+        else:
+            # Because of the need to return data matching all the different areas, displaying an error message
+            # to the end user would require either another callback to chain with, which would complicate the code and
+            # likely add a small bit of latency, which is this is left as a console-based error message.
+            raise PreventUpdate("Data could not be loaded from redis")
+
 
         server.logger.debug("redis db flushed")
 
