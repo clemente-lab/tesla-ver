@@ -64,7 +64,7 @@ LAYOUT = html.Div(
                                     id="y_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="Y Axis Values",
+                                    placeholder="Choose an Organism for the Y Axis",
                                     className="dropdowns",
                                 ),
                             ]
@@ -76,7 +76,7 @@ LAYOUT = html.Div(
                                     id="x_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="X Axis Values",
+                                    placeholder="Choose an Organism for the X Axis",
                                     className="dropdowns",
                                 ),
                             ]
@@ -88,7 +88,7 @@ LAYOUT = html.Div(
                                     id="size_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="Sizing Values",
+                                    placeholder="Choose a data column for point size",
                                     className="dropdowns",
                                 ),
                             ]
@@ -100,7 +100,7 @@ LAYOUT = html.Div(
                                     id="annotation_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="Annotation",
+                                    placeholder="Choose a data column for annotations",
                                     multi=True,
                                     className="dropdowns",
                                 ),
