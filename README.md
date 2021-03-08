@@ -34,7 +34,7 @@ Currently, the Tesla-ver server is not running, but may be available as a web ap
 
 ## Testing
 
-Run `bash test.bash` to run and install all testing setups.
+Run `bash test.bash` once the server is running via `bash start.bash` to run and install all tests.
 
 ---
 
