@@ -73,7 +73,7 @@ LAYOUT = html.Div(
                                     id="y_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="Choose an Organism for the Y Axis",
+                                    placeholder="Choose an Taxa for the Y Axis",
                                     className="dropdowns",
                                 ),
                             ]
@@ -85,7 +85,7 @@ LAYOUT = html.Div(
                                     id="x_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="Choose an Organism for the X Axis",
+                                    placeholder="Choose an Taxa for the X Axis",
                                     className="dropdowns",
                                 ),
                             ]
@@ -98,9 +98,9 @@ LAYOUT = html.Div(
         html.Div(
             id="instructions",
             children=[
-                html.P("In order to show graphs, press 'Display Graph' and select the data columns for each dropdown"),
-                html.P("Select a starting time value to show data beginning at that point."),
-                html.P("Controlling the animation is done via the play and pause buttons and the time bar"),
+                html.P("In order to show graphs, press 'Display Graph' and select the data columns for each dropdown."),
+                html.P("Select a time value to show data at that time point."),
+                html.P("Controlling the animation is done via the play and pause buttons and the time bar."),
             ],
         ),
         # Storage component for storing parsed data
