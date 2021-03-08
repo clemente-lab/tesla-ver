@@ -28,7 +28,7 @@ LAYOUT = html.Div(
                                 html.Div(
                                     id="controls-div",
                                     children=[
-                                        html.Button("Play", id="play-pause-button", n_clicks=1),
+                                        html.Button("Play", id="play-pause-button", n_clicks=1, style={"background-color":"rgb(184, 255, 251)"}),
                                         dcc.Interval(
                                             id="play-interval", interval=1 * 1000, n_intervals=0, disabled=True
                                         ),
@@ -90,7 +90,7 @@ LAYOUT = html.Div(
             id="instructions",
             children=[
                 html.P("In order to show graphs, press 'Display Graph' and select the data columns for each dropdown"),
-                html.P("Then, select a starting time value to show data beginning at that point."),
+                html.P("Select a starting time value to show data beginning at that point."),
                 html.P("Controlling the animation is done via the play and pause buttons and the time bar")
             ]
         ),
