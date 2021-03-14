@@ -161,7 +161,9 @@ def generate_bubble_chart(server):
         actions."""
         # Prevents updates without data
         if None in [json_data, x_column_name, y_column_name, mdata]:
-            raise PreventUpdate
+            raise PreventUpdate(
+                "Graph could not load data -- either this is at startup, or the Storage component isn't storing the data"
+            )
 
         if time_value == None:
             time_value = int(mdata.get("time_min"))
