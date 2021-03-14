@@ -73,7 +73,7 @@ LAYOUT = html.Div(
                                     id="y_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="Choose an Taxa for the Y Axis",
+                                    placeholder="Choose an taxa for the Y Axis",
                                     className="dropdowns",
                                 ),
                             ]
@@ -85,7 +85,7 @@ LAYOUT = html.Div(
                                     id="x_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="Choose an Taxa for the X Axis",
+                                    placeholder="Choose an taxa for the X Axis",
                                     className="dropdowns",
                                 ),
                             ]
