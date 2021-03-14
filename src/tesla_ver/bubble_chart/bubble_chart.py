@@ -117,8 +117,6 @@ def generate_bubble_chart(server):
         [
             Output("y_dropdown", "options"),
             Output("x_dropdown", "options"),
-            Output("size_dropdown", "options"),
-            Output("annotation_dropdown", "options"),
         ],
         [Input("df-mdata", "modified_timestamp")],
         [State("df-mdata", "data")],
@@ -145,8 +143,6 @@ def generate_bubble_chart(server):
         server.logger.debug(f'✅ Data Options created, values are {mdata.get("data_cols")}')
 
         return [
-            data_options,
-            data_options,
             data_options,
             data_options,
         ]
