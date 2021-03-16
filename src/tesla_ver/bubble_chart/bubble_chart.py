@@ -17,6 +17,11 @@ def generate_bubble_chart(server):
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
 
     app.layout = LAYOUT
+
+    # Ignores callback exceptions -- this is to allow for the initial state of the time value to be set
+    # without raising errors
+    app.config.suppress_callback_exceptions = True
+
     server.logger.debug("Bubble Chart layout loaded")
 
     @app.callback(
