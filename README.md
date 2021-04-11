@@ -22,7 +22,8 @@ Connect to it by going to `0.0.0.0:5000`
 
 ## Usage
 
-After installation, run `bash start.bash` to start the applcation, and connect to `0.0.0.0:5000`
+Make sure that no conda environments containing `tesla-ver` in the name exist, and then run
+`bash start.bash` to start the applcation, and connect to `0.0.0.0:5000`
 
 ---
 
