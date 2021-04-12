@@ -171,7 +171,10 @@ def generate_bubble_chart(server):
 
         # Loads dataframe at specific time value by getting the time as a key from a dictionary,
         # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
-        df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
+        try:
+            df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
+        except ValueError:
+            pass
 
         server.logger.debug("✅ dataframe filtered by time")
 
