@@ -36,6 +36,9 @@ generate_charting(server=server)
 
 server.logger.debug("✅ Bubble Chart Screen created and connected")
 
+
+
+# Wrapper to check if UUID is initialized, and initialize it if not
 def check_uuid_initialized(redirect_func):
     @wraps(redirect_func)
     def wrapped(*args, **kwargs):
@@ -43,8 +46,7 @@ def check_uuid_initialized(redirect_func):
         if uuid:
             return redirect_func(*args, **kwargs)
         else:
-            # session['uuid'] = str(uuid4().hex)
-            session['uuid'] = None
+            session['uuid'] = str(uuid4().hex)
             return redirect_func(*args, **kwargs)
     return wrapped
 
