@@ -139,13 +139,18 @@ def generate_data_uploading(server):
         )
         server.logger.debug("redis numeric data set at key: " + session_uuid + "_numeric_data")
 
-        # This may be an empty dataframe (checking is needed once the mdata starts getting used)
-        redis_manager.redis.set(
-            session.get('uuid') + "_metadata",
-            serialization_context.serialize(df[["Year", "Subject", *mdata_cols]]).to_buffer().to_pybytes(),
-        )
+        # Metadata storage feature flag
 
-        server.logger.debug("redis metadata set at key: " + session_uuid + "_metadata")
+        store_mdata = False
+
+        if store_mdata:
+            # This may be an empty dataframe (checking is needed once the mdata starts getting used)
+            redis_manager.redis.set(
+                session.get('uuid') + "_metadata",
+                serialization_context.serialize(df[["Year", "Subject", *mdata_cols]]).to_buffer().to_pybytes(),
+            )
+
+            server.logger.debug("redis metadata set at key: " + session_uuid + "_metadata")
 
         return {"visibility": "visible"}
 
