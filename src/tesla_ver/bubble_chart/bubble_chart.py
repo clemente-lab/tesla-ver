@@ -70,9 +70,16 @@ def generate_charting(server):
         session_uuid = session.get('uuid')
 
         if redis_manager.redis.exists(session_uuid + "_numeric_data"):
-            server.logger.debug("reading data from redis key: " + session_uuid + "_numeric_data")
+
+            # User specific key for data stored in redis
+            numeric_data_key = session_uuid + "_numeric_data"
+
+            server.logger.debug("reading data from redis key: " + numeric_data_key)
+
             df = context.deserialize(redis_manager.redis.get(session_uuid + "_numeric_data"))
-            # redis_manager.redis.flushdb()
+
+            # Clear user specific data after read
+            redis_manager.redis.delete(numeric_data_key)
         else:
             # Because of the need to return data matching all the different areas, displaying an error message
             # to the end user would require either another callback to chain with, which would complicate the code and
