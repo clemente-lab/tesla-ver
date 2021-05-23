@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import pyarrow as pa
 
+from flask import session
 
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -126,20 +127,24 @@ def generate_data_uploading(server):
 
         serialization_context = pa.default_serialization_context()
 
+        session_uuid = session.get('uuid')
+
         redis_manager.redis.set(
-            "data_numeric",
+            session_uuid + "_numeric_data",
             serialization_context.serialize(df[sorted(set(["Year", "Subject", *selected_columns]))])
             .to_buffer()
             .to_pybytes(),
         )
-        server.logger.debug("redis numeric data set")
+        server.logger.debug("redis numeric data set at key: " + session_uuid + "_numeric_data")
 
         # This may be an empty dataframe (checking is needed once the mdata starts getting used)
         redis_manager.redis.set(
-            "data_mdata",
+            session.get('uuid') + "_metadata",
             serialization_context.serialize(df[["Year", "Subject", *mdata_cols]]).to_buffer().to_pybytes(),
         )
-        server.logger.debug("redis mdata set")
+
+        server.logger.debug("redis metadata set at key: " + session_uuid + "_metadata")
+
         return {"visibility": "visible"}
 
     return app
