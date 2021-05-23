@@ -66,6 +66,7 @@ def generate_charting(server):
 
         context = pa.default_serialization_context()
 
+        # Gets session UUID to get user specific data
         session_uuid = session.get('uuid')
 
         if redis_manager.redis.exists(session_uuid + "_numeric_data"):

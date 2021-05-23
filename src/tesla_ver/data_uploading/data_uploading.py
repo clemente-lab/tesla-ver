@@ -127,6 +127,8 @@ def generate_data_uploading(server):
 
         serialization_context = pa.default_serialization_context()
 
+
+        # Gets session UUID to write user specific data
         session_uuid = session.get('uuid')
 
         redis_manager.redis.set(
