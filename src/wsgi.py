@@ -1,12 +1,12 @@
 # import flask
 import logging
-from flask import Flask, render_template, redirect, session, flash
+from flask import Flask, render_template, redirect, session
 from werkzeug.debug import DebuggedApplication
 from datetime import datetime
 from os import urandom
 from uuid import uuid4
 from functools import wraps
-from tesla_ver.bubble_chart.bubble_chart import generate_bubble_chart
+from tesla_ver.bubble_chart.bubble_chart import generate_charting
 from tesla_ver.data_uploading.data_uploading import generate_data_uploading
 
 
@@ -32,7 +32,7 @@ generate_data_uploading(server=server)
 server.logger.debug("✅ Data Uploading Screen created and connected")
 
 # Creates the bubble chart and connects it to the flask server
-generate_bubble_chart(server=server)
+generate_charting(server=server)
 
 server.logger.debug("✅ Bubble Chart Screen created and connected")
 
@@ -55,22 +55,24 @@ def check_uuid_initialized(redirect_func):
 def index():
     """Renders the landing page."""
     server.logger.debug("rendering homepage")
+    server.logger.debug("User with UUID:" + session.get('uuid') + "connected to homepage")
     return render_template("index.html")
-
-
-@server.route("/bubblechart.html")
-@check_uuid_initialized
-def render_bubble_chart():
-    """Redirects to the Dash Bubble chart."""
-    server.logger.debug("redirecting to bubblechart")
-    return redirect("/bubblechart.html")
-
 
 @server.route("/datauploading.html")
 @check_uuid_initialized
 def render_data_uploading():
     server.logger.debug("redirecting to data uploader")
+    server.logger.debug("User with UUID:" + session.get('uuid') + "connected to data uploading")
     return redirect("/datauploading.html")
+
+
+@server.route("/bubblechart.html")
+@check_uuid_initialized
+def render_charting_page():
+    """Redirects to the Dash Bubble chart."""
+    server.logger.debug("redirecting to bubblechart")
+    server.logger.debug("User with UUID:" + session.get('uuid') + "connected to charting")
+    return redirect("/bubblechart.html")
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ from tesla_ver.bubble_chart.bubble_chart_layout import LAYOUT
 from tesla_ver.redis_manager import redis_manager
 
 
-def generate_bubble_chart(server):
+def generate_charting(server):
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
 
     app.layout = LAYOUT
