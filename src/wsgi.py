@@ -6,7 +6,7 @@ from datetime import datetime
 from os import urandom
 from uuid import uuid4
 from functools import wraps
-from tesla_ver.bubble_chart.bubble_chart import generate_charting
+from tesla_ver.charting.charting import generate_charting
 from tesla_ver.data_uploading.data_uploading import generate_data_uploading
 
 

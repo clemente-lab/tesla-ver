@@ -11,7 +11,7 @@ from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from tesla_ver.bubble_chart.bubble_chart_layout import LAYOUT
+from tesla_ver.charting.charting_layout import LAYOUT
 from tesla_ver.redis_manager import redis_manager
 
 
@@ -86,7 +86,7 @@ def generate_charting(server):
             # likely add a small bit of latency, which is this is left as a console-based error message.
             raise PreventUpdate("Data could not be loaded from redis")
 
-        server.logger.debug("redis db flushed")
+        server.logger.debug("redis data for UUID " + session_uuid + " flushed")
 
         mdata = extract_mdata(df, "Year")
         df.rename(columns={"Year": "X"}, inplace=True)
