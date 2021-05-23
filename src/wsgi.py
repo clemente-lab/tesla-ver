@@ -55,14 +55,14 @@ def check_uuid_initialized(redirect_func):
 def index():
     """Renders the landing page."""
     server.logger.debug("rendering homepage")
-    server.logger.debug("User with UUID:" + session.get('uuid') + "connected to homepage")
+    server.logger.debug("User with UUID:" + session.get('uuid') + "connecting to homepage")
     return render_template("index.html")
 
 @server.route("/datauploading.html")
 @check_uuid_initialized
 def render_data_uploading():
     server.logger.debug("redirecting to data uploader")
-    server.logger.debug("User with UUID:" + session.get('uuid') + "connected to data uploading")
+    server.logger.debug("User with UUID:" + session.get('uuid') + "connecting to data uploading")
     return redirect("/datauploading.html")
 
 
@@ -71,7 +71,7 @@ def render_data_uploading():
 def render_charting_page():
     """Redirects to the Dash Bubble chart."""
     server.logger.debug("redirecting to bubblechart")
-    server.logger.debug("User with UUID:" + session.get('uuid') + "connected to charting")
+    server.logger.debug("User with UUID:" + session.get('uuid') + "connecting to charting")
     return redirect("/bubblechart.html")
 
 
