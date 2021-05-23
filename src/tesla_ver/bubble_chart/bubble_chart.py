@@ -4,6 +4,8 @@ import json
 import pandas as pd
 import pyarrow as pa
 
+from flask import session
+
 from ast import literal_eval
 from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
@@ -64,9 +66,12 @@ def generate_charting(server):
 
         context = pa.default_serialization_context()
 
-        if redis_manager.redis.exists("data_numeric"):
-            df = context.deserialize(redis_manager.redis.get("data_numeric"))
-            redis_manager.redis.flushdb()
+        session_uuid = session.get('uuid')
+
+        if redis_manager.redis.exists(session_uuid + "_numeric_data"):
+            server.logger.debug("reading data from redis key: " + session_uuid + "_numeric_data")
+            df = context.deserialize(redis_manager.redis.get(session_uuid + "_numeric_data"))
+            # redis_manager.redis.flushdb()
         else:
             # Because of the need to return data matching all the different areas, displaying an error message
             # to the end user would require either another callback to chain with, which would complicate the code and
