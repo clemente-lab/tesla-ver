@@ -1,4 +1,3 @@
-# import flask
 import logging
 from flask import Flask, render_template, redirect, session
 from werkzeug.debug import DebuggedApplication
