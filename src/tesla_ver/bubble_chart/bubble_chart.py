@@ -1,18 +1,13 @@
-import base64
-import io
 import dash
 import json
 
 import pandas as pd
-import numpy as np
 import pyarrow as pa
 
 from ast import literal_eval
 from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-from pathlib import Path
-from functools import reduce
 
 from tesla_ver.bubble_chart.bubble_chart_layout import LAYOUT
 from tesla_ver.redis_manager import redis_manager
@@ -22,6 +17,11 @@ def generate_bubble_chart(server):
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
 
     app.layout = LAYOUT
+
+    # Ignores callback exceptions -- this is to allow for the initial state of the time value to be set
+    # without raising errors
+    app.config.suppress_callback_exceptions = True
+
     server.logger.debug("Bubble Chart layout loaded")
 
     @app.callback(
@@ -30,6 +30,7 @@ def generate_bubble_chart(server):
             Output("df-iddata", "data"),
             Output("df-mdata", "data"),
             Output("graph", "style"),
+            Output("button", "style"),
         ],
         [Input("upload-button", "n_clicks"),],
     )
@@ -62,8 +63,15 @@ def generate_bubble_chart(server):
             }
 
         context = pa.default_serialization_context()
-        df = context.deserialize(redis_manager.redis.get("data_numeric"))
-        redis_manager.redis.flushdb()
+
+        if redis_manager.redis.exists("data_numeric"):
+            df = context.deserialize(redis_manager.redis.get("data_numeric"))
+            redis_manager.redis.flushdb()
+        else:
+            # Because of the need to return data matching all the different areas, displaying an error message
+            # to the end user would require either another callback to chain with, which would complicate the code and
+            # likely add a small bit of latency, which is this is left as a console-based error message.
+            raise PreventUpdate("Data could not be loaded from redis")
 
         server.logger.debug("redis db flushed")
 
@@ -78,10 +86,15 @@ def generate_bubble_chart(server):
         grouper = lambda df, col: json.dumps(
             {group_name: df_group.to_json() for group_name, df_group in df.groupby(col)}
         )
-        return [grouper(df, "X"), grouper(df, "Subject"), mdata, {"visibility": "visible"}]
+        return [grouper(df, "X"), grouper(df, "Subject"), mdata, {"visibility": "visible"}, {"visibility": "hidden"}]
 
     @app.callback(
-        [Output("time-slider", "marks"), Output("time-slider", "min"), Output("time-slider", "max"),],
+        [
+            Output("time-slider", "marks"),
+            Output("time-slider", "min"),
+            Output("time-slider", "max"),
+            Output("time-slider", "value"),
+        ],
         [Input("df-mdata", "modified_timestamp")],
         [State("df-mdata", "data")],
     )
@@ -103,14 +116,12 @@ def generate_bubble_chart(server):
             if idx % 4 == 0:
                 marks[key]["style"] = {"visibility": "visible"}
         server.logger.debug(f"✅ Marks Dictionary Created, time values are: {marks.keys()}")
-        return [marks, time_min, time_max]
+        return [marks, time_min, time_max, time_min]
 
     @app.callback(
         [
             Output("y_dropdown", "options"),
             Output("x_dropdown", "options"),
-            Output("size_dropdown", "options"),
-            Output("annotation_dropdown", "options"),
         ],
         [Input("df-mdata", "modified_timestamp")],
         [State("df-mdata", "data")],
@@ -139,36 +150,31 @@ def generate_bubble_chart(server):
         return [
             data_options,
             data_options,
-            data_options,
-            data_options,
         ]
 
     @app.callback(
         Output("bubble-graph-with-slider", "figure"),
-        [
-            Input("time-slider", "value"),
-            Input("y_dropdown", "value"),
-            Input("x_dropdown", "value"),
-            Input("size_dropdown", "value"),
-            Input("annotation_dropdown", "value"),
-        ],
+        [Input("time-slider", "value"), Input("y_dropdown", "value"), Input("x_dropdown", "value"),],
         [State("df-timedata", "data"), State("time-slider", "marks"), State("df-mdata", "data")],
     )
-    def update_figure(
-        time_value, y_column_name, x_column_name, size_dropdown_name, annotation_column_name, json_data, marks, mdata
-    ):
+    def update_figure(time_value, y_column_name, x_column_name, json_data, marks, mdata):
         """This callback handles updating the graph in response to user
         actions."""
         # Prevents updates without data
-        if None in [json_data, size_dropdown_name, annotation_column_name, x_column_name, y_column_name, mdata]:
-            raise PreventUpdate
+        if None in [json_data, x_column_name, y_column_name, mdata]:
+            raise PreventUpdate(
+                "Graph could not load data -- either this is at startup, or the Storage component isn't storing the data"
+            )
 
         if time_value == None:
             time_value = int(mdata.get("time_min"))
 
         # Loads dataframe at specific time value by getting the time as a key from a dictionary,
         # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
-        df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
+        try:
+            df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
+        except ValueError:
+            pass
 
         server.logger.debug("✅ dataframe filtered by time")
 

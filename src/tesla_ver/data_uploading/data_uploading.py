@@ -1,5 +1,4 @@
 import dash
-import redis
 
 import pandas as pd
 import numpy as np

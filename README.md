@@ -22,13 +22,20 @@ Connect to it by going to `0.0.0.0:5000`
 
 ## Usage
 
-After installation, run `bash start.bash` to start the applcation, and connect to `0.0.0.0:5000`
+Make sure that no conda environments containing `tesla-ver` in the name exist, and then run
+`bash start.bash` to start the applcation, and connect to `0.0.0.0:5000`
 
 ---
 
 ## Users
 
 Currently, the Tesla-ver server is not running, but may be available as a web app in future iterations
+
+---
+
+## Testing
+
+Run `bash test.bash` once the server is running via `bash start.bash` to run and install all tests.
 
 ---
 

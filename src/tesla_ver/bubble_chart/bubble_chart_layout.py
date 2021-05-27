@@ -10,7 +10,11 @@ LAYOUT = html.Div(
     id="graph_div",
     children=[
         # This triggers the plot to load
-        html.Div(id="button", children=[html.Button("Graph", id="upload-button", n_clicks=0)]),
+        html.Div(
+            id="button",
+            children=[html.Button("Display Graph", id="upload-button", n_clicks=0)],
+            style={"visibility": "visible"},
+        ),
         # This contains all the components of the graph itself
         html.Div(
             id="graph",
@@ -28,7 +32,12 @@ LAYOUT = html.Div(
                                 html.Div(
                                     id="controls-div",
                                     children=[
-                                        html.Button("Play", id="play-pause-button", n_clicks=1),
+                                        html.Button(
+                                            "Play",
+                                            id="play-pause-button",
+                                            n_clicks=1,
+                                            style={"background-color": "rgb(184, 255, 251)"},
+                                        ),
                                         dcc.Interval(
                                             id="play-interval", interval=1 * 1000, n_intervals=0, disabled=True
                                         ),
@@ -64,7 +73,7 @@ LAYOUT = html.Div(
                                     id="y_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="Y Axis Values",
+                                    placeholder="Choose an taxa for the Y Axis",
                                     className="dropdowns",
                                 ),
                             ]
@@ -76,32 +85,7 @@ LAYOUT = html.Div(
                                     id="x_dropdown",
                                     options=[],
                                     value=None,
-                                    placeholder="X Axis Values",
-                                    className="dropdowns",
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.P("Sizing Values"),
-                                dcc.Dropdown(
-                                    id="size_dropdown",
-                                    options=[],
-                                    value=None,
-                                    placeholder="Sizing Values",
-                                    className="dropdowns",
-                                ),
-                            ]
-                        ),
-                        html.Div(
-                            [
-                                html.P("Annotation"),
-                                dcc.Dropdown(
-                                    id="annotation_dropdown",
-                                    options=[],
-                                    value=None,
-                                    placeholder="Annotation",
-                                    multi=True,
+                                    placeholder="Choose an taxa for the X Axis",
                                     className="dropdowns",
                                 ),
                             ]
@@ -109,7 +93,15 @@ LAYOUT = html.Div(
                     ],
                 ),
             ],
-            style={"visibility": "visible"},
+            style={"visibility": "hidden"},
+        ),
+        html.Div(
+            id="instructions",
+            children=[
+                html.P("In order to show graphs, press 'Display Graph' and select the data columns for each dropdown."),
+                html.P("Select a time value to show data at that time point."),
+                html.P("Controlling the animation is done via the play and pause buttons and the time bar."),
+            ],
         ),
         # Storage component for storing parsed data
         dcc.Store(id="df-timedata"),

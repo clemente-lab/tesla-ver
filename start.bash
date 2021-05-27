@@ -64,13 +64,16 @@ function start_conda_session {
   CONDA_PREFIX=$(find $HOME -maxdepth 1 -type d | grep -E "\w{3,4}conda")
   source $CONDA_PREFIX/etc/profile.d/conda.sh
   ENVS=$(conda env list | awk '{print $1}' )
-  if [[ $ENVS = *"tesla-ver"* ]]; then
-    echo "Activating tesla-ver environment"
-    conda activate tesla-ver
-  else
-    echo "Creating and activating tesla-ver environment"
-    conda env create --file environment.yaml && conda activate tesla-ver
-  fi
+  # if [[ $ENVS = *"tesla-ver"* ]]; then
+  #   echo "Activating tesla-ver environment"
+  #   conda activate tesla-ver
+  # else
+  #   echo "Creating and activating tesla-ver environment"
+  #   conda env create --file environment_run.yaml && conda activate tesla-ver
+  # fi
+  echo "Activating tesla-ver environment"
+  conda env create --file environment_run.yaml
+  conda activate tesla-ver
 }
 
 # Checks if conda installation is found -- if not, it offers to install it via batch silent install
@@ -99,5 +102,4 @@ else
 fi
 
 # Runs tesla-ver with gunicorn and 2 workers.
-gunicorn --workers=1 --bind=0.0.0.0:5000 --log-level=debug wsgi:server
-
+gunicorn --workers=1 --bind=localhost:5000 --chdir ./src/ --log-level=debug wsgi:server
