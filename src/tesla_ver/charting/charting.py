@@ -16,6 +16,9 @@ from tesla_ver.redis_manager import redis_manager
 
 
 def generate_charting(server):
+
+    # TODO Use metadata in charting/graphing system, reenable feature flag when metadata is used for charting/graphing
+
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
 
     app.layout = LAYOUT

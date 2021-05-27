@@ -140,6 +140,7 @@ def generate_data_uploading(server):
         server.logger.debug("redis numeric data set at key: " + session_uuid + "_numeric_data")
 
         # Metadata storage feature flag
+        # TODO Use metadata in charting/graphing system, reenable feature flag when metadata is used for charting/graphing
 
         store_mdata = False
 
