@@ -185,11 +185,15 @@ def generate_charting(server):
         if time_value == None:
             time_value = int(mdata.get("time_min"))
 
+        if time_value == int(mdata.get("time_max")):
+            time_value
+
         # Loads dataframe at specific time value by getting the time as a key from a dictionary,
         # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
         try:
             df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
         except ValueError:
+            server.logger.debug(f"❌ unable to load dataframe at time value: {str(time_value)}")
             pass
 
         server.logger.debug("✅ dataframe filtered by time")
@@ -244,12 +248,15 @@ def generate_charting(server):
         return [play_status, play_bool]
 
     @app.callback(
-        Output("time-slider", "value"), [Input("play-interval", "n_intervals")], [State("time-slider", "value")]
+        [Output("time-slider", "value"), Output("play-interval", "disabled")], [Input("play-interval", "n_intervals")], [State("time-slider", "value"), State("df-mdata", "data")]
     )
-    def play_increment(n_intervals, time_value):
+    def play_increment(n_intervals, time_value, mdata):
         if time_value is None:
             raise PreventUpdate
-        return str(int(time_value) + 1)
+        if int(time_value) == int(mdata.get("time_max")):
+            server.logger.debug(f'Max time value reached, returning max value')
+            return [str(int(time_value)), True]
+        return [str(int(time_value) + 1), False]
 
     @app.callback(
         [Output("left-line-plot-graph", "figure"), Output("right-line-plot-graph", "figure")],
