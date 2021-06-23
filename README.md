@@ -27,6 +27,10 @@ Make sure that no conda environments containing `tesla-ver` in the name exist, a
 
 ---
 
+## Notes
+
+The values for time must be integers.
+
 ## Users
 
 Currently, the Tesla-ver server is not running, but may be available as a web app in future iterations
