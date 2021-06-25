@@ -4,16 +4,21 @@ import json
 import pandas as pd
 import pyarrow as pa
 
+from flask import session
+
 from ast import literal_eval
 from plotly.graph_objects import Scatter
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from tesla_ver.bubble_chart.bubble_chart_layout import LAYOUT
+from tesla_ver.charting.charting_layout import LAYOUT
 from tesla_ver.redis_manager import redis_manager
 
 
-def generate_bubble_chart(server):
+def generate_charting(server):
+
+    # TODO Use metadata in charting/graphing system, reenable feature flag when metadata is used for charting/graphing
+
     app = dash.Dash(__name__, server=server, url_base_pathname="/bubblechart.html/")
 
     app.layout = LAYOUT
@@ -64,16 +69,27 @@ def generate_bubble_chart(server):
 
         context = pa.default_serialization_context()
 
-        if redis_manager.redis.exists("data_numeric"):
-            df = context.deserialize(redis_manager.redis.get("data_numeric"))
-            redis_manager.redis.flushdb()
+        # Gets session UUID to get user specific data
+        session_uuid = session.get('uuid')
+
+        if redis_manager.redis.exists(session_uuid + "_numeric_data"):
+
+            # User specific key for data stored in redis
+            numeric_data_key = session_uuid + "_numeric_data"
+
+            server.logger.debug("reading data from redis key: " + numeric_data_key)
+
+            df = context.deserialize(redis_manager.redis.get(session_uuid + "_numeric_data"))
+
+            # Clear user specific data after read
+            redis_manager.redis.delete(numeric_data_key)
         else:
             # Because of the need to return data matching all the different areas, displaying an error message
             # to the end user would require either another callback to chain with, which would complicate the code and
             # likely add a small bit of latency, which is this is left as a console-based error message.
             raise PreventUpdate("Data could not be loaded from redis")
 
-        server.logger.debug("redis db flushed")
+        server.logger.debug("redis data for UUID " + session_uuid + " flushed")
 
         mdata = extract_mdata(df, "Year")
         df.rename(columns={"Year": "X"}, inplace=True)
@@ -169,11 +185,15 @@ def generate_bubble_chart(server):
         if time_value == None:
             time_value = int(mdata.get("time_min"))
 
+        if time_value == int(mdata.get("time_max")):
+            time_value
+
         # Loads dataframe at specific time value by getting the time as a key from a dictionary,
         # then evaluates it to turn it into a python dictionary, and then loads it as a dataframe
         try:
             df_by_time = pd.DataFrame.from_dict(literal_eval(json.loads(json_data).get(str(time_value))))
         except ValueError:
+            server.logger.debug(f"❌ unable to load dataframe at time value: {str(time_value)}")
             pass
 
         server.logger.debug("✅ dataframe filtered by time")
@@ -228,12 +248,15 @@ def generate_bubble_chart(server):
         return [play_status, play_bool]
 
     @app.callback(
-        Output("time-slider", "value"), [Input("play-interval", "n_intervals")], [State("time-slider", "value")]
+        [Output("time-slider", "value"), Output("play-interval", "disabled")], [Input("play-interval", "n_intervals")], [State("time-slider", "value"), State("df-mdata", "data")]
     )
-    def play_increment(n_intervals, time_value):
+    def play_increment(n_intervals, time_value, mdata):
         if time_value is None:
             raise PreventUpdate
-        return str(int(time_value) + 1)
+        if int(time_value) == int(mdata.get("time_max")):
+            server.logger.debug(f'Max time value reached, returning max value')
+            return [str(int(time_value)), True]
+        return [str(int(time_value) + 1), False]
 
     @app.callback(
         [Output("left-line-plot-graph", "figure"), Output("right-line-plot-graph", "figure")],
